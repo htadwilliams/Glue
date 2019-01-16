@@ -20,10 +20,10 @@ namespace Glue
 
         internal void Play()
         {
+            // Schedule each action in the macro and add it to the output queue
             foreach (Action action in actions)
             {
-                action.Schedule();
-                ActionQueue.Enqueue(action);
+                ActionQueue.Enqueue(action, action.Schedule());
             }
         }
     }

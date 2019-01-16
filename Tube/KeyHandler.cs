@@ -25,8 +25,8 @@ namespace Glue
             // TODO remove trigger and macro building test code
             Macro macro = new Macro(10);    // Fire this macro 10ms after trigger
 
-            macro = macro.AddAction(new Action(ActionTypes.KEYBOARD_PRESS, 0, Keys.Z))
-                         .AddAction(new Action(ActionTypes.KEYBOARD_RELEASE, 100, Keys.Z));
+            macro = macro.AddAction(new Action(ActionTypes.KEYBOARD_PRESS, 500, Keys.Z))
+                         .AddAction(new Action(ActionTypes.KEYBOARD_RELEASE, 1500, Keys.Z));
 
             // Bind macro to trigger Ctrl-C
             Trigger trigger = new Trigger(Keys.C, macro);
@@ -79,19 +79,18 @@ namespace Glue
                 {
                     LOGGER.Debug("+ " + (Keys)vkCode);
 
+                    if (triggers.TryGetValue((Keys)vkCode, out Trigger trigger))
+                    {
+                        if (trigger.AreModKeysActive())
+                        {
+                            trigger.Fire();
+                        }
+                    }
+
                     Main mainForm = GlueTube.MainForm;
                     String output = FormatKeyString(vkCode);
 
                     mainForm.AppendText(output);
-                }
-            }
-
-            // TODO Move test trigger code 
-            if (triggers.TryGetValue((Keys)vkCode, out Trigger trigger))
-            {
-                if (trigger.AreModKeysActive())
-                {
-                    trigger.Fire();
                 }
             }
 
