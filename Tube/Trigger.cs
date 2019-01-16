@@ -7,14 +7,17 @@ namespace Glue
     class Trigger
     {
         private readonly Keys triggerKey;
+        private readonly Macro macro;
         private List<Keys> modKeys = new List<Keys>();
+
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public Keys TriggerKey => triggerKey;
 
-        public Trigger(Keys triggerKey)
+        public Trigger(Keys triggerKey, Macro macro)
         {
             this.triggerKey = triggerKey;
+            this.macro = macro;
         }
 
         public void AddModifier(Keys modKey)
@@ -61,7 +64,7 @@ namespace Glue
 
             LOGGER.Info(message);
 
-            ActionQueue.Enqueue(new Action(ActionTypes.KEYBOARD_PRESS, 0, Keys.Z));
+            macro.Play();
         }
     }
 }

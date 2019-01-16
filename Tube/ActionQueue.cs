@@ -21,7 +21,10 @@ namespace Glue
         {
             if (null == thread)
             {
-                thread = new Thread(new ThreadStart(Threadproc));
+                thread = new Thread(new ThreadStart(Threadproc))
+                {
+                    Name = "ActionQueue"
+                };
                 thread.Start();
             }
         }
@@ -35,12 +38,16 @@ namespace Glue
         {
             LOGGER.Debug("Starting...");
 
+            // TODO Add thread termination condition or make sure one isn't needed
             while (true)
             {
                 while (actions.TryDequeue(out Action action))
                 {
-                    LOGGER.Debug("Action key code: " + action.Key.ToString());
+                    // TODO trigger actual key presses!
+                    LOGGER.Debug("Action: Type=" + action.ActionType.ToString() + " Key= " + action.Key.ToString());
                 }
+
+                // TODO How long should thread between queue checks? Configurable?
                 Thread.Sleep(1);
             }
         }

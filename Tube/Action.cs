@@ -36,5 +36,11 @@ namespace Glue
             this.timeTriggerMS = timeTriggerMS;
             this.key = key;
         }
+
+        public void Schedule()
+        {
+            // TODO schedule time now + timeTriggerMS
+            timeScheduledMS = 0;
+        }
     }
 }

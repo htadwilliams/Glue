@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Glue
 {
@@ -20,6 +16,15 @@ namespace Glue
         {
             actions.Add(action);
             return this;
+        }
+
+        internal void Play()
+        {
+            foreach (Action action in actions)
+            {
+                action.Schedule();
+                ActionQueue.Enqueue(action);
+            }
         }
     }
 }
