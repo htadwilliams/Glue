@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 
 namespace Glue
 {
@@ -28,7 +29,7 @@ namespace Glue
         public ActionTypes ActionType => actionType;
         public Keys Key => key;
 
-        private long TimeScheduledMS { get => timeScheduledMS; set => timeScheduledMS = value; }
+        public long TimeScheduledMS { get => timeScheduledMS; set => timeScheduledMS = value; }
 
         public Action(ActionTypes actionType, long timeTriggerMS, Keys key)
         {
@@ -37,10 +38,9 @@ namespace Glue
             this.key = key;
         }
 
-        public void Schedule()
+        public long Schedule()
         {
-            // TODO schedule time now + timeTriggerMS
-            timeScheduledMS = 0;
+            return this.timeScheduledMS = ActionQueue.Now() + this.timeTriggerMS;
         }
     }
 }
