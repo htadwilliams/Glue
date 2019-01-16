@@ -21,8 +21,15 @@ namespace Glue
         // TODO is there a better way to do static initialization for this class?
         public static void Initialize()
         {
-            // TODO remove trigger building test code
-            Trigger trigger = new Trigger(Keys.C);
+
+            // TODO remove trigger and macro building test code
+            Macro macro = new Macro(10);    // Fire this macro 10ms after trigger
+
+            macro = macro.AddAction(new Action(ActionTypes.KEYBOARD_PRESS, 0, Keys.Z))
+                         .AddAction(new Action(ActionTypes.KEYBOARD_RELEASE, 100, Keys.Z));
+
+            // Bind macro to trigger Ctrl-C
+            Trigger trigger = new Trigger(Keys.C, macro);
             trigger.AddModifier(Keys.LControlKey);
             // trigger.AddModifier(Keys.S);
             // trigger.AddModifier(Keys.LMenu);
