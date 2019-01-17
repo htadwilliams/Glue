@@ -17,8 +17,9 @@ namespace Glue
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         // Using https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp copied directly into the project for now 
-        // Thanks to BlueRaja.admin@gmail.com 
+        // Thanks to BlueRaja.admin@gmail.com
         private static SimplePriorityQueue<Action, long> actions = new SimplePriorityQueue<Action, long>();
+
         private static Thread thread = null;
 
         public static void Start()
@@ -41,9 +42,11 @@ namespace Glue
         public static long Now()
         {
             // LOGGER.Debug("Now=" + GetTickCount64());
+
             // The following looked like too much overhead in temporary object creation 
             // TODO Not sure if native call is worse though will have to perf test a bit
             // (long)(new TimeSpan(DateTime.Now.Ticks)).TotalMilliseconds;
+
             return (long) GetTickCount64();
         }
 
@@ -54,20 +57,24 @@ namespace Glue
             // TODO Add thread termination condition or make sure one isn't needed
             while (true)
             {
-                if (actions.Count > 0)
+                Action action;
+                while 
+                    (
+                        (actions.Count > 0) && 
+                        ((action = actions.First).TimeScheduledMS <= Now())
+                    )
                 {
-                    Action action = actions.First;
-
-                    if (action.TimeScheduledMS <= Now())
-                    {
-                        // TODO trigger actual key presses!
-                        actions.Dequeue();
-                        LOGGER.Debug("Action: Type=" + action.ActionType.ToString() + " Key= " + action.Key.ToString());
-                    }
+                    action.Play();
+                    actions.Dequeue();
                 }
 
                 // TODO How long should thread between queue checks? Configurable?
-                Thread.Sleep(1);
+                // Sleep(0) should yield a timeslice but shows a considerable bump 
+                // in CPU use in the debugger.  Need to perf test with release build.
+
+                // TODO Look into making thread wakeup signaled 
+                // Use something like a wait handle rather than polling the queue
+                Thread.Sleep(10);
             }
         }
 

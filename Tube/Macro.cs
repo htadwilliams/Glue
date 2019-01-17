@@ -23,7 +23,11 @@ namespace Glue
             // Schedule each action in the macro and add it to the output queue
             foreach (Action action in actions)
             {
-                ActionQueue.Enqueue(action, action.Schedule());
+                // Make copy of action for the queue 
+                // TODO create new scheduled action type to save memory 
+                // TODO use object pooled actions for better GC
+                Action actionCopy = new Action(action);
+                ActionQueue.Enqueue(actionCopy, actionCopy.Schedule());
             }
         }
     }
