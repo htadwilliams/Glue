@@ -25,8 +25,8 @@ namespace Glue
             // TODO remove trigger and macro building test code
             Macro macro = new Macro(10);    // Fire this macro 10ms after trigger
 
-            macro = macro.AddAction(new Action(ActionTypes.KEYBOARD_PRESS, 500, Keys.Z))
-                         .AddAction(new Action(ActionTypes.KEYBOARD_RELEASE, 1500, Keys.Z));
+            macro = macro.AddAction(new Action(ActionTypes.KEYBOARD_PRESS, 1000, Keys.Z))
+                         .AddAction(new Action(ActionTypes.KEYBOARD_RELEASE, 1000 * 10, Keys.Z));
 
             // Bind macro to trigger Ctrl-C
             Trigger trigger = new Trigger(Keys.C, macro);
