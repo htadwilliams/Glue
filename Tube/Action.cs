@@ -64,8 +64,8 @@ namespace Glue
         {
             this.timeScheduledMS = ActionQueue.Now() + this.timeTriggerMS;
 
-
-#if DEBUG   // Using conditional here because id var won't be defined for RELEASE
+            // Using conditional here because id var won't be defined for RELEASE
+#if DEBUG   
             if (LOGGER.IsDebugEnabled)
             {
                 String message = String.Format("'{0}' Scheduled at tick {1:n0} in {2}ms: {3}-{4}",
@@ -94,8 +94,8 @@ namespace Glue
                     this.Key,                       // 
                     this.ActionType);
                 LOGGER.Debug(message);
-#endif
             }
+#endif
         }
     }
 }
