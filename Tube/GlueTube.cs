@@ -1,4 +1,5 @@
 ﻿using log4net.Config;
+using SharpDX.DirectInput;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -29,8 +30,9 @@ namespace Glue
                 Thread.CurrentThread.Name = "Main";
             }
 
+
 #pragma warning disable CS0618 // Type or member is obsolete
-            XmlConfigurator.Configure(new FileInfo(fileName: ConfigurationSettings.AppSettings["log4net-config-file"]));
+                XmlConfigurator.Configure(new FileInfo(fileName: ConfigurationSettings.AppSettings["log4net-config-file"]));
 #pragma warning restore CS0618 // Type or member is obsolete
 
             // Console is intended for convenience during debugging
@@ -42,6 +44,27 @@ namespace Glue
             }
 
             LOGGER.Info("Startup!");
+
+
+            // Using https://github.com/sharpdx/sharpdx
+            // See quick example code 
+            // https://stackoverflow.com/questions/3929764/taking-input-from-a-joystick-with-c-sharp-net
+            LOGGER.Info("Enumerating DirectInput devices...");
+            DirectInput directInput = new DirectInput();
+            for (int i = 17; i < 28; i++)
+            {
+                foreach (
+                    var deviceInstance
+                    in directInput.GetDevices((DeviceType) i, DeviceEnumerationFlags.AllDevices))
+                {
+                    String message = String.Format(
+                        "Input device: {0} type={1} GUID=[{2}]",
+                        deviceInstance.InstanceName,
+                        deviceInstance.Type.ToString(),
+                        deviceInstance.ProductGuid.ToString());
+                    LOGGER.Info(message);
+                }
+            }
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
