@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
+using WindowsInput;
+using WindowsInput.Native;
 
 namespace Glue
 {
@@ -19,15 +21,18 @@ namespace Glue
 
     class Action
     {
+
         public long TimeTriggerMS => timeTriggerMS;
         public ActionTypes ActionType => actionType;
-        public Keys Key => key;
+        public VirtualKeyCode Key => key;
 
         public long TimeScheduledMS { get => timeScheduledMS; set => timeScheduledMS = value; }
 
+        private static readonly WindowsInputMessageDispatcher S_DISPATCHER = new WindowsInputMessageDispatcher();
+
         private readonly long timeTriggerMS;         // Time relative to previous action
         private readonly ActionTypes actionType;
-        private readonly Keys key;
+        private readonly VirtualKeyCode key;
 
         // Absolute time to fire, calculated when Action is scheduled 
         private long timeScheduledMS;
@@ -39,7 +44,7 @@ namespace Glue
 
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public Action(ActionTypes actionType, long timeTriggerMS, Keys key)
+        public Action(ActionTypes actionType, long timeTriggerMS, VirtualKeyCode key)
         {
             this.actionType = actionType;
             this.timeTriggerMS = timeTriggerMS;
@@ -82,8 +87,19 @@ namespace Glue
 
         internal void Play()
         {
-#if DEBUG
             // TODO trigger actual key presses!
+            INPUT[] inputs = null;
+            switch (this.actionType)
+            {
+                case ActionTypes.KEYBOARD_PRESS:
+                    inputs = new InputBuilder().AddKeyDown((VirtualKeyCode)this.key).ToArray();
+                    break;
+                case ActionTypes.KEYBOARD_RELEASE:
+                    inputs = new InputBuilder().AddKeyUp((VirtualKeyCode)this.key).ToArray();
+                    break;
+            }
+            S_DISPATCHER.DispatchInput(inputs);
+#if DEBUG
             if (LOGGER.IsDebugEnabled)
             {
                 long now = ActionQueue.Now();
