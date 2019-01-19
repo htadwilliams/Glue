@@ -5,17 +5,19 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WindowsInput.Native;
 
 namespace Glue
 {
     static class KeyHandler
     {
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
         private static bool lastInsertWasSpace = false;
+
+        // For friendly display of keys in GUI
         private static readonly Dictionary<Keys, String> keyMap = new Dictionary<Keys, String>();
 
-        // TODO Move triggers to trigger manager
+        // Using enum from windows forms
         private static readonly Dictionary<Keys, Trigger> triggers = new Dictionary<Keys, Trigger>();
 
         // TODO is there a better way to do static initialization for this class?
@@ -26,12 +28,17 @@ namespace Glue
             //
 
             // Define macro
-            Macro macro = new Macro(10);    // Fire 10ms after triggered
-            macro = macro.AddAction(new Action(ActionTypes.KEYBOARD_PRESS,      1000,       Keys.Z))
-                         .AddAction(new Action(ActionTypes.KEYBOARD_RELEASE,    1000 * 10,  Keys.Z));
+            Macro macro = new Macro(10) // Fire 10ms after triggered
+                .AddAction(new Action(ActionTypes.KEYBOARD_PRESS, 10, VirtualKeyCode.VK_R))
+                .AddAction(new Action(ActionTypes.KEYBOARD_RELEASE, 20, VirtualKeyCode.VK_R))
+                .AddAction(new Action(ActionTypes.KEYBOARD_PRESS, 3000, VirtualKeyCode.RETURN))
+                .AddAction(new Action(ActionTypes.KEYBOARD_RELEASE, 3010, VirtualKeyCode.RETURN))
+                .AddAction(new Action(ActionTypes.KEYBOARD_PRESS, 3020, VirtualKeyCode.VK_Q))
+                .AddAction(new Action(ActionTypes.KEYBOARD_RELEASE, 3030, VirtualKeyCode.VK_Q))
+                ;
 
-            // Bind macro to trigger (Ctrl-C and possibly other modifiers)
-            Trigger trigger = new Trigger(Keys.C, macro);
+            // Bind macro to trigger (Ctrl-Z and possibly other modifiers)
+            Trigger trigger = new Trigger(Keys.Z, macro);
             trigger.AddModifier(Keys.LControlKey);
             // trigger.AddModifier(Keys.S);
             // trigger.AddModifier(Keys.LMenu);
@@ -75,15 +82,19 @@ namespace Glue
         {
             int vkCode = Marshal.ReadInt32(lParam);
             {
+                // TODO find a way to detect key repeats from held keys
+                // This may need a combination of low level and non-low-level
+                // hooks
                 if (wParam == (IntPtr)KeyInterceptor.WM_KEYDOWN || wParam == (IntPtr)KeyInterceptor.WM_SYSKEYDOWN)
                 {
                     if (GlueTube.MainForm.LogInput)
                     {
-                        LOGGER.Debug("+ " + (Keys)vkCode);
+                        LOGGER.Debug("+ " + (VirtualKeyCode)vkCode);
+
                         String output;
                         if (GlueTube.MainForm.RawKeyNames)
                         {
-                            output = ((Keys)vkCode).ToString() + " ";
+                            output = ((VirtualKeyCode)vkCode).ToString() + " ";
                         }
                         else
                         {
@@ -105,7 +116,7 @@ namespace Glue
             }
 
             // This code eats a keystroke and will be useful for key remapping
-            if (vkCode == (int)Keys.Z)
+            if (vkCode == (int)VirtualKeyCode.VK_Z)
             {
                 LOGGER.Debug("EATING Z!!");
 
@@ -120,7 +131,7 @@ namespace Glue
             {
                 if (GlueTube.MainForm.LogInput)
                 {
-                    LOGGER.Debug("- " + (Keys)vkCode);
+                    LOGGER.Debug("- " + (VirtualKeyCode)vkCode);
                 }
             }
 

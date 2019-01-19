@@ -74,7 +74,7 @@ namespace Glue
 
                 // TODO Look into making thread wakeup signaled 
                 // Use something like a wait handle rather than polling the queue
-                Thread.Sleep(10);
+                Thread.Sleep(1);
             }
         }
 
