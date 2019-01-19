@@ -21,14 +21,16 @@ namespace Glue
         // TODO is there a better way to do static initialization for this class?
         public static void Initialize()
         {
-
+            //
             // TODO remove trigger and macro building test code
-            Macro macro = new Macro(10);    // Fire this macro 10ms after trigger
+            //
 
-            macro = macro.AddAction(new Action(ActionTypes.KEYBOARD_PRESS, 1000, Keys.Z))
-                         .AddAction(new Action(ActionTypes.KEYBOARD_RELEASE, 1000 * 10, Keys.Z));
+            // Define macro
+            Macro macro = new Macro(10);    // Fire 10ms after triggered
+            macro = macro.AddAction(new Action(ActionTypes.KEYBOARD_PRESS,      1000,       Keys.Z))
+                         .AddAction(new Action(ActionTypes.KEYBOARD_RELEASE,    1000 * 10,  Keys.Z));
 
-            // Bind macro to trigger Ctrl-C
+            // Bind macro to trigger (Ctrl-C and possibly other modifiers)
             Trigger trigger = new Trigger(Keys.C, macro);
             trigger.AddModifier(Keys.LControlKey);
             // trigger.AddModifier(Keys.S);
@@ -72,13 +74,26 @@ namespace Glue
             int nCode, IntPtr wParam, IntPtr lParam)
         {
             int vkCode = Marshal.ReadInt32(lParam);
-
-            if (GlueTube.MainForm.LogInput)
             {
                 if (wParam == (IntPtr)KeyInterceptor.WM_KEYDOWN || wParam == (IntPtr)KeyInterceptor.WM_SYSKEYDOWN)
                 {
-                    LOGGER.Debug("+ " + (Keys)vkCode);
+                    if (GlueTube.MainForm.LogInput)
+                    {
+                        LOGGER.Debug("+ " + (Keys)vkCode);
+                        String output;
+                        if (GlueTube.MainForm.RawKeyNames)
+                        {
+                            output = ((Keys)vkCode).ToString() + " ";
+                        }
+                        else
+                        {
+                            output = FormatKeyString(vkCode);
+                        }
 
+                        GlueTube.MainForm.AppendText(output);
+                    }
+
+                    // Triggers fire macros (and other things)
                     if (triggers.TryGetValue((Keys)vkCode, out Trigger trigger))
                     {
                         if (trigger.AreModKeysActive())
@@ -86,15 +101,10 @@ namespace Glue
                             trigger.Fire();
                         }
                     }
-
-                    Main mainForm = GlueTube.MainForm;
-                    String output = FormatKeyString(vkCode);
-
-                    mainForm.AppendText(output);
                 }
             }
 
-            // This code eats a keystroke and may be useful for key remapping
+            // This code eats a keystroke and will be useful for key remapping
             if (vkCode == (int)Keys.Z)
             {
                 LOGGER.Debug("EATING Z!!");
@@ -106,9 +116,9 @@ namespace Glue
                 return new IntPtr(1);
             }
 
-            if (GlueTube.MainForm.LogInput)
+            if (wParam == (IntPtr)KeyInterceptor.WM_KEYUP || wParam == (IntPtr)KeyInterceptor.WM_SYSKEYUP)
             {
-                if (wParam == (IntPtr)KeyInterceptor.WM_KEYUP || wParam == (IntPtr)KeyInterceptor.WM_SYSKEYUP)
+                if (GlueTube.MainForm.LogInput)
                 {
                     LOGGER.Debug("- " + (Keys)vkCode);
                 }

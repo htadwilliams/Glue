@@ -31,13 +31,16 @@
             this.IDE_INPUTSTREAM = new System.Windows.Forms.TextBox();
             this.IDB_CLEAR = new System.Windows.Forms.Button();
             this.IDC_LOGDISPLAY = new System.Windows.Forms.CheckBox();
+            this.IDC_RAWKEYNAMES = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // IDE_INPUTSTREAM
             // 
             this.IDE_INPUTSTREAM.AcceptsReturn = true;
             this.IDE_INPUTSTREAM.AcceptsTab = true;
-            this.IDE_INPUTSTREAM.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.IDE_INPUTSTREAM.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.IDE_INPUTSTREAM.Font = new System.Drawing.Font("Courier New", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.IDE_INPUTSTREAM.Location = new System.Drawing.Point(-6, -3);
             this.IDE_INPUTSTREAM.Multiline = true;
@@ -49,7 +52,8 @@
             // 
             // IDB_CLEAR
             // 
-            this.IDB_CLEAR.Location = new System.Drawing.Point(294, 511);
+            this.IDB_CLEAR.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.IDB_CLEAR.Location = new System.Drawing.Point(12, 525);
             this.IDB_CLEAR.Name = "IDB_CLEAR";
             this.IDB_CLEAR.Size = new System.Drawing.Size(129, 41);
             this.IDB_CLEAR.TabIndex = 1;
@@ -59,19 +63,32 @@
             // 
             // IDC_LOGDISPLAY
             // 
+            this.IDC_LOGDISPLAY.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.IDC_LOGDISPLAY.AutoSize = true;
-            this.IDC_LOGDISPLAY.Location = new System.Drawing.Point(452, 523);
+            this.IDC_LOGDISPLAY.Location = new System.Drawing.Point(170, 537);
             this.IDC_LOGDISPLAY.Name = "IDC_LOGDISPLAY";
-            this.IDC_LOGDISPLAY.Size = new System.Drawing.Size(200, 29);
+            this.IDC_LOGDISPLAY.Size = new System.Drawing.Size(133, 29);
             this.IDC_LOGDISPLAY.TabIndex = 2;
-            this.IDC_LOGDISPLAY.Text = "&Input log display";
+            this.IDC_LOGDISPLAY.Text = "&Log input";
             this.IDC_LOGDISPLAY.UseVisualStyleBackColor = true;
+            // 
+            // IDC_RAWKEYNAMES
+            // 
+            this.IDC_RAWKEYNAMES.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.IDC_RAWKEYNAMES.AutoSize = true;
+            this.IDC_RAWKEYNAMES.Location = new System.Drawing.Point(309, 537);
+            this.IDC_RAWKEYNAMES.Name = "IDC_RAWKEYNAMES";
+            this.IDC_RAWKEYNAMES.Size = new System.Drawing.Size(196, 29);
+            this.IDC_RAWKEYNAMES.TabIndex = 3;
+            this.IDC_RAWKEYNAMES.Text = "&Raw key names";
+            this.IDC_RAWKEYNAMES.UseVisualStyleBackColor = true;
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1142, 578);
+            this.Controls.Add(this.IDC_RAWKEYNAMES);
             this.Controls.Add(this.IDC_LOGDISPLAY);
             this.Controls.Add(this.IDB_CLEAR);
             this.Controls.Add(this.IDE_INPUTSTREAM);
@@ -87,6 +104,7 @@
         private System.Windows.Forms.TextBox IDE_INPUTSTREAM;
         private System.Windows.Forms.Button IDB_CLEAR;
         private System.Windows.Forms.CheckBox IDC_LOGDISPLAY;
+        private System.Windows.Forms.CheckBox IDC_RAWKEYNAMES;
     }
 }
 
