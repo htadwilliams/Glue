@@ -22,5 +22,29 @@ namespace Glue.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool LogInput {
+            get {
+                return ((bool)(this["LogInput"]));
+            }
+            set {
+                this["LogInput"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool RawKeyNames {
+            get {
+                return ((bool)(this["RawKeyNames"]));
+            }
+            set {
+                this["RawKeyNames"] = value;
+            }
+        }
     }
 }
