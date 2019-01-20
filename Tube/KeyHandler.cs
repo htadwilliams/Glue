@@ -31,10 +31,10 @@ namespace Glue
             Macro macro = new Macro(10) // Fire 10ms after triggered
                 .AddAction(new Action(ActionTypes.KEYBOARD_PRESS, 10, VirtualKeyCode.VK_R))
                 .AddAction(new Action(ActionTypes.KEYBOARD_RELEASE, 20, VirtualKeyCode.VK_R))
-                .AddAction(new Action(ActionTypes.KEYBOARD_PRESS, 3000, VirtualKeyCode.RETURN))
-                .AddAction(new Action(ActionTypes.KEYBOARD_RELEASE, 3010, VirtualKeyCode.RETURN))
-                .AddAction(new Action(ActionTypes.KEYBOARD_PRESS, 3020, VirtualKeyCode.VK_Q))
-                .AddAction(new Action(ActionTypes.KEYBOARD_RELEASE, 3030, VirtualKeyCode.VK_Q))
+                .AddAction(new Action(ActionTypes.KEYBOARD_PRESS, 4000, VirtualKeyCode.RETURN))
+                .AddAction(new Action(ActionTypes.KEYBOARD_RELEASE, 4010, VirtualKeyCode.RETURN))
+                .AddAction(new Action(ActionTypes.KEYBOARD_PRESS, 4020, VirtualKeyCode.VK_Q))
+                .AddAction(new Action(ActionTypes.KEYBOARD_RELEASE, 4030, VirtualKeyCode.VK_Q))
                 ;
 
             // Bind macro to trigger (Ctrl-Z and possibly other modifiers)
@@ -81,61 +81,83 @@ namespace Glue
             int nCode, IntPtr wParam, IntPtr lParam)
         {
             int vkCode = Marshal.ReadInt32(lParam);
+
+            // TODO find a way to detect key repeats from held keys - flag not avail in LL hook
+            if (wParam == (IntPtr) KeyInterceptor.WM_KEYDOWN || wParam == (IntPtr) KeyInterceptor.WM_SYSKEYDOWN)
             {
-                // TODO find a way to detect key repeats from held keys
-                // This may need a combination of low level and non-low-level
-                // hooks
-                if (wParam == (IntPtr)KeyInterceptor.WM_KEYDOWN || wParam == (IntPtr)KeyInterceptor.WM_SYSKEYDOWN)
-                {
-                    if (GlueTube.MainForm.LogInput)
-                    {
-                        LOGGER.Debug("+ " + (VirtualKeyCode)vkCode);
 
-                        String output;
-                        if (GlueTube.MainForm.RawKeyNames)
-                        {
-                            output = ((VirtualKeyCode)vkCode).ToString() + " ";
-                        }
-                        else
-                        {
-                            output = FormatKeyString(vkCode);
-                        }
-
-                        GlueTube.MainForm.AppendText(output);
-                    }
-
-                    // Triggers fire macros (and other things)
-                    if (triggers.TryGetValue((Keys)vkCode, out Trigger trigger))
-                    {
-                        if (trigger.AreModKeysActive())
-                        {
-                            trigger.Fire();
-                        }
-                    }
-                }
+                LogKeyDown(vkCode);
+                CheckAndFireTriggers(vkCode);
             }
 
-            // This code eats a keystroke and will be useful for key remapping
-            if (vkCode == (int)VirtualKeyCode.VK_Z)
+            if (wParam == (IntPtr) KeyInterceptor.WM_KEYUP || wParam == (IntPtr) KeyInterceptor.WM_SYSKEYUP)
             {
-                LOGGER.Debug("EATING Z!!");
+                LogKeyUp(vkCode);
+            }
 
-                // MSDN: if the hook procedure processed the message, it 
-                // may return a nonzero value to prevent the system from 
-                // passing the message to the rest of the hook chain or the 
-                // target window procedure.                     
+            // MSDN: if the hook procedure processed the message, it may return a nonzero value to prevent 
+            // the system from passing the message to the rest of the hook chain or the target window 
+            // procedure.                     
+            if (DoRemap(vkCode))        // Do this after logging if you want to see remapped keys as typed
+            {
+                // Eat keystroke if we're remapping it (it's been sent to output queue as another key)
                 return new IntPtr(1);
             }
 
-            if (wParam == (IntPtr)KeyInterceptor.WM_KEYUP || wParam == (IntPtr)KeyInterceptor.WM_SYSKEYUP)
+            return new IntPtr(0);
+        }
+
+        private static void LogKeyUp(int vkCode)
+        {
+            if (GlueTube.MainForm.LogInput)
             {
-                if (GlueTube.MainForm.LogInput)
+                LOGGER.Debug("- " + (VirtualKeyCode) vkCode);
+            }
+        }
+
+        private static void LogKeyDown(int vkCode)
+        {
+            if (GlueTube.MainForm.LogInput)
+            {
+                LOGGER.Debug("+ " + (VirtualKeyCode) vkCode);
+
+                String output;
+                if (GlueTube.MainForm.RawKeyNames)
                 {
-                    LOGGER.Debug("- " + (VirtualKeyCode)vkCode);
+                    output = ((VirtualKeyCode) vkCode).ToString() + " ";
                 }
+                else
+                {
+                    output = FormatKeyString(vkCode);
+                }
+
+                GlueTube.MainForm.AppendText(output);
+            }
+        }
+
+        private static bool DoRemap(int vkCode)
+        {
+            // This code eats a keystroke and will be useful for key remapping
+            if (vkCode == (int) VirtualKeyCode.VK_Z)
+            {
+                LOGGER.Debug("EATING Z!!");
+
+                return true;
             }
 
-            return new IntPtr(0);
+            return false;
+        }
+
+        private static void CheckAndFireTriggers(int vkCode)
+        {
+            // Triggers fire macros (and other things)
+            if (triggers.TryGetValue((Keys) vkCode, out Trigger trigger))
+            {
+                if (trigger.AreModKeysActive())
+                {
+                    trigger.Fire();
+                }
+            }
         }
 
         private static string FormatKeyString(int vkCode)
@@ -148,9 +170,25 @@ namespace Glue
             else
             {
                 output = ((Keys)vkCode).ToString();
-                if (output.Length == 1)
+
+                // Only printed characters are a single character long 
+                if (output.Length == 1) 
                 {
-                    output = output.ToLower();
+                    // Could be simplified but this is super clear to read
+                    if (Keyboard.IsKeyToggled(Keys.CapsLock))
+                    {
+                        if (Keyboard.IsKeyDown(Keys.LShiftKey))
+                        {
+                            output = output.ToLower();
+                        }
+                    }
+                    else
+                    {
+                        if (!Keyboard.IsKeyDown(Keys.LShiftKey))
+                        {
+                            output = output.ToLower();
+                        }
+                    }
                 }
             }
 
@@ -170,6 +208,7 @@ namespace Glue
             lastInsertWasSpace
                 = (output.EndsWith(" ") ||
                    output.EndsWith("\r\n"));
+
             return output;
         }
     }

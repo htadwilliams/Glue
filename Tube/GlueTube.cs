@@ -1,13 +1,10 @@
-﻿using log4net.Config;
-using SharpDX.DirectInput;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Configuration;
 using System.IO;
-using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using log4net.Config;
+using SharpDX.DirectInput;
 
 [assembly: log4net.Config.XmlConfigurator(Watch = true)]
 
@@ -15,9 +12,10 @@ namespace Glue
 {
     static class GlueTube
     {
+        public static Main MainForm { get => mainForm; }
+
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private static Main mainForm = null;
-        public static Main MainForm { get => mainForm; }
 
         /// <summary>
         /// The main entry point for the application.
@@ -30,7 +28,8 @@ namespace Glue
                 Thread.CurrentThread.Name = "Main";
             }
 
-
+            // This is how the log4net examples do it, and nobody has bothered
+            // to update them to get rid of the warning
 #pragma warning disable CS0618 // Type or member is obsolete
                 XmlConfigurator.Configure(new FileInfo(fileName: ConfigurationSettings.AppSettings["log4net-config-file"]));
 #pragma warning restore CS0618 // Type or member is obsolete
@@ -44,7 +43,6 @@ namespace Glue
             }
 
             LOGGER.Info("Startup!");
-
 
             // Using https://github.com/sharpdx/sharpdx
             // See quick example code 
@@ -69,10 +67,13 @@ namespace Glue
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            // Native class invocation 
+            // Native keyboard and mouse hook initialization
             KeyHandler.Initialize();
             KeyInterceptor.Initialize(KeyHandler.HookCallback);
             MouseInterceptor.Initialize();
+
+            // Starts thread for queue of actions such as pressing keys,
+            // pushing buttons, playing sounds, etc.
             ActionQueue.Start();
 
             mainForm = new Main();
