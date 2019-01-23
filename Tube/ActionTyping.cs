@@ -25,11 +25,10 @@ namespace Glue
         public new IAction[] Schedule()
         {
             List<IAction> actions = new List<IAction>();
-            long now = ActionQueue.Now();
             INPUT[] inputs = new InputBuilder().AddCharacters(this.typedString).ToArray();
 
             int actionCount = 0;
-            long actionTimeMS = now;
+            long actionTimeMS = ActionQueue.Now();
 
             foreach (INPUT input in inputs)
             {
