@@ -18,7 +18,7 @@ namespace Glue
 
         // Using https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp copied directly into the project for now 
         // Thanks to BlueRaja.admin@gmail.com
-        private static SimplePriorityQueue<Action, long> actions = new SimplePriorityQueue<Action, long>();
+        private static SimplePriorityQueue<IAction, long> actions = new SimplePriorityQueue<IAction, long>();
 
         private static Thread thread = null;
 
@@ -34,7 +34,7 @@ namespace Glue
             }
         }
 
-        public static void Enqueue(Action action, long timeScheduledMS)
+        public static void Enqueue(IAction action, long timeScheduledMS)
         {
             actions.Enqueue(action, timeScheduledMS);
         }
@@ -57,7 +57,7 @@ namespace Glue
             // TODO Add thread termination condition or make sure one isn't needed
             while (true)
             {
-                Action action;
+                IAction action;
                 while 
                     (
                         (actions.Count > 0) && 

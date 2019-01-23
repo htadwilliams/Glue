@@ -1,117 +1,30 @@
 ﻿using System;
-using System.Windows.Forms;
-using WindowsInput;
-using WindowsInput.Native;
 
 namespace Glue
 {
-    // TODO Action types may be better as a class hierarchy - refactor when added
-    public enum ActionTypes
+    public abstract class Action : IAction
     {
-        KEYBOARD_PRESS,
-        KEYBOARD_RELEASE,
-
-        // TODO implement advanced actions
-        //JOYBUTTON_PRESS,
-        //JOYUBUTTON_RELEASE,
-        //MOUSE_PRESS,
-        //MOUSE_RELEASE,
-        //SOUND,
-    };
-
-    class Action
-    {
-
-        public long TimeTriggerMS => timeTriggerMS;
-        public ActionTypes ActionType => actionType;
-        public VirtualKeyCode Key => key;
-
-        public long TimeScheduledMS { get => timeScheduledMS; set => timeScheduledMS = value; }
-
-        private static readonly WindowsInputMessageDispatcher S_DISPATCHER = new WindowsInputMessageDispatcher();
-
-        private readonly long timeTriggerMS;         // Time relative to previous action
-        private readonly ActionTypes actionType;
-        private readonly VirtualKeyCode key;
-
-        // Absolute time to fire, calculated when Action is scheduled 
-        private long timeScheduledMS;
-
-#if DEBUG
-        private static long counter = 0;
-        private long id;
-#endif
-
-        private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-        public Action(ActionTypes actionType, long timeTriggerMS, VirtualKeyCode key)
+        public long TimeScheduledMS
         {
-            this.actionType = actionType;
-            this.timeTriggerMS = timeTriggerMS;
-            this.key = key;
-#if DEBUG
-            this.id = counter += 1;
-#endif
+            get => this.timeScheduledMS;
+            set => this.timeScheduledMS=value;
         }
 
-        // copy ctor
-        public Action(Action previousAction)
+        private long timeScheduledMS;         // Time relative to triggering event
+
+        public IAction[] Schedule()
         {
-            this.actionType = previousAction.actionType;
-            this.timeTriggerMS = previousAction.timeTriggerMS;
-            this.key = previousAction.key;
-#if DEBUG
-            this.id = counter += 1;
-#endif
+            throw new NotImplementedException();
         }
 
-        public long Schedule()
+        public void Play()
         {
-            this.timeScheduledMS = ActionQueue.Now() + this.timeTriggerMS;
-
-            // Using conditional here because id var won't be defined for RELEASE
-#if DEBUG   
-            if (LOGGER.IsDebugEnabled)
-            {
-                String message = String.Format("'{0}' Scheduled at tick {1:n0} in {2}ms: {3}-{4}",
-                    this.id.ToString().PadLeft(3, '0'),
-                    this.timeScheduledMS,           // Absolute time scheduled to play
-                    this.timeTriggerMS,             // Time relative to prevous action
-                    this.Key,                   
-                    this.ActionType);
-                LOGGER.Debug(message);
-            }
-#endif
-            return this.timeScheduledMS;
+            throw new NotImplementedException();
         }
 
-        internal void Play()
+        public long GetScheduledTime()
         {
-            // TODO trigger actual key presses!
-            INPUT[] inputs = null;
-            switch (this.actionType)
-            {
-                case ActionTypes.KEYBOARD_PRESS:
-                    inputs = new InputBuilder().AddKeyDown((VirtualKeyCode)this.key).ToArray();
-                    break;
-                case ActionTypes.KEYBOARD_RELEASE:
-                    inputs = new InputBuilder().AddKeyUp((VirtualKeyCode)this.key).ToArray();
-                    break;
-            }
-            S_DISPATCHER.DispatchInput(inputs);
-#if DEBUG
-            if (LOGGER.IsDebugEnabled)
-            {
-                long now = ActionQueue.Now();
-                String message = String.Format("'{0}'   Played at tick {1:n0} dt {2}ms: {3}-{4}",
-                    this.id.ToString().PadLeft(3, '0'),
-                    now,                            // Time actually played
-                    now - this.timeScheduledMS,     // Time delta (how late were we?)
-                    this.Key,                       // 
-                    this.ActionType);
-                LOGGER.Debug(message);
-            }
-#endif
+            throw new NotImplementedException();
         }
     }
 }

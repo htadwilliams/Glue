@@ -5,14 +5,14 @@ namespace Glue
     class Macro
     {
         private readonly long delayTimeMS;         // Time delay before playing first action
-        private readonly List<Action> actions = new List<Action>();
+        private readonly List<IAction> actions = new List<IAction>();
 
         public Macro(long delayTimeMS)
         {
             this.delayTimeMS = delayTimeMS;
         }
 
-        public Macro AddAction(Action action)
+        public Macro AddAction(IAction action)
         {
             actions.Add(action);
             return this;
@@ -21,13 +21,15 @@ namespace Glue
         internal void Play()
         {
             // Schedule each action in the macro and add it to the output queue
-            foreach (Action action in actions)
+            foreach (IAction action in actions)
             {
-                // Make copy of action for the queue 
-                // TODO create new scheduled action type to save memory 
                 // TODO use object pooled actions for better GC
-                Action actionCopy = new Action(action);
-                ActionQueue.Enqueue(actionCopy, actionCopy.Schedule());
+                IAction[] scheduledActions = action.Schedule();
+
+                foreach (IAction scheduledAction in scheduledActions)
+                {
+                    ActionQueue.Enqueue(scheduledAction, scheduledAction.TimeScheduledMS);
+                }
             }
         }
     }

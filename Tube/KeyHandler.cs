@@ -29,12 +29,14 @@ namespace Glue
 
             // Define macro
             Macro macro = new Macro(10) // Fire 10ms after triggered
-                .AddAction(new Action(ActionTypes.KEYBOARD_PRESS, 10, VirtualKeyCode.VK_R))
-                .AddAction(new Action(ActionTypes.KEYBOARD_RELEASE, 20, VirtualKeyCode.VK_R))
-                .AddAction(new Action(ActionTypes.KEYBOARD_PRESS, 4000, VirtualKeyCode.RETURN))
-                .AddAction(new Action(ActionTypes.KEYBOARD_RELEASE, 4010, VirtualKeyCode.RETURN))
-                .AddAction(new Action(ActionTypes.KEYBOARD_PRESS, 4020, VirtualKeyCode.VK_Q))
-                .AddAction(new Action(ActionTypes.KEYBOARD_RELEASE, 4030, VirtualKeyCode.VK_Q))
+                .AddAction(new ActionKey(VirtualKeyCode.VK_R, ActionKey.Type.PRESS, 10))
+                .AddAction(new ActionKey(VirtualKeyCode.VK_R, ActionKey.Type.RELEASE, 10))
+
+                .AddAction(new ActionKey(VirtualKeyCode.RETURN, ActionKey.Type.PRESS, 4000))
+                .AddAction(new ActionKey(VirtualKeyCode.RETURN, ActionKey.Type.RELEASE, 4010))
+
+                .AddAction(new ActionKey(VirtualKeyCode.VK_Q, ActionKey.Type.PRESS, 4020))
+                .AddAction(new ActionKey(VirtualKeyCode.VK_Q, ActionKey.Type.RELEASE, 4030))
                 ;
 
             // Bind macro to trigger (Ctrl-Z and possibly other modifiers)
@@ -42,6 +44,13 @@ namespace Glue
             trigger.AddModifier(Keys.LControlKey);
             // trigger.AddModifier(Keys.S);
             // trigger.AddModifier(Keys.LMenu);
+            triggers.Add(trigger.TriggerKey, trigger);
+
+            macro = new Macro(2000);
+            macro.AddAction(new ActionTyping("Type this in your pipe and smoke it!", 10, 10));
+
+            trigger = new Trigger(Keys.C, macro);
+            trigger.AddModifier(Keys.LControlKey);
             triggers.Add(trigger.TriggerKey, trigger);
 
             // Maps virtual key codes to friendly text for user display
