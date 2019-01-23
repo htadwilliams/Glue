@@ -25,6 +25,9 @@ namespace Glue
         public new IAction[] Schedule()
         {
             List<IAction> actions = new List<IAction>();
+
+            // TODO INPUT generated with AddCharacters(char) or AddCharacters(string) mask information
+            // The keyboard hook (KeyInterceptor) can't make sense of input generated this way
             INPUT[] inputs = new InputBuilder().AddCharacters(this.typedString).ToArray();
 
             int actionCount = 0;

@@ -15,13 +15,16 @@ namespace Glue
             RELEASE
         }
 
-        private readonly long timeTriggerMS;         // Time relative to triggering event
-        private readonly Nullable<VirtualKeyCode> key;
+        // TODO get rid of overloaded behavior caused by field state
+        // Only one of these fields should be set at a given time
+        private readonly Nullable<VirtualKeyCode> key;  // Generated if scheduled by this class (ActionKey)
+        private Nullable<INPUT> input;                  // Generated if scheduled by ActionTyping with a string
+
         private readonly Type type;
+        private readonly long timeTriggerMS;         // Time relative to triggering event
 
         private static readonly WindowsInputMessageDispatcher DISPATCHER = new WindowsInputMessageDispatcher();
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private Nullable<INPUT> input;
 
         public ActionKey(VirtualKeyCode key, Type type, long timeTriggerMS)
         {
