@@ -1,14 +1,7 @@
-﻿using Priority_Queue;
-using System;
-using System.Collections;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using Priority_Queue;
 
 namespace Glue
 {
@@ -21,6 +14,7 @@ namespace Glue
         private static SimplePriorityQueue<IAction, long> actions = new SimplePriorityQueue<IAction, long>();
 
         private static Thread thread = null;
+        private static EventWaitHandle eventWait = new AutoResetEvent (false);
 
         public static void Start()
         {
@@ -37,6 +31,7 @@ namespace Glue
         public static void Enqueue(IAction action, long timeScheduledMS)
         {
             actions.Enqueue(action, timeScheduledMS);
+            eventWait.Set();
         }
 
         public static long Now()
@@ -50,11 +45,27 @@ namespace Glue
             return (long) GetTickCount64();
         }
 
+        private static int GetWaitUntilNextAction()
+        {
+            int waitUntilNextActionMS = 0;
+
+            if (actions.Count > 0)
+            {
+                waitUntilNextActionMS = (int) (actions.First.TimeScheduledMS - Now());
+            }
+            else if (actions.Count == 0)
+            {
+                // -to wait indefinitely
+                waitUntilNextActionMS = -1;
+            }
+
+            return waitUntilNextActionMS;
+        }
+
         private static void Threadproc()
         {
             LOGGER.Debug("Starting...");
 
-            // TODO Add thread termination condition or make sure one isn't needed
             while (true)
             {
                 IAction action;
@@ -68,13 +79,7 @@ namespace Glue
                     actions.Dequeue();
                 }
 
-                // TODO How long should thread between queue checks? Configurable?
-                // Sleep(0) should yield a timeslice but shows a considerable bump 
-                // in CPU use in the debugger.  Need to perf test with release build.
-
-                // TODO Look into making thread wakeup signaled 
-                // Use something like a wait handle rather than polling the queue
-                Thread.Sleep(1);
+                eventWait.WaitOne(GetWaitUntilNextAction());
             }
         }
 
