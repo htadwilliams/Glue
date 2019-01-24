@@ -27,7 +27,11 @@ namespace Glue
             // TODO remove trigger and macro building test code
             //
 
-            // Define macro
+            //
+            // Create and bind a macro with delayed key presses
+            //
+
+            // Create macro with several actions
             Macro macro = new Macro(10) // Fire 10ms after triggered
                 .AddAction(new ActionKey(VirtualKeyCode.VK_R, ActionKey.Type.PRESS, 10))
                 .AddAction(new ActionKey(VirtualKeyCode.VK_R, ActionKey.Type.RELEASE, 10))
@@ -46,10 +50,21 @@ namespace Glue
             // trigger.AddModifier(Keys.LMenu);
             triggers.Add(trigger.TriggerKey, trigger);
 
+            //
+            // Create and bind a typing macro (string of text)
+            // 
             macro = new Macro(2000);
-            macro.AddAction(new ActionTyping("Type this in your pipe and smoke it!", 10, 10));
-
+            macro.AddAction(new ActionTyping("Put this in your pipe and type it!", 10, 10));
             trigger = new Trigger(Keys.C, macro);
+            trigger.AddModifier(Keys.LControlKey);
+            triggers.Add(trigger.TriggerKey, trigger);
+
+            //
+            // Create and bind a sound macro
+            //
+            macro = new Macro(0);
+            macro.AddAction(new ActionSound("sound_servomotor.wav"));
+            trigger = new Trigger(Keys.S, macro);
             trigger.AddModifier(Keys.LControlKey);
             triggers.Add(trigger.TriggerKey, trigger);
 

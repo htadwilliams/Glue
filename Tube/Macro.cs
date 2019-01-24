@@ -24,6 +24,7 @@ namespace Glue
             foreach (IAction action in actions)
             {
                 // TODO use object pooled actions for better GC
+                // BUGBUG Pass in delay time! action.Schedule(this.delayTimeMS);
                 IAction[] scheduledActions = action.Schedule();
 
                 foreach (IAction scheduledAction in scheduledActions)
