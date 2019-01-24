@@ -22,7 +22,7 @@ namespace Glue
             this.dwellTimeMS=dwellTimeMS;
         }
 
-        public new IAction[] Schedule()
+        public IAction[] Schedule()
         {
             List<IAction> actions = new List<IAction>();
 
@@ -53,6 +53,12 @@ namespace Glue
             }
 
             return actions.ToArray();
+        }
+
+        public void Play()
+        {
+            // ActionTyping is only used to schedule ActionKey 
+            throw new NotImplementedException();
         }
     }
 }

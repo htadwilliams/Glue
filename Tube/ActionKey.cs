@@ -42,7 +42,7 @@ namespace Glue
             this.timeTriggerMS = timeTriggerMS;
         }
 
-        public new IAction[] Schedule()
+        public IAction[] Schedule()
         {
             ActionKey scheduledCopy = new ActionKey((VirtualKeyCode) this.key, this.type, this.TimeTriggerMS)
             {
@@ -62,7 +62,7 @@ namespace Glue
             return new IAction[] {scheduledCopy};
         }
 
-        public new void Play()
+        public void Play()
         {
             INPUT[] inputs = null;
             if (null == this.input)
