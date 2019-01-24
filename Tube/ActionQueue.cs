@@ -38,8 +38,7 @@ namespace Glue
         {
             // LOGGER.Debug("Now=" + GetTickCount64());
 
-            // The following looked like too much overhead in temporary object creation 
-            // TODO Not sure if native call is worse though will have to perf test a bit
+            // Commented out first attempt - may wish to play with it again
             // (long)(new TimeSpan(DateTime.Now.Ticks)).TotalMilliseconds;
 
             return (long) GetTickCount64();
@@ -47,19 +46,14 @@ namespace Glue
 
         private static int GetWaitUntilNextAction()
         {
-            int waitUntilNextActionMS = 0;
-
-            if (actions.Count > 0)
+            if (actions.Count != 0)
             {
-                waitUntilNextActionMS = (int) (actions.First.TimeScheduledMS - Now());
+                // BUGBUG assumes 1 tick == 1 MS which is not true on all systems
+                return (int) (actions.First.TimeScheduledMS - Now());
             }
-            else if (actions.Count == 0)
-            {
-                // -to wait indefinitely
-                waitUntilNextActionMS = -1;
-            }
-
-            return waitUntilNextActionMS;
+                
+            // to wait indefinitely
+            return -1;
         }
 
         private static void Threadproc()
@@ -75,15 +69,26 @@ namespace Glue
                         ((action = actions.First).TimeScheduledMS <= Now())
                     )
                 {
+                    // Actions should play quickly ~1MS for now (see) 
+                    // following comment).  Once worker thread is implemented
+                    // then asynchronous action processing will be supported.
+                    // TODO Submit actions.Play to worker thread(s)
                     action.Play();
+
                     actions.Dequeue();
                 }
 
+                // Wait until next event is ready to fire, 
+                // or events are added to the queue
                 eventWait.WaitOne(GetWaitUntilNextAction());
             }
         }
 
+        #region Win API Functions and Constants
+
         [DllImport("kernel32")]
         extern static UInt64 GetTickCount64();
+
+        #endregion
     }
 }
