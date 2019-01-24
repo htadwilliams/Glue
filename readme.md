@@ -2,7 +2,7 @@ Glue
 
 A macro tool.  Originally written in C++, this is my latest attempt to write it in C# including low-level keyboard and mouse hooks (with native windows API calls).
 
-Press Ctrl-C (making sure input focus is not set to console window or application will exit) to fire hard-coded macro which will trigger a Q and ENhttps://github.com/htadwilliams/GlueTER keyboard press and release after a time.  
+Press Ctrl-C (making sure input focus is not set to console window or application will exit) to fire hard-coded macro which will trigger a Q and ENTER keyboard press and release after a time.  
 
 Ctrl-Z will type a sequence of characters immediately with short delay between presses and releases. 
 
