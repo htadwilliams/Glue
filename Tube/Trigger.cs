@@ -1,16 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Glue
 {
+    [JsonObject(MemberSerialization.OptIn)]
     class Trigger
     {
-        private readonly Keys triggerKey;
-        private readonly Macro macro;
-        private List<Keys> modKeys = new List<Keys>();
-
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        [JsonProperty]
+        [JsonConverter(typeof(StringEnumConverter))]
+        private readonly Keys triggerKey;
+
+        [JsonProperty]
+        private readonly Macro macro;
+        
+        [JsonProperty (ItemConverterType = typeof(StringEnumConverter))]
+        private List<Keys> modKeys = new List<Keys>();
 
         public Keys TriggerKey => triggerKey;
 

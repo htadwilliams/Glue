@@ -84,7 +84,6 @@
     <Compile Include="ActionTyping.cs" />
     <Compile Include="GenericPriorityQueue.cs" />
     <Compile Include="GenericPriorityQueueNode.cs" />
-    <Compile Include="IAction.cs" />
     <Compile Include="IFixedSizePriorityQueue.cs" />
     <Compile Include="InputBuilder.cs" />
     <Compile Include="IPriorityQueue.cs" />
@@ -163,6 +162,6 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(ProjectDir)\Log.$(ConfigurationName).config $(TargetDir)\Log.config
-copy $(ProjectDir)\sound_servomotor.wav $(TargetDir)</PostBuildEvent>
+copy $(ProjectDir)\*.wav $(TargetDir)</PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -1,14 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using WindowsInput;
 using WindowsInput.Native;
 
 namespace Glue
 {
-    public class ActionTyping : Action, IAction
+    public class ActionTyping : Action
     {
+        [JsonProperty]
         public string TypedString => this.typedString;
+
+        [JsonProperty]
         public long CharDelayMS => this.charDelayMS;
+
+        [JsonProperty]
         public long DwellTimeMS => this.dwellTimeMS;
 
         private readonly String typedString;
@@ -20,11 +26,12 @@ namespace Glue
             this.typedString=typedString;
             this.charDelayMS=keyDelayMS;
             this.dwellTimeMS=dwellTimeMS;
+            this.Type = "TYPING";
         }
 
-        public IAction[] Schedule()
+        public override Action[] Schedule()
         {
-            List<IAction> actions = new List<IAction>();
+            List<Action> actions = new List<Action>();
 
             // TODO INPUT generated with AddCharacters(char) or AddCharacters(string) mask information
             // The keyboard hook (KeyInterceptor) can't make sense of input generated this way
@@ -35,11 +42,11 @@ namespace Glue
 
             foreach (INPUT input in inputs)
             {
-                IAction action = new ActionKey(
+                Action action = new ActionKey(
                     input, 
                     (actionCount % 2) == 0 
-                        ? ActionKey.Type.PRESS 
-                        : ActionKey.Type.RELEASE,
+                        ? ActionKey.Movement.PRESS 
+                        : ActionKey.Movement.RELEASE,
                     actionTimeMS);
 
                 actions.Add(action);
@@ -55,7 +62,7 @@ namespace Glue
             return actions.ToArray();
         }
 
-        public void Play()
+        public override void Play()
         {
             // ActionTyping is only used to schedule ActionKey 
             throw new NotImplementedException();

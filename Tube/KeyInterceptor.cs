@@ -24,7 +24,6 @@ namespace Glue
         {
             _hookID = SetHook(_proc);
             handler = lowLevelKeyboardProc;
-
         }
 
         public static void Cleanup()
