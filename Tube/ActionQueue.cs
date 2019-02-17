@@ -11,8 +11,7 @@ namespace Glue
 
         // Using https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp copied directly into the project for now 
         // Thanks to BlueRaja.admin@gmail.com
-        private static SimplePriorityQueue<IAction, long> actions = new SimplePriorityQueue<IAction, long>();
-
+        private static SimplePriorityQueue<Action, long> actions = new SimplePriorityQueue<Action, long>();
         private static Thread thread = null;
         private static EventWaitHandle eventWait = new AutoResetEvent (false);
 
@@ -28,7 +27,7 @@ namespace Glue
             }
         }
 
-        public static void Enqueue(IAction action, long timeScheduledMS)
+        public static void Enqueue(Action action, long timeScheduledMS)
         {
             actions.Enqueue(action, timeScheduledMS);
             eventWait.Set();
@@ -62,7 +61,7 @@ namespace Glue
 
             while (true)
             {
-                IAction action;
+                Action action;
                 while 
                     (
                         (actions.Count > 0) && 

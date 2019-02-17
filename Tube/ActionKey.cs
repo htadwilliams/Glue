@@ -1,50 +1,58 @@
 ﻿using System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using WindowsInput;
 using WindowsInput.Native;
 
 namespace Glue
 {
-    public class ActionKey : Action, IAction
+    public class ActionKey : Action
     {
-        public long TimeTriggerMS => timeTriggerMS;
-        public Nullable<VirtualKeyCode> Key => key;
-
-        public enum Type
+        public enum Movement
         {
             PRESS,
             RELEASE
         }
 
-        // TODO get rid of overloaded behavior caused by field state
-        // Only one of these fields should be set at a given time
+        public long TimeTriggerMS => timeTriggerMS;
+
+        public Nullable<VirtualKeyCode> Key => key;
+
+        [JsonProperty]
+        [JsonConverter(typeof(StringEnumConverter))]
+        private readonly Movement movement;
+
+        [JsonProperty]
+        private readonly long timeTriggerMS;            // Time relative to triggering event
+
+        [JsonProperty]
+        [JsonConverter(typeof(StringEnumConverter))]
         private readonly Nullable<VirtualKeyCode> key;  // Generated if scheduled by this class (ActionKey)
         private Nullable<INPUT> input;                  // Generated if scheduled by ActionTyping with a string
-
-        private readonly Type type;
-        private readonly long timeTriggerMS;         // Time relative to triggering event
 
         private static readonly WindowsInputMessageDispatcher DISPATCHER = new WindowsInputMessageDispatcher();
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public ActionKey(VirtualKeyCode key, Type type, long timeTriggerMS)
+        public ActionKey(VirtualKeyCode key, Movement movement, long timeTriggerMS)
         {
             this.key = key;
-            this.type = type;
+            this.movement = movement;
             this.input = null;
             this.timeTriggerMS = timeTriggerMS;
+            this.Type = "KEY";
         }
 
-        internal ActionKey(INPUT input, Type type, long timeTriggerMS)
+        internal ActionKey(INPUT input, Movement movement, long timeTriggerMS)
         {
             this.input=input;
             this.key = null;
-            this.type = type;
+            this.movement = movement;
             this.timeTriggerMS = timeTriggerMS;
         }
 
-        public IAction[] Schedule()
+        public override Action[] Schedule()
         {
-            ActionKey scheduledCopy = new ActionKey((VirtualKeyCode) this.key, this.type, this.TimeTriggerMS)
+            ActionKey scheduledCopy = new ActionKey((VirtualKeyCode) this.key, this.movement, this.TimeTriggerMS)
             {
                 TimeScheduledMS = ActionQueue.Now() + this.timeTriggerMS
             };
@@ -52,27 +60,27 @@ namespace Glue
             if (LOGGER.IsDebugEnabled)
             {
                 String message = String.Format("Scheduled at tick {0:n0} in {1}ms: {2}-{3}",
-                    this.TimeScheduledMS,           // Absolute time scheduled to play
-                    this.timeTriggerMS,             // Time relative to prevous action
+                    scheduledCopy.TimeScheduledMS,      // Absolute time scheduled to play
+                    this.timeTriggerMS,                 // Time relative to prevous action
                     this.key,                   
-                    this.type);
+                    this.movement);
                 LOGGER.Debug(message);
             }
 
-            return new IAction[] {scheduledCopy};
+            return new Action[] {scheduledCopy};
         }
 
-        public void Play()
+        public override void Play()
         {
             INPUT[] inputs = null;
             if (null == this.input)
             {
-                switch (this.type)
+                switch (this.movement)
                 {
-                    case Type.PRESS:
+                    case Movement.PRESS:
                         inputs = new InputBuilder().AddKeyDown((VirtualKeyCode)this.key).ToArray();
                         break;
-                    case Type.RELEASE:
+                    case Movement.RELEASE:
                         inputs = new InputBuilder().AddKeyUp((VirtualKeyCode)this.key).ToArray();
                         break;
                 }
@@ -91,7 +99,7 @@ namespace Glue
                     now,                            // Time actually played
                     now - this.TimeScheduledMS,     // Time delta (how late were we?)
                     this.key,                       
-                    this.type);
+                    this.movement);
                 LOGGER.Debug(message);
             }
         }

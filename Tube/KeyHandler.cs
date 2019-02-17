@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 using WindowsInput.Native;
 
 namespace Glue
@@ -17,57 +19,9 @@ namespace Glue
         // For friendly display of keys in GUI
         private static readonly Dictionary<Keys, String> keyMap = new Dictionary<Keys, String>();
 
-        // Using enum from windows forms
-        private static readonly Dictionary<Keys, Trigger> triggers = new Dictionary<Keys, Trigger>();
-
         // TODO is there a better way to do static initialization for this class?
         public static void Initialize()
         {
-            //
-            // TODO remove trigger and macro building test code
-            //
-
-            //
-            // Create and bind a macro with delayed key presses
-            //
-
-            // Create macro with several actions
-            Macro macro = new Macro(10) // Fire 10ms after triggered
-                .AddAction(new ActionKey(VirtualKeyCode.VK_R, ActionKey.Type.PRESS, 10))
-                .AddAction(new ActionKey(VirtualKeyCode.VK_R, ActionKey.Type.RELEASE, 10))
-
-                .AddAction(new ActionKey(VirtualKeyCode.RETURN, ActionKey.Type.PRESS, 4000))
-                .AddAction(new ActionKey(VirtualKeyCode.RETURN, ActionKey.Type.RELEASE, 4010))
-
-                .AddAction(new ActionKey(VirtualKeyCode.VK_Q, ActionKey.Type.PRESS, 4020))
-                .AddAction(new ActionKey(VirtualKeyCode.VK_Q, ActionKey.Type.RELEASE, 4030))
-                ;
-
-            // Bind macro to trigger (Ctrl-Z and possibly other modifiers)
-            Trigger trigger = new Trigger(Keys.Z, macro);
-            trigger.AddModifier(Keys.LControlKey);
-            // trigger.AddModifier(Keys.S);
-            // trigger.AddModifier(Keys.LMenu);
-            triggers.Add(trigger.TriggerKey, trigger);
-
-            //
-            // Create and bind a typing macro (string of text)
-            // 
-            macro = new Macro(2000);
-            macro.AddAction(new ActionTyping("Put this in your pipe and type it!", 10, 10));
-            trigger = new Trigger(Keys.C, macro);
-            trigger.AddModifier(Keys.LControlKey);
-            triggers.Add(trigger.TriggerKey, trigger);
-
-            //
-            // Create and bind a sound macro
-            //
-            macro = new Macro(0);
-            macro.AddAction(new ActionSound("sound_servomotor.wav"));
-            trigger = new Trigger(Keys.S, macro);
-            trigger.AddModifier(Keys.LControlKey);
-            triggers.Add(trigger.TriggerKey, trigger);
-
             // Maps virtual key codes to friendly text for user display
             (Keys key, string text)[] keyTable =
             {
@@ -175,7 +129,7 @@ namespace Glue
         private static void CheckAndFireTriggers(int vkCode)
         {
             // Triggers fire macros (and other things)
-            if (triggers.TryGetValue((Keys) vkCode, out Trigger trigger))
+            if (GlueTube.Triggers.TryGetValue((Keys) vkCode, out Trigger trigger))
             {
                 if (trigger.AreModKeysActive())
                 {
