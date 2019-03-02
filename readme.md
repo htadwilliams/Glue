@@ -1,11 +1,41 @@
 Glue
 
+WARNING: This globally hooks keyboard and logs to file. Don't run in DEBUG mode if you don't want your keys logged!
+
 A macro tool.  Originally written in C++, this is my latest attempt to write it in C# including low-level keyboard and mouse hooks (with native windows API calls).
 
-Press Ctrl-C (making sure input focus is not set to console window or application will exit) to fire hard-coded macro which will trigger a Q and ENTER keyboard press and release after a time.  
+The application loads a JSON file with triggers, macros, etc specified as command-line parameter.  If this file isn't found, one will be created with the following default mappings:
 
-Ctrl-Z will type a sequence of characters immediately with short delay between presses and releases. 
+* Press Ctrl-C (making sure input focus is not set to console window or application will exit) to fire hard-coded macro which will trigger a Q and ENTER keyboard press and release after a delay.  
 
-Ctrl-S plays a sound.
+* Ctrl-Z will type a sequence of characters immediately with short delay between presses and releases. 
 
-WARNING: Globally hooking the keyboard and logging the results can be used for evil! This code does just that and can be seriously abused.  Please don't do that! This also globally hooks the mouse, which can still be abused but is slightly less serious.
+* Ctrl-S plays a sound.
+
+LEFT SHIFT types an A if input window contains "skies.exe" so I can use it for altrnate fire in Sunless Skies (and easily changge for other unity games where shift can't be remapped).
+
+NOTES:
+
+The application creates a thread that monitors a priority queue of scheduled macro events to fire (See EventQueue class).  The priority queue implementation is courtesy of BlueRaja.admin@gmail.com (https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp). 
+
+DirectX is used to enumerate input devices on startup.
+
+Could be improved by hooking this to a thread pool so that macro events can be processed asynchronously.  Right now macro events must not block and do things like press keys, play sounds, or eat key events (for remapping).
+
+Next steps include:
+
+* Move to Trello or something for feature tracking and move all those damn TODO comments there.
+* Move hard-coded key remapping to JSON file.
+
+Feature TODO list:
+
+* Add queue display window for fun and debugging (shows keyboard state, and representation of events queued for future work).
+* Macro looping start/stop events.
+* Game device button triggers, macro events, and button remapping.
+* Remote control - trigger events via network client (most likely REST interface).
+
+BONUS: 
+* GUI for recording / editing macros and all the data structures serialized to JSON.
+
+
+
