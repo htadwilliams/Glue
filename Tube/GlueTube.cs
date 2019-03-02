@@ -16,17 +16,19 @@ namespace Glue
     static class GlueTube
     {
         public static Main MainForm { get => mainForm; }
-        internal static Dictionary<Keys, Trigger> Triggers => triggers;
+        public static Dictionary<Keys, Trigger> Triggers => triggers;
+        public static Dictionary<VirtualKeyCode, KeyRemap> KeyMap => keyMap;
 
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private static Main mainForm = null;
         private static Dictionary<Keys, Trigger> triggers = new Dictionary<Keys, Trigger>();
+        private static Dictionary<VirtualKeyCode, KeyRemap> keyMap = new Dictionary<VirtualKeyCode, KeyRemap>();
 
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
             if (Thread.CurrentThread.Name == null)
             {
@@ -48,6 +50,15 @@ namespace Glue
             }
 
             LOGGER.Info("Startup!");
+
+            if (LOGGER.IsDebugEnabled)
+            {
+                LOGGER.Debug("Arguments ...");
+                foreach(string arg in args)
+                {
+                    LOGGER.Debug(arg);
+                }
+            }
 
             // Using https://github.com/sharpdx/sharpdx
             // See quick example code 
@@ -74,8 +85,11 @@ namespace Glue
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            // TODO LoadMacros should allow file specification
-            LoadMacros();
+            LoadMacros(args[0]);
+
+            // TODO remove hard-coded key remap
+            KeyRemap remap = new KeyRemap(VirtualKeyCode.LSHIFT, VirtualKeyCode.VK_A, "skies.exe");
+            GlueTube.KeyMap.Add(remap.KeyOld, remap);
 
             // Native keyboard and mouse hook initialization
             KeyHandler.Initialize();
@@ -96,21 +110,21 @@ namespace Glue
             MouseInterceptor.Cleanup();
             KeyInterceptor.Cleanup();
 
-            SaveMacros(@"macros.json");
+            SaveMacros(args[0]);
 
             LOGGER.Info("Exiting");
         }
 
-        private static void SaveMacros(String macroFile)
+        private static void SaveMacros(String macroFileName)
         {
-            LOGGER.Info("Saving macros to [" + macroFile + "]");
+            LOGGER.Info("Saving macros to [" + macroFileName + "]");
             JsonSerializer serializer = new JsonSerializer
             {
                 NullValueHandling = NullValueHandling.Ignore,
                 // TypeNameHandling = TypeNameHandling.All
             };
 
-            using (StreamWriter sw = new StreamWriter(macroFile))
+            using (StreamWriter sw = new StreamWriter(macroFileName))
             using (JsonWriter writer = new JsonTextWriter(sw))
             {
                 writer.Formatting = Formatting.Indented;
@@ -118,8 +132,10 @@ namespace Glue
             }
         }
 
-        private static void LoadMacros()
+        private static void LoadMacros(String macroFileName)
         {
+            LOGGER.Info("Loading macros from [" + macroFileName + "]");
+
             JsonSerializer serializer = new JsonSerializer
             {
                 NullValueHandling = NullValueHandling.Ignore
@@ -127,7 +143,7 @@ namespace Glue
 
             try
             {
-                using (StreamReader sr = new StreamReader(@"macros.json"))
+                using (StreamReader sr = new StreamReader(macroFileName))
                 {
                     using (JsonReader reader = new JsonTextReader(sr))
                     {
@@ -151,7 +167,7 @@ namespace Glue
 
             else
             {
-                LOGGER.Info("Macero file not found - creating example macros");
+                LOGGER.Info("Macro file not found or load failed - creating example macros");
 
                 triggers = new Dictionary<Keys, Trigger>();
 
@@ -178,7 +194,11 @@ namespace Glue
                 // Create and bind a typing macro (string of text)
                 // 
                 macro = new Macro(2000);
-                macro.AddAction(new ActionTyping("Put this in your pipe and type it!", 10, 10));
+                macro.AddAction(
+                    new ActionTyping(
+                        "Lorem ipsum dolor sit amet, tincidunt eget elit vivamus consequat, mi ac urna.", 
+                        10,     // delay MS
+                        10));   // dwell time MS
                 trigger = new Trigger(Keys.C, macro);
                 trigger.AddModifier(Keys.LControlKey);
                 Triggers.Add(trigger.TriggerKey, trigger);

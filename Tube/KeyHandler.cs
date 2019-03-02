@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Newtonsoft.Json;
 using WindowsInput.Native;
 
 namespace Glue
@@ -63,23 +58,29 @@ namespace Glue
             // TODO find a way to detect key repeats from held keys - flag not avail in LL hook
             if (wParam == (IntPtr) KeyInterceptor.WM_KEYDOWN || wParam == (IntPtr) KeyInterceptor.WM_SYSKEYDOWN)
             {
-
                 LogKeyDown(vkCode);
+
+                VirtualKeyCode keyRemapped = DoRemap((VirtualKeyCode) vkCode, ActionKey.Movement.PRESS);
+                if ((int) keyRemapped != vkCode)
+                {
+                    // MSDN: if the hook procedure processed the message, it may return a nonzero value to prevent 
+                    // the system from passing the message to the rest of the hook chain or the target window 
+                    // procedure.
+                    return new IntPtr(1);
+                }
+
                 CheckAndFireTriggers(vkCode);
             }
 
             if (wParam == (IntPtr) KeyInterceptor.WM_KEYUP || wParam == (IntPtr) KeyInterceptor.WM_SYSKEYUP)
             {
                 LogKeyUp(vkCode);
-            }
 
-            // MSDN: if the hook procedure processed the message, it may return a nonzero value to prevent 
-            // the system from passing the message to the rest of the hook chain or the target window 
-            // procedure.                     
-            if (DoRemap(vkCode))        // Do this after logging if you want to see remapped keys as typed
-            {
-                // Eat keystroke if we're remapping it (it's been sent to output queue as another key)
-                return new IntPtr(1);
+                VirtualKeyCode keyRemapped = DoRemap((VirtualKeyCode) vkCode, ActionKey.Movement.RELEASE);
+                if ((int) keyRemapped != vkCode)
+                {
+                    return new IntPtr(1);
+                }
             }
 
             return new IntPtr(0);
@@ -113,17 +114,34 @@ namespace Glue
             }
         }
 
-        private static bool DoRemap(int vkCode)
+        private static VirtualKeyCode DoRemap(VirtualKeyCode inputKey, ActionKey.Movement movement)
         {
-            // This code eats a keystroke and will be useful for key remapping
-            if (vkCode == (int) VirtualKeyCode.VK_Z)
+            if (GlueTube.KeyMap.TryGetValue(inputKey, out KeyRemap remap))
             {
-                LOGGER.Debug("EATING Z!!");
+                // Filter remapping to the given process name 
+                // If empty process name is given, perform remap for all of them
+                String inputFocusProcessName = "";
+                if (remap.ProcName.Length != 0)
+                {
+                    inputFocusProcessName = ProcessInfo.GetProcessFileName(
+                        ProcessInfo.GetInputFocusProcessId());
 
-                return true;
+                    if (!inputFocusProcessName
+                        .ToLower()
+                        .Contains(remap.ProcName.ToLower())
+                        )
+                    {
+                        return inputKey;
+                    }
+                }
+
+                ActionKey actionKey = new ActionKey(remap.KeyNew, movement, ActionQueue.Now());
+                actionKey.Play();
+
+                return remap.KeyNew;
             }
 
-            return false;
+            return inputKey;
         }
 
         private static void CheckAndFireTriggers(int vkCode)
@@ -133,6 +151,13 @@ namespace Glue
             {
                 if (trigger.AreModKeysActive())
                 {
+                    if (LOGGER.IsDebugEnabled)
+                    {
+                        int inputProcessId = ProcessInfo.GetInputFocusProcessId();
+                        LOGGER.Debug("Input process Id: " + inputProcessId);
+                        LOGGER.Debug("Input process name" + ProcessInfo.GetProcessFileName(inputProcessId));
+                    }
+
                     trigger.Fire();
                 }
             }
