@@ -15,14 +15,18 @@ namespace Glue
 {
     static class GlueTube
     {
-        public static Main MainForm { get => mainForm; }
-        public static Dictionary<Keys, Trigger> Triggers => triggers;
-        public static Dictionary<VirtualKeyCode, KeyRemap> KeyMap => keyMap;
+        public static Main MainForm { get => s_mainForm; }
+        public static Dictionary<Keys, Trigger> Triggers => s_triggers;
+        public static Dictionary<VirtualKeyCode, KeyRemap> KeyMap => s_keyMap;
+
+        private const string FILENAME_DEFAULT = "macros.json";
 
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private static Main mainForm = null;
-        private static Dictionary<Keys, Trigger> triggers = new Dictionary<Keys, Trigger>();
-        private static Dictionary<VirtualKeyCode, KeyRemap> keyMap = new Dictionary<VirtualKeyCode, KeyRemap>();
+        private static Main s_mainForm = null;
+
+        // TODO App needs separate collection of macros (probably Dictionary)
+        private static Dictionary<Keys, Trigger> s_triggers = new Dictionary<Keys, Trigger>();
+        private static Dictionary<VirtualKeyCode, KeyRemap> s_keyMap = new Dictionary<VirtualKeyCode, KeyRemap>();
 
         /// <summary>
         /// The main entry point for the application.
@@ -30,43 +34,64 @@ namespace Glue
         [STAThread]
         static void Main(string[] args)
         {
+            String fileName = args.Length > 0 
+                ? args[0] 
+                : FILENAME_DEFAULT;
+
             if (Thread.CurrentThread.Name == null)
             {
                 Thread.CurrentThread.Name = "Main";
             }
 
-            // This is how the log4net examples do it, and nobody has bothered
-            // to update them to get rid of the warning
-#pragma warning disable CS0618 // Type or member is obsolete
-            XmlConfigurator.Configure(new FileInfo(fileName: ConfigurationSettings.AppSettings["log4net-config-file"]));
-#pragma warning restore CS0618 // Type or member is obsolete
+            KeyHandler.InitKeyTable();
 
-            // Console is intended for convenience during debugging
-            // but has some performance impact, and is a bit
-            // of a hack.
-            if (LOGGER.IsDebugEnabled)
+            try
             {
-                WinConsole.Initialize(false);
+                InitLogging();
+                InitDirectX();
+                LoadMacros(fileName);
+
+                // Native keyboard and mouse hook initialization
+                KeyInterceptor.Initialize(KeyHandler.HookCallback);
+                MouseInterceptor.Initialize();
+
+                // Starts thread for timed queue of actions such as pressing keys,
+                // activating game controller buttons, playing sounds, etc.
+                ActionQueue.Start();
+
+                LOGGER.Debug("Entering Application.Run()...");
+                InitForm();
+                Application.Run(s_mainForm);
+                LOGGER.Debug("...returned from Application.Run().");
+            }
+            finally
+            {
+                // Native class de-initialization
+                MouseInterceptor.Cleanup();
+                KeyInterceptor.Cleanup();
             }
 
-            LOGGER.Info("Startup!");
+            SaveMacros(fileName);
+            LOGGER.Info("Exiting");
+        }
 
-            if (LOGGER.IsDebugEnabled)
-            {
-                LOGGER.Debug("Arguments ...");
-                foreach(string arg in args)
-                {
-                    LOGGER.Debug(arg);
-                }
-            }
+        private static void InitForm()
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            s_mainForm = new Main();
+        }
 
+        // TODO All the DirectX stuff should be moved to another wrapper class
+        private static void InitDirectX()
+        {
             // Using https://github.com/sharpdx/sharpdx
             // See quick example code 
             // https://stackoverflow.com/questions/3929764/taking-input-from-a-joystick-with-c-sharp-net
             LOGGER.Info("Enumerating DirectInput devices...");
             DirectInput directInput = new DirectInput();
 
-            // TODO Huh? Get rid of hard-coded enumeration range and this horrible for loop
+            // TODO Huh? Get rid of hard-coded enumeration range with magic numbers, and this horrible for loop
             for (int i = 17; i < 28; i++)
             {
                 foreach (
@@ -81,38 +106,29 @@ namespace Glue
                     LOGGER.Info(message);
                 }
             }
+        }
 
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+        private static void InitLogging()
+        {
+            // This is how the log4net examples do it, and nobody has bothered
+            // to update them to get rid of the warning
+#pragma warning disable CS0618 // Type or member is obsolete
+            XmlConfigurator.Configure(new FileInfo(fileName: ConfigurationSettings.AppSettings["log4net-config-file"]));
+#pragma warning restore CS0618 // Type or member is obsolete
 
-            LoadMacros(args[0]);
+            // Console is intended for convenience during debugging
+            // but has some performance impact, and is a bit of a hack.
+            if (LOGGER.IsDebugEnabled)
+            {
+                WinConsole.Initialize(false);
+            }
 
-            // TODO remove hard-coded key remap
-            KeyRemap remap = new KeyRemap(VirtualKeyCode.LSHIFT, VirtualKeyCode.VK_A, "skies.exe");
-            GlueTube.KeyMap.Add(remap.KeyOld, remap);
+            LOGGER.Info("Startup!");
+        }
 
-            // Native keyboard and mouse hook initialization
-            KeyHandler.Initialize();
-            KeyInterceptor.Initialize(KeyHandler.HookCallback);
-            MouseInterceptor.Initialize();
-
-            // Starts thread for queue of actions such as pressing keys,
-            // pushing buttons, playing sounds, etc.
-            ActionQueue.Start();
-
-            mainForm = new Main();
-
-            LOGGER.Debug("Entering Application.Run()...");
-            Application.Run(mainForm);
-            LOGGER.Debug("...returned from Application.Run().");
-
-            // Native class de-initialization
-            MouseInterceptor.Cleanup();
-            KeyInterceptor.Cleanup();
-
-            SaveMacros(args[0]);
-
-            LOGGER.Info("Exiting");
+        private static void AddRemap(KeyRemap keyRemap)
+        {
+            GlueTube.KeyMap.Add(keyRemap.KeyOld, keyRemap);
         }
 
         private static void SaveMacros(String macroFileName)
@@ -121,7 +137,6 @@ namespace Glue
             JsonSerializer serializer = new JsonSerializer
             {
                 NullValueHandling = NullValueHandling.Ignore,
-                // TypeNameHandling = TypeNameHandling.All
             };
 
             using (StreamWriter sw = new StreamWriter(macroFileName))
@@ -134,6 +149,24 @@ namespace Glue
 
         private static void LoadMacros(String macroFileName)
         {
+            // TODO remove hard-coded key remaps and read from JSON
+            // Bind things to shift (really A) for sunless skies!
+            AddRemap(new KeyRemap(VirtualKeyCode.LSHIFT, VirtualKeyCode.VK_A, "skies.exe"));
+
+            // Evil evil swap for people typing into notepad!  Easy for quick functional test.
+            AddRemap(new KeyRemap(VirtualKeyCode.VK_B, VirtualKeyCode.VK_V, "notepad.exe"));
+            AddRemap(new KeyRemap(VirtualKeyCode.VK_V, VirtualKeyCode.VK_B, "notepad.exe"));
+
+            // KILL WASD!!!
+            //ddRemap(new KeyRemap(VirtualKeyCode.VK_E, VirtualKeyCode.VK_W, ""));
+            //AddRemap(new KeyRemap(VirtualKeyCode.VK_S, VirtualKeyCode.VK_A, ""));
+            //AddRemap(new KeyRemap(VirtualKeyCode.VK_D, VirtualKeyCode.VK_S, ""));
+            //AddRemap(new KeyRemap(VirtualKeyCode.VK_F, VirtualKeyCode.VK_D, ""));
+
+            // Slide keys over to make room for killing WASD
+            //AddRemap(new KeyRemap(VirtualKeyCode.VK_W, VirtualKeyCode.VK_E, ""));
+            //AddRemap(new KeyRemap(VirtualKeyCode.VK_A, VirtualKeyCode.VK_F, ""));
+
             LOGGER.Info("Loading macros from [" + macroFileName + "]");
 
             JsonSerializer serializer = new JsonSerializer
@@ -147,29 +180,28 @@ namespace Glue
                 {
                     using (JsonReader reader = new JsonTextReader(sr))
                     {
-                        triggers = serializer.Deserialize<Dictionary<Keys, Trigger>>(reader);
+                        s_triggers = serializer.Deserialize<Dictionary<Keys, Trigger>>(reader);
                     }
                 }
             }
             catch (Exception e)
             {
-                LOGGER.Error("Exception: " + e);
+                LOGGER.Error("Failed to load macros with exception: " + e);
             }
-
 
             //
             // Create and bind a macro with delayed key presses
             //
-            if (null != triggers && triggers.Count != 0)
+            if (null != s_triggers && s_triggers.Count != 0)
             {
-                LOGGER.Info(String.Format("Loaded file with {0} triggers!", triggers.Count));
+                LOGGER.Info(String.Format("Loaded file with {0} triggers!", s_triggers.Count));
             }
 
             else
             {
                 LOGGER.Info("Macro file not found or load failed - creating example macros");
 
-                triggers = new Dictionary<Keys, Trigger>();
+                s_triggers = new Dictionary<Keys, Trigger>();
 
                 // Create macro with several actions
                 Macro macro = new Macro(10) // Fire 10ms after triggered
@@ -211,6 +243,13 @@ namespace Glue
                 trigger = new Trigger(Keys.S, macro);
                 trigger.AddModifier(Keys.LControlKey);
                 Triggers.Add(trigger.TriggerKey, trigger);
+
+                // For sunless skies
+                //macro = new Macro(0)
+                //    .AddAction(new ActionKey(VirtualKeyCode.VK_A, ActionKey.Movement.PRESS, 50))
+                //    .AddAction(new ActionKey(VirtualKeyCode.VK_A, ActionKey.Movement.RELEASE, 50));
+                //trigger = new Trigger(Keys.LShiftKey, macro);
+                //Triggers.Add(trigger.TriggerKey, trigger);
             }
         }
     }
