@@ -6,18 +6,22 @@ namespace Glue
 {
     class MouseInterceptor
     {
-        private static LowLevelMouseProc _proc = HookCallback;
-        private static IntPtr _hookID = IntPtr.Zero;
+        private static LowLevelMouseProc s_proc = HookCallback;
+        private static IntPtr s_hookID = IntPtr.Zero;
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public static void Initialize()
         {
-            _hookID = SetHook(_proc);
+            s_hookID = SetHook(s_proc);
         }
 
         public static void Cleanup()
         {
-            UnhookWindowsHookEx(_hookID);
+            if (s_hookID != IntPtr.Zero)
+            {
+                UnhookWindowsHookEx(s_hookID);
+                s_hookID = IntPtr.Zero;
+            }
         }
 
         private static IntPtr SetHook(LowLevelMouseProc proc)
@@ -43,7 +47,7 @@ namespace Glue
                 LOGGER.Info(hookStruct.pt.x + ", " + hookStruct.pt.y);
             }
 
-            return CallNextHookEx(_hookID, nCode, wParam, lParam);
+            return CallNextHookEx(s_hookID, nCode, wParam, lParam);
         }
 
         private const int WH_MOUSE_LL = 14;

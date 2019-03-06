@@ -11,17 +11,17 @@ namespace Glue
     {
         public VirtualKeyCode KeyOld => this.keyOld;
         public VirtualKeyCode KeyNew => this.keyNew;
-        public string ProcName => this.procName;
+        public string ProcessName => this.processName;
 
         private readonly VirtualKeyCode keyOld;
         private readonly VirtualKeyCode keyNew;
-        private readonly string procName;
+        private readonly string processName;
 
         public KeyRemap(VirtualKeyCode keyOld, VirtualKeyCode keyNew, string procName)
         {
             this.keyOld=keyOld;
             this.keyNew=keyNew;
-            this.procName=procName??throw new ArgumentNullException(nameof(procName));
+            this.processName=procName??throw new ArgumentNullException(nameof(procName));
         }
     }
 }

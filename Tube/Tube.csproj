@@ -106,7 +106,7 @@
     <Compile Include="Native\VirtualKeyCode.cs" />
     <Compile Include="Native\XButton.cs" />
     <Compile Include="ProcessInfo.cs" />
-    <Compile Include="RemapKey.cs" />
+    <Compile Include="KeyRemap.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SimplePriorityQueue.cs" />
     <Compile Include="Trigger.cs" />

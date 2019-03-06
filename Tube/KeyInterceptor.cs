@@ -16,19 +16,23 @@ namespace Glue
     {
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private static LowLevelKeyboardProc _proc = HookCallback;
-        private static LowLevelKeyboardProc handler = null;
-        private static IntPtr _hookID = IntPtr.Zero;
+        private static LowLevelKeyboardProc s_proc = HookCallback;
+        private static LowLevelKeyboardProc s_handler = null;
+        private static IntPtr s_hookID = IntPtr.Zero;
 
         public static void Initialize(LowLevelKeyboardProc lowLevelKeyboardProc)
         {
-            _hookID = SetHook(_proc);
-            handler = lowLevelKeyboardProc;
+            s_hookID = SetHook(s_proc);
+            s_handler = lowLevelKeyboardProc;
         }
 
         public static void Cleanup()
         {
-            UnhookWindowsHookEx(_hookID);
+            if (s_hookID != IntPtr.Zero)
+            {
+                UnhookWindowsHookEx(s_hookID);
+                s_hookID = IntPtr.Zero;
+            }
         }
 
         private static IntPtr SetHook(LowLevelKeyboardProc proc)
@@ -52,7 +56,7 @@ namespace Glue
 
             if (nCode >= 0)
             {
-                IntPtr retval = handler(nCode, wParam, lParam);
+                IntPtr retval = s_handler(nCode, wParam, lParam);
 
                 // If handler returns non-zero it's eating a keystroke!
                 // Just return the non-zero.
@@ -67,10 +71,28 @@ namespace Glue
             
             // If delegate returned a 0 then it doesn't care, and we need to 
             // call the next hook proc.
-            return CallNextHookEx(_hookID, nCode, wParam, lParam);
+            return CallNextHookEx(s_hookID, nCode, wParam, lParam);
         }
 
         #region Win API Functions and Constants
+        [StructLayout(LayoutKind.Sequential)]
+        public class KBDLLHOOKSTRUCT
+        {
+            public uint vkCode;
+            public uint scanCode;
+            public KBDLLHOOKSTRUCTFlags flags;
+            public uint time;
+            public UIntPtr dwExtraInfo;
+        }
+
+        [Flags]
+        public enum KBDLLHOOKSTRUCTFlags : uint 
+        {
+            LLKHF_EXTENDED = 0x01,
+            LLKHF_INJECTED = 0x10,
+            LLKHF_ALTDOWN = 0x20,
+            LLKHF_UP = 0x80,
+        }
 
         // TODO move windows message constants to enum - preferably one someone else wrote
         public const int WH_KEYBOARD_LL    = 13;
@@ -95,6 +117,7 @@ namespace Glue
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern IntPtr GetModuleHandle(string lpModuleName);
+
         #endregion
     }
 }
