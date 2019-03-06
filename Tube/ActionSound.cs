@@ -6,7 +6,7 @@ namespace Glue
 {
     public class ActionSound : Action
     {
-        private static readonly SoundPlayer PLAYER = new SoundPlayer();
+        private static readonly SoundPlayer PLAYER = new SoundPlayer();     // They claim to be thread safe
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private String soundPath;

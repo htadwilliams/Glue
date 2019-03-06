@@ -57,7 +57,7 @@ namespace Glue
 
         private static void Threadproc()
         {
-            LOGGER.Debug("Starting...");
+            LOGGER.Debug("Thread starting...");
 
             while (true)
             {
@@ -69,9 +69,9 @@ namespace Glue
                     )
                 {
                     // Actions should play quickly ~1MS for now (see) 
-                    // following comment).  Once worker thread is implemented
-                    // then asynchronous action processing will be supported.
-                    // TODO Submit actions.Play to worker thread(s)
+                    // following comment).  If worker thread pool is used 
+                    // asynchronous action processing will be supported.
+                    // TODO Asynchronous action support: Submit actions.Play to worker thread pool
                     action.Play();
 
                     actions.Dequeue();

@@ -15,6 +15,7 @@ namespace Glue
         [JsonConverter(typeof(StringEnumConverter))]
         private readonly Keys triggerKey;
 
+        // TODO Triggers refer to macros by name rather than containing instances of them
         [JsonProperty]
         private readonly Macro macro;
         

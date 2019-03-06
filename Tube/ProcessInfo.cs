@@ -19,10 +19,10 @@ namespace Glue
 
             if (0 != foregroundWindowHandle.ToInt64())
             {
-                if (LOGGER.IsDebugEnabled)
-                {
-                    LOGGER.Debug(String.Format("Foreground window handle: {0:X}", foregroundWindowHandle.ToInt64()));
-                }
+                //if (LOGGER.IsDebugEnabled)
+                //{
+                //    LOGGER.Debug(String.Format("Foreground window handle: {0:X}", foregroundWindowHandle.ToInt64()));
+                //}
 
                 GetWindowThreadProcessId(foregroundWindowHandle, out inputProcessId);
             }
@@ -35,10 +35,11 @@ namespace Glue
             StringBuilder processFileName = new StringBuilder(MAX_PATH);
 
             IntPtr processHandle = OpenProcess(ProcessAccessFlags.All, true, processId);
-            if (LOGGER.IsDebugEnabled)
-            {
-                LOGGER.Debug(String.Format("Process handle for id={0}: {1:X}", processId, processHandle.ToInt64()));
-            }
+
+            //if (LOGGER.IsDebugEnabled)
+            //{
+            //    LOGGER.Debug(String.Format("Process handle for id={0}: {1:X}", processId, processHandle.ToInt64()));
+            //}
 
             if (0 != processHandle.ToInt64())
             {
@@ -48,6 +49,8 @@ namespace Glue
 
             return processFileName.ToString();
         }
+
+        #region Win API Functions and Constants
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();
@@ -97,5 +100,7 @@ namespace Glue
         [SuppressUnmanagedCodeSecurity]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool CloseHandle(IntPtr hObject);
+
+        #endregion
     }
 }

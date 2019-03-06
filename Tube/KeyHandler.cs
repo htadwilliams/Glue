@@ -1,21 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Media;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using WindowsInput.Native;
+using static Glue.KeyInterceptor;
 
 namespace Glue
 {
     static class KeyHandler
     {
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private static bool lastInsertWasSpace = false;
+        private static bool s_lastInsertWasSpace = false;
 
+        private static readonly SoundPlayer PLAYER = new SoundPlayer();
+        
         // For friendly display of keys in GUI
         private static readonly Dictionary<Keys, String> keyMap = new Dictionary<Keys, String>();
 
-        // TODO is there a better way to do static initialization for this class?
-        public static void Initialize()
+        public static void InitKeyTable()
         {
             // Maps virtual key codes to friendly text for user display
             (Keys key, string text)[] keyTable =
@@ -54,21 +57,29 @@ namespace Glue
             int nCode, IntPtr wParam, IntPtr lParam)
         {
             int vkCode = Marshal.ReadInt32(lParam);
+            KBDLLHOOKSTRUCT kbd = (KBDLLHOOKSTRUCT) Marshal.PtrToStructure(lParam, typeof(KBDLLHOOKSTRUCT));
 
-            // TODO find a way to detect key repeats from held keys - flag not avail in LL hook
+            // TODO find a way to detect key repeats from held keys - check KBDLLHOOKSTRUCT
             if (wParam == (IntPtr) KeyInterceptor.WM_KEYDOWN || wParam == (IntPtr) KeyInterceptor.WM_SYSKEYDOWN)
             {
                 LogKeyDown(vkCode);
 
-                VirtualKeyCode keyRemapped = DoRemap((VirtualKeyCode) vkCode, ActionKey.Movement.PRESS);
-                if ((int) keyRemapped != vkCode)
+                // Don't do remap for injected keys
+                // TODO Problem: Steam game streaming uses injected keystrokes, so ignoring them for remaps breaks it
+                // TODO is there a different way to detect our own injected keys vs. injected from other processes?
+                if (!kbd.flags.HasFlag(KBDLLHOOKSTRUCTFlags.LLKHF_INJECTED))
                 {
-                    // MSDN: if the hook procedure processed the message, it may return a nonzero value to prevent 
-                    // the system from passing the message to the rest of the hook chain or the target window 
-                    // procedure.
-                    return new IntPtr(1);
+                    VirtualKeyCode keyRemapped = DoRemap((VirtualKeyCode) vkCode, ActionKey.Movement.PRESS);
+                    if ((int) keyRemapped != vkCode)
+                    {
+                        // MSDN: if the hook procedure processed the message, it may return a nonzero value to prevent 
+                        // the system from passing the message to the rest of the hook chain or the target window 
+                        // procedure.
+                        return new IntPtr(1);
+                    }
                 }
 
+                // TODO support for triggers on key up
                 CheckAndFireTriggers(vkCode);
             }
 
@@ -76,10 +87,13 @@ namespace Glue
             {
                 LogKeyUp(vkCode);
 
-                VirtualKeyCode keyRemapped = DoRemap((VirtualKeyCode) vkCode, ActionKey.Movement.RELEASE);
-                if ((int) keyRemapped != vkCode)
+                if (!kbd.flags.HasFlag(KBDLLHOOKSTRUCTFlags.LLKHF_INJECTED))
                 {
-                    return new IntPtr(1);
+                    VirtualKeyCode keyRemapped = DoRemap((VirtualKeyCode) vkCode, ActionKey.Movement.RELEASE);
+                    if ((int) keyRemapped != vkCode)
+                    {
+                        return new IntPtr(1);
+                    }
                 }
             }
 
@@ -121,14 +135,19 @@ namespace Glue
                 // Filter remapping to the given process name 
                 // If empty process name is given, perform remap for all of them
                 String inputFocusProcessName = "";
-                if (remap.ProcName.Length != 0)
+                if (remap.ProcessName.Length != 0)
                 {
                     inputFocusProcessName = ProcessInfo.GetProcessFileName(
                         ProcessInfo.GetInputFocusProcessId());
 
+                    LOGGER.Debug(
+                        "DoRemap inputKey = [" + inputKey 
+                        + "] focus window = [" + inputFocusProcessName 
+                        + "] remap process = [" + remap.ProcessName + "]");
+
                     if (!inputFocusProcessName
                         .ToLower()
-                        .Contains(remap.ProcName.ToLower())
+                        .Contains(remap.ProcessName.ToLower())
                         )
                     {
                         return inputKey;
@@ -180,14 +199,14 @@ namespace Glue
                     // Could be simplified but this is super clear to read
                     if (Keyboard.IsKeyToggled(Keys.CapsLock))
                     {
-                        if (Keyboard.IsKeyDown(Keys.LShiftKey))
+                        if (Keyboard.IsKeyDown(Keys.LShiftKey) || Keyboard.IsKeyDown(Keys.RShiftKey))
                         {
                             output = output.ToLower();
                         }
                     }
                     else
                     {
-                        if (!Keyboard.IsKeyDown(Keys.LShiftKey))
+                        if (!Keyboard.IsKeyDown(Keys.LShiftKey) && !Keyboard.IsKeyDown(Keys.RShiftKey))
                         {
                             output = output.ToLower();
                         }
@@ -195,20 +214,18 @@ namespace Glue
                 }
             }
 
-            // Pad Key names (not single typed characters
-            // e.g. LMenu)
+            // Pad Key names (e.g. LMenu, not single typed characters like "A")
             if ((output.Length > 1) && (output != "\r\n"))
             {
-                if (!lastInsertWasSpace)
+                if (!s_lastInsertWasSpace)
                 {
                     output = output.Insert(0, " ");
                 }
                 output += " ";
             }
 
-            // TODO conditional should be set of white space 
-            // rather than just space
-            lastInsertWasSpace
+            // Set flag for next time this method is called
+            s_lastInsertWasSpace
                 = (output.EndsWith(" ") ||
                    output.EndsWith("\r\n"));
 
