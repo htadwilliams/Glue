@@ -4,15 +4,15 @@ WARNING: This globally hooks keyboard and logs to file. Don't run in DEBUG mode 
 
 A macro tool.  Originally written in C++, this is my latest attempt to write it in C# including low-level keyboard and mouse hooks (with native windows API calls).
 
-The application loads a JSON file with triggers, macros, etc specified as command-line parameter.  If this file isn't found, one will be created with the following default mappings:
+The application by default attempts to read  a JSON file MACROS.JSON from it's working directory. The file name / path may be optionally specified as a command-line parameter.  If this file isn't found or a command-line isn't specified, one will be created with the following mappings: 
 
-* Press Ctrl-C (making sure input focus is not set to console window or application will exit) to fire macro which will trigger a Q and ENTER keyboard press and release after a delay.  
+* Ctrl-C (making sure input focus is not set to console window or application will exit) will type a string of characters immediately with short delay between presses and releases.
 
-* Ctrl-Z will type a sequence of characters immediately with short delay between presses and releases. 
+* Ctrl-Z will immediately type an R followed by a Q and ENTER after a delay of ~4 seconds. This is useful for demonstrating asynchronous scheduling of output events.
 
-* Ctrl-S plays a sound.
+* Ctrl-S plays a sound immediately. If the sound is already playing it will be restarted.
 
-Keyboard remapping is supported but remaps are hard-coded in GlueTube.exe right now. They need to be added to serialization.
+Keyboard remapping is supported but remaps are hard-coded in GlueTube.exe right now. They need to be added to serialization. These can be found and changed in GlueTube.cs - look for the LoadMacros() method. Remapping is process aware (they can be defined globally or only defined for a given process name).
 
 LEFT SHIFT types an A if input window contains "skies.exe" so I can use it for altrnate fire in Sunless Skies (and easily changge for other unity games where shift can't be remapped).
 
