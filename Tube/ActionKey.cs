@@ -14,8 +14,8 @@ namespace Glue
             RELEASE
         }
 
+        public static readonly IntPtr INJECTION_ID = new IntPtr(0xD00D);
         public long TimeTriggerMS => timeTriggerMS;
-
         public Nullable<VirtualKeyCode> Key => key;
 
         [JsonProperty]
@@ -73,23 +73,32 @@ namespace Glue
         public override void Play()
         {
             INPUT[] inputs = null;
+
+            // Constructor only supplied virtual key code - create INPUT 
             if (null == this.input)
             {
                 switch (this.movement)
                 {
                     case Movement.PRESS:
-                        inputs = new InputBuilder().AddKeyDown((VirtualKeyCode)this.key).ToArray();
+                        inputs = new InputBuilder().AddKeyDown((VirtualKeyCode) this.key).ToArray();
                         break;
                     case Movement.RELEASE:
-                        inputs = new InputBuilder().AddKeyUp((VirtualKeyCode)this.key).ToArray();
+                        inputs = new InputBuilder().AddKeyUp((VirtualKeyCode) this.key).ToArray();
                         break;
                 }
+
             }
+            // Constructor supplied INPUT - use it instead
             else
             {
                 inputs = new INPUT[1];
                 inputs[0] = (INPUT) this.input;
             }
+
+            // Stamp our injected input so our keyboard remapper doesn't try 
+            // to remap it! We still want to remap other injected input (for 
+            // example from remote desktop, or steam streaming)
+            inputs[0].Data.Keyboard.ExtraInfo = INJECTION_ID;
             DISPATCHER.DispatchInput(inputs);
 
             if (LOGGER.IsDebugEnabled)

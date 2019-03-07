@@ -203,7 +203,9 @@ namespace Glue
 
                 s_triggers = new Dictionary<Keys, Trigger>();
 
-                // Create macro with several actions
+                //
+                // Create macro with several actions bound to CTRL-Z
+                //
                 Macro macro = new Macro(10) // Fire 10ms after triggered
                     .AddAction(new ActionKey(VirtualKeyCode.VK_R, ActionKey.Movement.PRESS, 10))
                     .AddAction(new ActionKey(VirtualKeyCode.VK_R, ActionKey.Movement.RELEASE, 10))
@@ -214,16 +216,13 @@ namespace Glue
                     .AddAction(new ActionKey(VirtualKeyCode.VK_Q, ActionKey.Movement.PRESS, 4020))
                     .AddAction(new ActionKey(VirtualKeyCode.VK_Q, ActionKey.Movement.RELEASE, 4030))
                     ;
-
-                // Bind macro to trigger (Ctrl-Z and possibly other modifiers)
+                // Setup trigger
                 Trigger trigger = new Trigger(Keys.Z, macro);
                 trigger.AddModifier(Keys.LControlKey);
-                trigger.AddModifier(Keys.S);
-                trigger.AddModifier(Keys.LMenu);
                 Triggers.Add(trigger.TriggerKey, trigger);
 
                 //
-                // Create and bind a typing macro (string of text)
+                // Create and bind a typing macro (string of text) bound to CTRL-C
                 // 
                 macro = new Macro(2000);
                 macro.AddAction(
