@@ -64,14 +64,17 @@ namespace Glue
             {
                 LogKeyDown(vkCode);
 
-                // Don't do remap for injected keys
-                // TODO Problem: Steam game streaming uses injected keystrokes, so ignoring them for remaps breaks it
-                // TODO is there a different way to detect our own injected keys vs. injected from other processes?
-                if (!kbd.flags.HasFlag(KBDLLHOOKSTRUCTFlags.LLKHF_INJECTED))
+                // This could be used to ignore any injected keystrokes - may make it an option
+                // if (!kbd.flags.HasFlag(KBDLLHOOKSTRUCTFlags.LLKHF_INJECTED))
+
+                // Don't do remap for keys injected by our own process
+                if (!KeyWasFromGlue(kbd.dwExtraInfo))
                 {
                     VirtualKeyCode keyRemapped = DoRemap((VirtualKeyCode) vkCode, ActionKey.Movement.PRESS);
                     if ((int) keyRemapped != vkCode)
                     {
+                        // Eat keystroke
+
                         // MSDN: if the hook procedure processed the message, it may return a nonzero value to prevent 
                         // the system from passing the message to the rest of the hook chain or the target window 
                         // procedure.
@@ -87,17 +90,24 @@ namespace Glue
             {
                 LogKeyUp(vkCode);
 
-                if (!kbd.flags.HasFlag(KBDLLHOOKSTRUCTFlags.LLKHF_INJECTED))
+                // if (!kbd.flags.HasFlag(KBDLLHOOKSTRUCTFlags.LLKHF_INJECTED))
+                if (!KeyWasFromGlue(kbd.dwExtraInfo))
                 {
                     VirtualKeyCode keyRemapped = DoRemap((VirtualKeyCode) vkCode, ActionKey.Movement.RELEASE);
                     if ((int) keyRemapped != vkCode)
                     {
+                        // Eat keystroke
                         return new IntPtr(1);
                     }
                 }
             }
 
             return new IntPtr(0);
+        }
+
+        private static bool KeyWasFromGlue(UIntPtr injectionId)
+        {
+            return injectionId.ToUInt32() == ActionKey.INJECTION_ID.ToInt32();
         }
 
         private static void LogKeyUp(int vkCode)
