@@ -12,7 +12,7 @@ EXAMPLE MACROS:
 * Ctrl-S plays a sound asynchronously. If the sound is already playing it will be restarted.
 
 EXAMPLE REMAPS:
-* LEFT SHIFT types an A if input window process name contains "skies.exe" so it can be mapped in Sunless Skies (and easily changge for other unity games where SHIFT can't be remapped).
+* LEFT SHIFT types an A if input window process name contains "skies.exe" so it can be mapped in Sunless Skies (and easily change for other unity games where SHIFT can't be remapped).
 * WASD are remapped to ESDF (with E<->W and F<->A) for "somegame.exe".  Change to your .exe name to use.  WASD is EVIL!
 
 NOTES:
