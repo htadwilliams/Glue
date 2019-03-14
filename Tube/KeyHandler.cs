@@ -62,8 +62,6 @@ namespace Glue
             // TODO find a way to detect key repeats from held keys - check KBDLLHOOKSTRUCT
             if (wParam == (IntPtr) KeyInterceptor.WM_KEYDOWN || wParam == (IntPtr) KeyInterceptor.WM_SYSKEYDOWN)
             {
-                LogKeyDown(vkCode);
-
                 // This could be used to ignore any injected keystrokes - may make it an option
                 // if (!kbd.flags.HasFlag(KBDLLHOOKSTRUCTFlags.LLKHF_INJECTED))
 
@@ -82,14 +80,14 @@ namespace Glue
                     }
                 }
 
+                LogKeyDown(vkCode);
+
                 // TODO support for triggers on key up
                 CheckAndFireTriggers(vkCode);
             }
 
             if (wParam == (IntPtr) KeyInterceptor.WM_KEYUP || wParam == (IntPtr) KeyInterceptor.WM_SYSKEYUP)
             {
-                LogKeyUp(vkCode);
-
                 // if (!kbd.flags.HasFlag(KBDLLHOOKSTRUCTFlags.LLKHF_INJECTED))
                 if (!KeyWasFromGlue(kbd.dwExtraInfo))
                 {
@@ -100,6 +98,8 @@ namespace Glue
                         return new IntPtr(1);
                     }
                 }
+
+                LogKeyUp(vkCode);
             }
 
             return new IntPtr(0);
@@ -195,7 +195,7 @@ namespace Glue
         private static string FormatKeyString(int vkCode)
         {
             string output;
-            if (keyMap.TryGetValue((Keys)vkCode, out String text))
+            if (keyMap.TryGetValue((Keys) vkCode, out String text))
             {
                 output = text;
             }
