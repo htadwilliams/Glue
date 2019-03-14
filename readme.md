@@ -2,19 +2,23 @@ Glue
 
 WARNING: This globally hooks keyboard and logs to file. Don't run in DEBUG mode if you don't want your keys logged!
 
-A macro tool.  Originally written in C++, this is my latest attempt to write it in C# including low-level keyboard and mouse hooks (with native windows API calls).
+An input remapping and macroing tool.  Originally written in C++, this a rewrite in C# including low-level keyboard and mouse hooks (with lots of native windows API calls).
 
-The application by default attempts to read  a JSON file MACROS.JSON from it's working directory. The file name / path may be optionally specified as a command-line parameter.  If this file isn't found or a command-line isn't specified, one will be created with the following mappings: 
+The application by default attempts to read MACROS.JSON from its working directory. The file name / path may be optionally specified as a command-line parameter.  If this file isn't found or a command-line isn't specified, one will be created with default mappings and macros. 
+
+EXAMPLE MACROS:
 
 * Ctrl-C (making sure input focus is not set to console window or application will exit) will type a string of characters immediately with short delay between presses and releases.
 
 * Ctrl-Z will immediately type an R followed by a Q and ENTER after a delay of ~4 seconds. This is useful for demonstrating asynchronous scheduling of output events.
 
-* Ctrl-S plays a sound immediately. If the sound is already playing it will be restarted.
+* Ctrl-S plays a sound asynchronously. If the sound is already playing it will be restarted.
 
-Keyboard remapping is supported but remaps are hard-coded in GlueTube.exe right now. They need to be added to serialization. These can be found and changed in GlueTube.cs - look for the LoadMacros() method. Remapping is process aware (they can be defined globally or only defined for a given process name).
+EXAMPLE REMAPS:
 
-LEFT SHIFT types an A if input window contains "skies.exe" so I can use it for altrnate fire in Sunless Skies (and easily changge for other unity games where shift can't be remapped).
+LEFT SHIFT types an A if input window process name contains "skies.exe" so it can be mapped in Sunless Skies (and easily changge for other unity games where SHIFT can't be remapped).
+
+WASD are remapped to ESDF (with E<->W and F<->A) for "somegame.exe".  Change to your .exe name to use.  WASD is EVIL!
 
 NOTES:
 
@@ -27,7 +31,6 @@ Could be improved by hooking the action queue to a thread pool so that macro eve
 Next steps include:
 
 * Move to Trello or something for feature tracking and move all those damn TODO comments there.
-* Move hard-coded key remapping to JSON file.
 * Separate macros from triggers (more than one trigger should be able to fire the same macro without duplicating the macro).
 
 Feature TODO list:
