@@ -19,10 +19,19 @@ namespace Glue
         public static Dictionary<Keys, Trigger> Triggers => s_triggers;
         public static Dictionary<VirtualKeyCode, KeyRemap> KeyMap => s_keyMap;
 
-        private const string FILENAME_DEFAULT = "macros.json";
+        private const string FILENAME_DEFAULT           = "macros.json";
+        private const string PROCESS_NAME_VBSWAP        = "notepad.exe";
+        private const string PROCESS_NAME_KILLWASD      = "somegame.exe";
+
+        // Magic numbers for DirectX device enumeration
+        // TODO kill magic numbers for DirectX device enumeration
+        private const int ID_DX_DEVICETYPE_BEGIN = 1;
+        // private const int ID_DX_DEVICETYPE_BEGIN = 17;
+        private const int ID_DX_DEVICETYPE_END = 28;
 
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private static Main s_mainForm = null;
+        private static bool s_writeOnExit = false;      // Set if loading fails, or if GUI changes contents 
 
         // TODO App needs separate collection of macros (probably Dictionary)
         private static Dictionary<Keys, Trigger> s_triggers = new Dictionary<Keys, Trigger>();
@@ -49,7 +58,7 @@ namespace Glue
             {
                 InitLogging();
                 InitDirectX();
-                LoadMacros(fileName);
+                LoadFile(fileName);
 
                 // Native keyboard and mouse hook initialization
                 KeyInterceptor.Initialize(KeyHandler.HookCallback);
@@ -71,7 +80,11 @@ namespace Glue
                 KeyInterceptor.Cleanup();
             }
 
-            SaveMacros(fileName);
+            if (s_writeOnExit)
+            {
+                SaveFile(fileName);
+            }
+
             LOGGER.Info("Exiting");
         }
 
@@ -88,23 +101,33 @@ namespace Glue
             // Using https://github.com/sharpdx/sharpdx
             // See quick example code 
             // https://stackoverflow.com/questions/3929764/taking-input-from-a-joystick-with-c-sharp-net
-            LOGGER.Info("Enumerating DirectInput devices...");
-            DirectInput directInput = new DirectInput();
+            LOGGER.Info("Enumerating DirectX Input devices...");
 
-            // TODO Huh? Get rid of hard-coded enumeration range with magic numbers, and this horrible for loop
-            for (int i = 17; i < 28; i++)
+            try
             {
-                foreach (
-                    var deviceInstance
-                    in directInput.GetDevices((DeviceType) i, DeviceEnumerationFlags.AllDevices))
+                DirectInput directInput = new DirectInput();
+
+                foreach(DeviceType deviceType in Enum.GetValues(typeof(DeviceType)))
                 {
-                    String message = String.Format(
-                        "Input device: {0} type={1} GUID=[{2}]",
-                        deviceInstance.InstanceName,
-                        deviceInstance.Type.ToString(),
-                        deviceInstance.ProductGuid.ToString());
-                    LOGGER.Info(message);
+                    IList<DeviceInstance> deviceInstances = directInput.GetDevices(deviceType, DeviceEnumerationFlags.AllDevices);
+                    if (deviceInstances.Count > 0)
+                    {
+                        LOGGER.Info("    Devices of type [" + deviceType.ToString() + "]:");
+
+                        foreach (DeviceInstance deviceInstance in deviceInstances)
+                        {
+                            String message = String.Format(
+                                "        {0} : GUID=[{1}]",
+                                deviceInstance.InstanceName,
+                                deviceInstance.ProductGuid.ToString());
+                            LOGGER.Info(message);
+                        }
+                    }
                 }
+            }
+            catch(Exception e)
+            {
+                LOGGER.Error("Error enumerating DirectX devices: ", e);
             }
         }
 
@@ -131,43 +154,39 @@ namespace Glue
             GlueTube.KeyMap.Add(keyRemap.KeyOld, keyRemap);
         }
 
-        private static void SaveMacros(String macroFileName)
+        private static void SaveFile(String fileName)
         {
-            LOGGER.Info("Saving macros to [" + macroFileName + "]");
+            LOGGER.Info("Saving to [" + fileName + "]");
             JsonSerializer serializer = new JsonSerializer
             {
+                TypeNameHandling = TypeNameHandling.None,
                 NullValueHandling = NullValueHandling.Ignore,
             };
 
-            using (StreamWriter sw = new StreamWriter(macroFileName))
+            using (StreamWriter sw = new StreamWriter(fileName))
             using (JsonWriter writer = new JsonTextWriter(sw))
             {
                 writer.Formatting = Formatting.Indented;
-                serializer.Serialize(writer, Triggers);
+
+                // Order of writes and reads to this file must be kept in sync
+                // with LoadFile()
+                writer.WriteComment("Order of this file's contents must be maintained\r\n    1) Triggers\r\n    2) Input remapping");
+                sw.Write("\r\n\r\n");
+
+                writer.WriteComment("Triggers");
+                sw.Write("\r\n");
+                serializer.Serialize(writer, s_triggers);
+
+                sw.Write("\r\n\r\n");
+                writer.WriteComment("Input remapping");
+                sw.Write("\r\n");
+                serializer.Serialize(writer, s_keyMap);
             }
         }
 
-        private static void LoadMacros(String macroFileName)
+        private static void LoadFile(String fileName)
         {
-            // TODO remove hard-coded key remaps and read from JSON
-            // Bind things to shift (really A) for sunless skies!
-            AddRemap(new KeyRemap(VirtualKeyCode.LSHIFT, VirtualKeyCode.VK_A, "skies.exe"));
-
-            // Evil evil swap for people typing into notepad!  Easy for quick functional test.
-            AddRemap(new KeyRemap(VirtualKeyCode.VK_B, VirtualKeyCode.VK_V, "notepad.exe"));
-            AddRemap(new KeyRemap(VirtualKeyCode.VK_V, VirtualKeyCode.VK_B, "notepad.exe"));
-
-            // KILL WASD!!!
-            AddRemap(new KeyRemap(VirtualKeyCode.VK_E, VirtualKeyCode.VK_W, "notepad.exe"));
-            AddRemap(new KeyRemap(VirtualKeyCode.VK_S, VirtualKeyCode.VK_A, "notepad.exe"));
-            AddRemap(new KeyRemap(VirtualKeyCode.VK_D, VirtualKeyCode.VK_S, "notepad.exe"));
-            AddRemap(new KeyRemap(VirtualKeyCode.VK_F, VirtualKeyCode.VK_D, "notepad.exe"));
-
-            // Slide keys over to make room for killing WASD
-            AddRemap(new KeyRemap(VirtualKeyCode.VK_W, VirtualKeyCode.VK_E, "notepad.exe"));
-            AddRemap(new KeyRemap(VirtualKeyCode.VK_A, VirtualKeyCode.VK_F, "notepad.exe"));
-
-            LOGGER.Info("Loading macros from [" + macroFileName + "]");
+            LOGGER.Info("Loading file [" + fileName + "]");
 
             JsonSerializer serializer = new JsonSerializer
             {
@@ -176,80 +195,104 @@ namespace Glue
 
             try
             {
-                using (StreamReader sr = new StreamReader(macroFileName))
+                using (StreamReader sr = new StreamReader(fileName))
                 {
                     using (JsonReader reader = new JsonTextReader(sr))
                     {
+                        reader.SupportMultipleContent = true;
+
+                        reader.Read();
                         s_triggers = serializer.Deserialize<Dictionary<Keys, Trigger>>(reader);
+
+                        reader.Read();
+                        s_keyMap = serializer.Deserialize<Dictionary<VirtualKeyCode, KeyRemap>>(reader);
                     }
                 }
             }
             catch (Exception e)
             {
-                LOGGER.Error("Failed to load macros with exception: " + e);
+                LOGGER.Error("Failed to load file with exception: " + e);
+
+                CreateDefaultContent();
+                s_writeOnExit = true;
+                return;
             }
 
-            //
-            // Create and bind a macro with delayed key presses
-            //
+            s_writeOnExit = false;
             if (null != s_triggers && s_triggers.Count != 0)
             {
-                LOGGER.Info(String.Format("Loaded file with {0} triggers!", s_triggers.Count));
+                LOGGER.Info(String.Format("    Loaded {0} triggers", s_triggers.Count));
             }
-
-            else
+            if (null != s_keyMap && s_keyMap.Count != 0)
             {
-                LOGGER.Info("Macro file not found or load failed - creating example macros");
-
-                s_triggers = new Dictionary<Keys, Trigger>();
-
-                //
-                // Create macro with several actions bound to CTRL-Z
-                //
-                Macro macro = new Macro(10) // Fire 10ms after triggered
-                    .AddAction(new ActionKey(VirtualKeyCode.VK_R, ActionKey.Movement.PRESS, 10))
-                    .AddAction(new ActionKey(VirtualKeyCode.VK_R, ActionKey.Movement.RELEASE, 10))
-
-                    .AddAction(new ActionKey(VirtualKeyCode.RETURN, ActionKey.Movement.PRESS, 4000))
-                    .AddAction(new ActionKey(VirtualKeyCode.RETURN, ActionKey.Movement.RELEASE, 4010))
-
-                    .AddAction(new ActionKey(VirtualKeyCode.VK_Q, ActionKey.Movement.PRESS, 4020))
-                    .AddAction(new ActionKey(VirtualKeyCode.VK_Q, ActionKey.Movement.RELEASE, 4030))
-                    ;
-                // Setup trigger
-                Trigger trigger = new Trigger(Keys.Z, macro);
-                trigger.AddModifier(Keys.LControlKey);
-                Triggers.Add(trigger.TriggerKey, trigger);
-
-                //
-                // Create and bind a typing macro (string of text) bound to CTRL-C
-                // 
-                macro = new Macro(2000);
-                macro.AddAction(
-                    new ActionTyping(
-                        "Lorem ipsum dolor sit amet, tincidunt eget elit vivamus consequat, mi ac urna.", 
-                        10,     // delay MS
-                        10));   // dwell time MS
-                trigger = new Trigger(Keys.C, macro);
-                trigger.AddModifier(Keys.LControlKey);
-                Triggers.Add(trigger.TriggerKey, trigger);
-
-                //
-                // Create and bind a sound macro
-                //
-                macro = new Macro(0);
-                macro.AddAction(new ActionSound("sound_servomotor.wav"));
-                trigger = new Trigger(Keys.S, macro);
-                trigger.AddModifier(Keys.LControlKey);
-                Triggers.Add(trigger.TriggerKey, trigger);
-
-                // For sunless skies
-                //macro = new Macro(0)
-                //    .AddAction(new ActionKey(VirtualKeyCode.VK_A, ActionKey.Movement.PRESS, 50))
-                //    .AddAction(new ActionKey(VirtualKeyCode.VK_A, ActionKey.Movement.RELEASE, 50));
-                //trigger = new Trigger(Keys.LShiftKey, macro);
-                //Triggers.Add(trigger.TriggerKey, trigger);
+                LOGGER.Info(String.Format("    Loaded {0} remapped keys", s_keyMap.Count));
             }
+        }
+
+        private static void CreateDefaultContent()
+        {
+            LOGGER.Info("File not found or load failed - creating example content");
+
+            s_triggers = new Dictionary<Keys, Trigger>();
+            s_keyMap = new Dictionary<VirtualKeyCode, KeyRemap>();
+
+            //
+            // Create macro with several actions bound to CTRL-Z
+            //
+            Macro macro = new Macro(10) // Fire 10ms after triggered
+                .AddAction(new ActionKey(VirtualKeyCode.VK_R, ActionKey.Movement.PRESS, 10))
+                .AddAction(new ActionKey(VirtualKeyCode.VK_R, ActionKey.Movement.RELEASE, 10))
+
+                .AddAction(new ActionKey(VirtualKeyCode.RETURN, ActionKey.Movement.PRESS, 4000))
+                .AddAction(new ActionKey(VirtualKeyCode.RETURN, ActionKey.Movement.RELEASE, 4010))
+
+                .AddAction(new ActionKey(VirtualKeyCode.VK_Q, ActionKey.Movement.PRESS, 4020))
+                .AddAction(new ActionKey(VirtualKeyCode.VK_Q, ActionKey.Movement.RELEASE, 4030))
+                ;
+            // Setup trigger
+            Trigger trigger = new Trigger(Keys.Z, macro);
+            trigger.AddModifier(Keys.LControlKey);
+            Triggers.Add(trigger.TriggerKey, trigger);
+
+            //
+            // Create and bind a typing macro (string of text) bound to CTRL-C
+            // 
+            macro = new Macro(2000);
+            macro.AddAction(
+                new ActionTyping(
+                    "Lorem ipsum dolor sit amet, tincidunt eget elit vivamus consequat, mi ac urna.",
+                    10,     // delay MS
+                    10));   // dwell time MS
+            trigger = new Trigger(Keys.C, macro);
+            trigger.AddModifier(Keys.LControlKey);
+            Triggers.Add(trigger.TriggerKey, trigger);
+
+            //
+            // Create and bind a sound macro
+            //
+            macro = new Macro(0);
+            macro.AddAction(new ActionSound("sound_servomotor.wav"));
+            trigger = new Trigger(Keys.S, macro);
+            trigger.AddModifier(Keys.LControlKey);
+            Triggers.Add(trigger.TriggerKey, trigger);
+
+            // Sunless skies (and other Unity games) won't allow binding to shift key
+            // Mapping A to Shift allows binding game functions to that instead.
+            AddRemap(new KeyRemap(VirtualKeyCode.LSHIFT, VirtualKeyCode.VK_A, "skies.exe"));
+
+            // Evil evil swap for people typing into notepad!  Easy for quick functional test.
+            AddRemap(new KeyRemap(VirtualKeyCode.VK_B, VirtualKeyCode.VK_V, PROCESS_NAME_VBSWAP));
+            AddRemap(new KeyRemap(VirtualKeyCode.VK_V, VirtualKeyCode.VK_B, PROCESS_NAME_VBSWAP));
+
+            // KILL WASD!!!
+            AddRemap(new KeyRemap(VirtualKeyCode.VK_E, VirtualKeyCode.VK_W, PROCESS_NAME_KILLWASD));
+            AddRemap(new KeyRemap(VirtualKeyCode.VK_S, VirtualKeyCode.VK_A, PROCESS_NAME_KILLWASD));
+            AddRemap(new KeyRemap(VirtualKeyCode.VK_D, VirtualKeyCode.VK_S, PROCESS_NAME_KILLWASD));
+            AddRemap(new KeyRemap(VirtualKeyCode.VK_F, VirtualKeyCode.VK_D, PROCESS_NAME_KILLWASD));
+
+            // Slide keys over to make room for killing WASD
+            AddRemap(new KeyRemap(VirtualKeyCode.VK_W, VirtualKeyCode.VK_E, PROCESS_NAME_KILLWASD));
+            AddRemap(new KeyRemap(VirtualKeyCode.VK_A, VirtualKeyCode.VK_F, PROCESS_NAME_KILLWASD));
         }
     }
 }

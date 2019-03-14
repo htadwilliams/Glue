@@ -140,12 +140,12 @@ namespace Glue
 
         private static VirtualKeyCode DoRemap(VirtualKeyCode inputKey, ActionKey.Movement movement)
         {
-            if (GlueTube.KeyMap.TryGetValue(inputKey, out KeyRemap remap))
+            if (GlueTube.KeyMap != null && GlueTube.KeyMap.TryGetValue(inputKey, out KeyRemap remap))
             {
                 // Filter remapping to the given process name 
                 // If empty process name is given, perform remap for all of them
                 String inputFocusProcessName = "";
-                if (remap.ProcessName.Length != 0)
+                if (remap.ProcessName != null && remap.ProcessName.Length != 0)
                 {
                     inputFocusProcessName = ProcessInfo.GetProcessFileName(
                         ProcessInfo.GetInputFocusProcessId());
@@ -176,17 +176,10 @@ namespace Glue
         private static void CheckAndFireTriggers(int vkCode)
         {
             // Triggers fire macros (and other things)
-            if (GlueTube.Triggers.TryGetValue((Keys) vkCode, out Trigger trigger))
+            if (GlueTube.Triggers != null && GlueTube.Triggers.TryGetValue((Keys) vkCode, out Trigger trigger))
             {
                 if (trigger.AreModKeysActive())
                 {
-                    if (LOGGER.IsDebugEnabled)
-                    {
-                        int inputProcessId = ProcessInfo.GetInputFocusProcessId();
-                        LOGGER.Debug("Input process Id: " + inputProcessId);
-                        LOGGER.Debug("Input process name" + ProcessInfo.GetProcessFileName(inputProcessId));
-                    }
-
                     trigger.Fire();
                 }
             }
