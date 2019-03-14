@@ -53,7 +53,7 @@ namespace Glue
 
                 // Native keyboard and mouse hook initialization
                 KeyInterceptor.Initialize(KeyHandler.HookCallback);
-                MouseInterceptor.Initialize();
+                MouseInterceptor.Initialize(MouseHandler.HookCallback);
 
                 // Starts thread for timed queue of actions such as pressing keys,
                 // activating game controller buttons, playing sounds, etc.
@@ -158,14 +158,14 @@ namespace Glue
             AddRemap(new KeyRemap(VirtualKeyCode.VK_V, VirtualKeyCode.VK_B, "notepad.exe"));
 
             // KILL WASD!!!
-            //ddRemap(new KeyRemap(VirtualKeyCode.VK_E, VirtualKeyCode.VK_W, ""));
-            //AddRemap(new KeyRemap(VirtualKeyCode.VK_S, VirtualKeyCode.VK_A, ""));
-            //AddRemap(new KeyRemap(VirtualKeyCode.VK_D, VirtualKeyCode.VK_S, ""));
-            //AddRemap(new KeyRemap(VirtualKeyCode.VK_F, VirtualKeyCode.VK_D, ""));
+            AddRemap(new KeyRemap(VirtualKeyCode.VK_E, VirtualKeyCode.VK_W, "notepad.exe"));
+            AddRemap(new KeyRemap(VirtualKeyCode.VK_S, VirtualKeyCode.VK_A, "notepad.exe"));
+            AddRemap(new KeyRemap(VirtualKeyCode.VK_D, VirtualKeyCode.VK_S, "notepad.exe"));
+            AddRemap(new KeyRemap(VirtualKeyCode.VK_F, VirtualKeyCode.VK_D, "notepad.exe"));
 
             // Slide keys over to make room for killing WASD
-            //AddRemap(new KeyRemap(VirtualKeyCode.VK_W, VirtualKeyCode.VK_E, ""));
-            //AddRemap(new KeyRemap(VirtualKeyCode.VK_A, VirtualKeyCode.VK_F, ""));
+            AddRemap(new KeyRemap(VirtualKeyCode.VK_W, VirtualKeyCode.VK_E, "notepad.exe"));
+            AddRemap(new KeyRemap(VirtualKeyCode.VK_A, VirtualKeyCode.VK_F, "notepad.exe"));
 
             LOGGER.Info("Loading macros from [" + macroFileName + "]");
 

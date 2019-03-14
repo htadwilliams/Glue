@@ -6,13 +6,17 @@ namespace Glue
 {
     class MouseInterceptor
     {
+        public delegate IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam);
+
         private static LowLevelMouseProc s_proc = HookCallback;
+        private static LowLevelMouseProc s_handler = HookCallback;
         private static IntPtr s_hookID = IntPtr.Zero;
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public static void Initialize()
+        public static void Initialize(LowLevelMouseProc lowLevelMouseProc)
         {
             s_hookID = SetHook(s_proc);
+            s_handler = lowLevelMouseProc;
         }
 
         public static void Cleanup()
@@ -34,17 +38,19 @@ namespace Glue
             }
         }
 
-        private delegate IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam);
-
         private static IntPtr HookCallback(
             int nCode, IntPtr wParam, IntPtr lParam)
         {
-            if (nCode >= 0 &&
-                MouseMessages.WM_LBUTTONDOWN == (MouseMessages)wParam)
+            if (nCode >= 0)
             {
-                MSLLHOOKSTRUCT hookStruct = (MSLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
+                IntPtr retval = s_handler(nCode, wParam, lParam);
 
-                LOGGER.Info(hookStruct.pt.x + ", " + hookStruct.pt.y);
+                // If handler returns non-zero it's eating input.
+                // Just return the non-zero.
+                if ((int) retval != 0)
+                {
+                    return retval;
+                }
             }
 
             return CallNextHookEx(s_hookID, nCode, wParam, lParam);
@@ -52,7 +58,7 @@ namespace Glue
 
         private const int WH_MOUSE_LL = 14;
 
-        private enum MouseMessages
+        public enum MouseMessages
         {
             WM_LBUTTONDOWN = 0x0201,
             WM_LBUTTONUP = 0x0202,
@@ -63,14 +69,14 @@ namespace Glue
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private struct POINT
+        public struct POINT
         {
             public int x;
             public int y;
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private struct MSLLHOOKSTRUCT
+        public struct MSLLHOOKSTRUCT
         {
             public POINT pt;
             public uint mouseData;
