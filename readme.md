@@ -7,18 +7,13 @@ An input remapping and macroing tool.  Originally written in C++, this a rewrite
 The application by default attempts to read MACROS.JSON from its working directory. The file name / path may be optionally specified as a command-line parameter.  If this file isn't found or a command-line isn't specified, one will be created with default mappings and macros. 
 
 EXAMPLE MACROS:
-
 * Ctrl-C (making sure input focus is not set to console window or application will exit) will type a string of characters immediately with short delay between presses and releases.
-
 * Ctrl-Z will immediately type an R followed by a Q and ENTER after a delay of ~4 seconds. This is useful for demonstrating asynchronous scheduling of output events.
-
 * Ctrl-S plays a sound asynchronously. If the sound is already playing it will be restarted.
 
 EXAMPLE REMAPS:
-
-LEFT SHIFT types an A if input window process name contains "skies.exe" so it can be mapped in Sunless Skies (and easily changge for other unity games where SHIFT can't be remapped).
-
-WASD are remapped to ESDF (with E<->W and F<->A) for "somegame.exe".  Change to your .exe name to use.  WASD is EVIL!
+* LEFT SHIFT types an A if input window process name contains "skies.exe" so it can be mapped in Sunless Skies (and easily changge for other unity games where SHIFT can't be remapped).
+* WASD are remapped to ESDF (with E<->W and F<->A) for "somegame.exe".  Change to your .exe name to use.  WASD is EVIL!
 
 NOTES:
 
