@@ -60,7 +60,7 @@ namespace Glue
 
                 // If handler returns non-zero it's eating a keystroke!
                 // Just return the non-zero.
-                if ((int)retval != 0)
+                if ((int) retval != 0)
                 {
                     return retval;
                 }

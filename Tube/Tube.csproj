@@ -92,6 +92,7 @@
     <Compile Include="KeyInterceptor.cs" />
     <Compile Include="Macro.cs" />
     <Compile Include="MouseButton.cs" />
+    <Compile Include="MouseHandler.cs" />
     <Compile Include="MouseInterceptor.cs" />
     <Compile Include="ActionQueue.cs" />
     <Compile Include="Native\HARDWAREINPUT.cs" />
