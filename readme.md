@@ -13,7 +13,8 @@ EXAMPLE MACROS:
 
 EXAMPLE REMAPS:
 * LEFT SHIFT types an A if input window process name contains "skies.exe" so it can be mapped in Sunless Skies (and easily change for other unity games where SHIFT can't be remapped).
-* WASD are remapped to ESDF (with E<->W and F<->A) for "somegame.exe".  Change to your .exe name to use.  WASD is EVIL!
+* WASD are remapped to ESDF (with E<->W and F<->A) for "somegame.exe". Change to your .exe name to use.  WASD is EVIL!
+* Swap V and B if typing into notepad.exe.
 
 NOTES:
 
