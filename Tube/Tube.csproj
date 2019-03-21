@@ -79,6 +79,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Action.cs" />
+    <Compile Include="ActionMouse.cs" />
     <Compile Include="ActionSound.cs" />
     <Compile Include="ActionKey.cs" />
     <Compile Include="ActionTyping.cs" />

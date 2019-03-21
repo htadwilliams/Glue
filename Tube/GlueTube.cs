@@ -276,6 +276,17 @@ namespace Glue
             trigger.AddModifier(Keys.LControlKey);
             Triggers.Add(trigger.TriggerKey, trigger);
 
+            // 
+            // Create mouse movement
+            //
+
+            macro = new Macro(20);
+            // macro.AddAction(new ActionMouse(ActionMouse.Movement.ABSOLUTE, 65535 / 2, 65535 / 2, 500));
+            macro.AddAction(new ActionMouse(ActionMouse.Movement.RELATIVE, 1, 1, 500));
+            trigger = new Trigger(Keys.Left, macro);
+            trigger.AddModifier(Keys.LMenu);
+            Triggers.Add(trigger.TriggerKey, trigger);
+
             // Sunless skies (and other Unity games) won't allow binding to shift key
             // Mapping A to Shift allows binding game functions to that instead.
             AddRemap(new KeyRemap(VirtualKeyCode.LSHIFT, VirtualKeyCode.VK_A, "skies.exe"));
