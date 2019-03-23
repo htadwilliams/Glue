@@ -21,7 +21,7 @@ namespace Glue
         public static Dictionary<String, Macro> Macros => s_macros;
 
         private const string FILENAME_DEFAULT           = "macros.json";
-        private const string PROCESS_NAME_VBSWAP        = "notepad.exe";
+        private const string PROCESS_NAME_NOTEPAD        = "notepad.exe";
         private const string PROCESS_NAME_KILLWASD      = "somegame.exe";
 
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -181,6 +181,8 @@ namespace Glue
                 // with LoadFile()
                 writer.WriteComment("Order of this file's contents must be maintained\r\n    1) Macros\r\n    2) Triggers\r\n    3) Input remapping");
 
+                // TODO Serialize lists instead of maps where possible (build maps when deserializing)
+
                 sw.Write("\r\n\r\n");
                 writer.WriteComment("Macros");
                 sw.Write("\r\n");
@@ -321,8 +323,8 @@ namespace Glue
             AddRemap(new KeyRemap(VirtualKeyCode.LSHIFT, VirtualKeyCode.VK_A, "skies.exe"));
 
             // Evil evil swap for people typing into notepad!  Easy for quick functional test.
-            AddRemap(new KeyRemap(VirtualKeyCode.VK_B, VirtualKeyCode.VK_V, PROCESS_NAME_VBSWAP));
-            AddRemap(new KeyRemap(VirtualKeyCode.VK_V, VirtualKeyCode.VK_B, PROCESS_NAME_VBSWAP));
+            AddRemap(new KeyRemap(VirtualKeyCode.VK_B, VirtualKeyCode.VK_V, PROCESS_NAME_NOTEPAD));
+            AddRemap(new KeyRemap(VirtualKeyCode.VK_V, VirtualKeyCode.VK_B, PROCESS_NAME_NOTEPAD));
 
             // KILL WASD!!!
             AddRemap(new KeyRemap(VirtualKeyCode.VK_E, VirtualKeyCode.VK_W, PROCESS_NAME_KILLWASD));
