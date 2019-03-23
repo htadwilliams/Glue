@@ -19,6 +19,9 @@ namespace Glue
                 LOGGER.Info(hookStruct.pt.x + ", " + hookStruct.pt.y);
             }
 
+            // Freeze the mouse
+            // return new IntPtr(1);
+
             return new IntPtr(0);
         }
     }
