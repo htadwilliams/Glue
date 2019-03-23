@@ -9,37 +9,44 @@ namespace Glue
     [JsonObject(MemberSerialization.OptIn)]
     class Trigger
     {
+        public Keys TriggerKey => this.triggerKey;
+
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         [JsonProperty]
         [JsonConverter(typeof(StringEnumConverter))]
         private readonly Keys triggerKey;
 
-        // TODO Triggers refer to macros by name rather than containing instances of them
         [JsonProperty]
-        private readonly Macro macro;
+        private readonly List<string> macroNames = new List<string>();
         
         [JsonProperty (ItemConverterType = typeof(StringEnumConverter))]
-        private List<Keys> modKeys = new List<Keys>();
+        private readonly List<Keys> modKeys = new List<Keys>();
 
-        public Keys TriggerKey => triggerKey;
-
-        public Trigger(Keys triggerKey, Macro macro)
+        [JsonConstructor]
+        public Trigger(Keys triggerKey, List<String> macroNames)
         {
             this.triggerKey = triggerKey;
-            this.macro = macro;
+            this.macroNames.AddRange(macroNames);
         }
 
-        public void AddModifier(Keys modKey)
+        public Trigger(Keys triggerKey, String macroName)
         {
-            modKeys.Add(modKey);
+            this.triggerKey = triggerKey;
+            this.macroNames.Add(macroName);
+        }
+
+        public Trigger AddModifier(Keys modKey)
+        {
+            this.modKeys.Add(modKey);
+            return this;
         }
 
         public bool AreModKeysActive()
         {
             bool modKeysAreActive = true;
 
-            foreach(Keys key in modKeys)
+            foreach(Keys key in this.modKeys)
             {
                 if (!Keyboard.IsKeyDown(key))
                 {
@@ -53,18 +60,18 @@ namespace Glue
 
         internal void Fire()
         {
-            String message = "TRIGGER FIRED: triggerKey=" + triggerKey;
+            String message = "TRIGGER FIRED: triggerKey=" + TriggerKey;
 
-            if (modKeys.Count > 0)
+            if (this.modKeys.Count > 0)
             {
                 message += " modKeys={";
 
                 int modCount = 0;
-                foreach (Keys key in modKeys)
+                foreach (Keys key in this.modKeys)
                 {
                     message += key;
                     modCount++;
-                    if (modCount < modKeys.Count)
+                    if (modCount < this.modKeys.Count)
                     {
                         message += ", ";
                     }
@@ -74,7 +81,10 @@ namespace Glue
 
             LOGGER.Info(message);
 
-            macro.Play();
+            foreach (String macroName in this.macroNames)
+            {
+                GlueTube.PlayMacro(macroName);
+            }
         }
     }
 }

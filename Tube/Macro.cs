@@ -6,13 +6,18 @@ namespace Glue
     class Macro
     {
         [JsonProperty]
+        private readonly string name;
+
+        [JsonProperty]
         private readonly long delayTimeMS;         // Time delay before playing first action
 
         [JsonProperty]
         private readonly List<Action> actions = new List<Action>();
 
-        public Macro(long delayTimeMS)
+        [JsonConstructor]
+        public Macro(string name, long delayTimeMS)        
         {
+            this.name = name;
             this.delayTimeMS = delayTimeMS;
         }
 
