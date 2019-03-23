@@ -18,24 +18,20 @@ namespace Glue
         public static Main MainForm { get => s_mainForm; }
         public static Dictionary<Keys, Trigger> Triggers => s_triggers;
         public static Dictionary<VirtualKeyCode, KeyRemap> KeyMap => s_keyMap;
+        public static Dictionary<String, Macro> Macros => s_macros;
 
         private const string FILENAME_DEFAULT           = "macros.json";
         private const string PROCESS_NAME_VBSWAP        = "notepad.exe";
         private const string PROCESS_NAME_KILLWASD      = "somegame.exe";
 
-        // Magic numbers for DirectX device enumeration
-        // TODO kill magic numbers for DirectX device enumeration
-        private const int ID_DX_DEVICETYPE_BEGIN = 1;
-        // private const int ID_DX_DEVICETYPE_BEGIN = 17;
-        private const int ID_DX_DEVICETYPE_END = 28;
-
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private static Main s_mainForm = null;
         private static bool s_writeOnExit = false;      // Set if loading fails, or if GUI changes contents 
 
-        // TODO App needs separate collection of macros (probably Dictionary)
         private static Dictionary<Keys, Trigger> s_triggers = new Dictionary<Keys, Trigger>();
         private static Dictionary<VirtualKeyCode, KeyRemap> s_keyMap = new Dictionary<VirtualKeyCode, KeyRemap>();
+        private static Dictionary<String, Macro> s_macros = new Dictionary<String, Macro>();
 
         /// <summary>
         /// The main entry point for the application.
@@ -86,6 +82,19 @@ namespace Glue
             }
 
             LOGGER.Info("Exiting");
+        }
+
+        internal static void PlayMacro(string macroName)
+        {
+            if (s_macros.TryGetValue(macroName, out Macro macro))
+            {
+                LOGGER.Debug("Playing macro [" + macroName + "]");
+                macro.Play();
+            }
+            else
+            {
+                LOGGER.Warn("Macro not found: " + macroName);
+            }
         }
 
         private static void InitForm()
@@ -170,9 +179,14 @@ namespace Glue
 
                 // Order of writes and reads to this file must be kept in sync
                 // with LoadFile()
-                writer.WriteComment("Order of this file's contents must be maintained\r\n    1) Triggers\r\n    2) Input remapping");
-                sw.Write("\r\n\r\n");
+                writer.WriteComment("Order of this file's contents must be maintained\r\n    1) Macros\r\n    2) Triggers\r\n    3) Input remapping");
 
+                sw.Write("\r\n\r\n");
+                writer.WriteComment("Macros");
+                sw.Write("\r\n");
+                serializer.Serialize(writer, s_macros);
+
+                sw.Write("\r\n\r\n");
                 writer.WriteComment("Triggers");
                 sw.Write("\r\n");
                 serializer.Serialize(writer, s_triggers);
@@ -202,6 +216,9 @@ namespace Glue
                         reader.SupportMultipleContent = true;
 
                         reader.Read();
+                        s_macros = serializer.Deserialize<Dictionary<String, Macro>>(reader);
+
+                        reader.Read();
                         s_triggers = serializer.Deserialize<Dictionary<Keys, Trigger>>(reader);
 
                         reader.Read();
@@ -219,6 +236,11 @@ namespace Glue
             }
 
             s_writeOnExit = false;
+
+            if (null != s_macros && s_macros.Count != 0)
+            {
+                LOGGER.Info(String.Format("    Loaded {0} macros", s_macros.Count));
+            }
             if (null != s_triggers && s_triggers.Count != 0)
             {
                 LOGGER.Info(String.Format("    Loaded {0} triggers", s_triggers.Count));
@@ -239,7 +261,8 @@ namespace Glue
             //
             // Create macro with several actions bound to CTRL-Z
             //
-            Macro macro = new Macro(10) // Fire 10ms after triggered
+            String macroName = "delayed-action";
+            Macro macro = new Macro(macroName, 10) // Fire 10ms after triggered
                 .AddAction(new ActionKey(VirtualKeyCode.VK_R, ActionKey.Movement.PRESS, 10))
                 .AddAction(new ActionKey(VirtualKeyCode.VK_R, ActionKey.Movement.RELEASE, 10))
 
@@ -249,31 +272,48 @@ namespace Glue
                 .AddAction(new ActionKey(VirtualKeyCode.VK_Q, ActionKey.Movement.PRESS, 4020))
                 .AddAction(new ActionKey(VirtualKeyCode.VK_Q, ActionKey.Movement.RELEASE, 4030))
                 ;
+            s_macros.Add(macroName, macro);
             // Setup trigger
-            Trigger trigger = new Trigger(Keys.Z, macro);
+            Trigger trigger = new Trigger(Keys.Z, macroName);
             trigger.AddModifier(Keys.LControlKey);
             Triggers.Add(trigger.TriggerKey, trigger);
 
             //
             // Create and bind a typing macro (string of text) bound to CTRL-C
             // 
-            macro = new Macro(2000);
+            macroName = "typing-stuff";
+            macro = new Macro(macroName, 2000);
             macro.AddAction(
                 new ActionTyping(
                     "Lorem ipsum dolor sit amet, tincidunt eget elit vivamus consequat, mi ac urna.",
                     10,     // delay MS
                     10));   // dwell time MS
-            trigger = new Trigger(Keys.C, macro);
+            s_macros.Add(macroName, macro);
+            trigger = new Trigger(Keys.C, macroName);
             trigger.AddModifier(Keys.LControlKey);
             Triggers.Add(trigger.TriggerKey, trigger);
 
             //
             // Create and bind a sound macro
             //
-            macro = new Macro(0);
+            macroName = "sound";
+            macro = new Macro(macroName, 0);
             macro.AddAction(new ActionSound("sound_servomotor.wav"));
-            trigger = new Trigger(Keys.S, macro);
+            s_macros.Add(macroName, macro);
+            trigger = new Trigger(Keys.S, macroName);
             trigger.AddModifier(Keys.LControlKey);
+            Triggers.Add(trigger.TriggerKey, trigger);
+
+            // 
+            // Create mouse movement
+            //
+            macroName = "mouse-nudge";
+            macro = new Macro(macroName, 20);
+            // macro.AddAction(new ActionMouse(ActionMouse.Movement.ABSOLUTE, 65535 / 2, 65535 / 2, 500));
+            macro.AddAction(new ActionMouse(ActionMouse.Movement.RELATIVE, 1, 1, 500));
+            s_macros.Add(macroName, macro);
+            trigger = new Trigger(Keys.Left, macroName);
+            trigger.AddModifier(Keys.LMenu);
             Triggers.Add(trigger.TriggerKey, trigger);
 
             // Sunless skies (and other Unity games) won't allow binding to shift key

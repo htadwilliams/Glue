@@ -38,6 +38,9 @@ namespace Glue
                     return JsonConvert.DeserializeObject<ActionTyping>(jo.ToString(), SpecifiedSubclassConversion);
                 case "SOUND":
                     return JsonConvert.DeserializeObject<ActionSound>(jo.ToString(), SpecifiedSubclassConversion);
+                case "MOUSE":
+                    return JsonConvert.DeserializeObject<ActionMouse>(jo.ToString(), SpecifiedSubclassConversion);
+
                 default:
                     throw new Exception();
             }
