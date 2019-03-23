@@ -56,6 +56,8 @@ namespace Glue
             return CallNextHookEx(s_hookID, nCode, wParam, lParam);
         }
 
+        #region Win API Functions and Constants
+
         private const int WH_MOUSE_LL = 14;
 
         public enum MouseMessages
@@ -99,5 +101,7 @@ namespace Glue
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern IntPtr GetModuleHandle(string lpModuleName);
+
+        #endregion
     }
 }
