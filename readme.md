@@ -24,11 +24,6 @@ DirectX is used to enumerate input devices on startup.
 
 Could be improved by hooking the action queue to a thread pool so that macro events can be processed asynchronously.  Right now macro events must not block and do things like press keys, play sounds, or eat key events (for remapping).
 
-Next steps include:
-
-* Move to Trello or something for feature tracking and move all those damn TODO comments there.
-* Separate macros from triggers (more than one trigger should be able to fire the same macro without duplicating the macro).
-
 Feature TODO list:
 
 * Add queue display window for fun and debugging (shows keyboard state, and representation of events queued for future work).
