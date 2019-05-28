@@ -80,10 +80,16 @@ namespace Glue
                     }
                 }
 
-                LogKeyDown(vkCode);
+                if (!KeyWasFromGlue(kbd.dwExtraInfo))
+                {
+                    if (GlueTube.CheckAndFireTriggers(vkCode, ActionKey.Movement.PRESS))
+                    {
+                        // Eat keystroke if trigger tells us to do so
+                        return new IntPtr(1);
+                    }
+                }
 
-                // TODO support for triggers on key up
-                CheckAndFireTriggers(vkCode);
+                LogKeyDown(vkCode);
             }
 
             if (wParam == (IntPtr) KeyInterceptor.WM_KEYUP || wParam == (IntPtr) KeyInterceptor.WM_SYSKEYUP)
@@ -95,6 +101,15 @@ namespace Glue
                     if ((int) keyRemapped != vkCode)
                     {
                         // Eat keystroke
+                        return new IntPtr(1);
+                    }
+                }
+
+                if (!KeyWasFromGlue(kbd.dwExtraInfo))
+                {
+                    if (GlueTube.CheckAndFireTriggers(vkCode, ActionKey.Movement.RELEASE))
+                    {
+                        // Eat keystroke if trigger tells us to do so
                         return new IntPtr(1);
                     }
                 }
@@ -155,6 +170,7 @@ namespace Glue
                         + "] focus window = [" + inputFocusProcessName 
                         + "] remap process = [" + remap.ProcessName + "]");
 
+                    // TODO process name filtering should be regex not .Contains()
                     if (!inputFocusProcessName
                         .ToLower()
                         .Contains(remap.ProcessName.ToLower())
@@ -164,6 +180,7 @@ namespace Glue
                     }
                 }
 
+                LOGGER.Debug("REMAPPED: " + inputKey + " -> " + remap.KeyNew);
                 ActionKey actionKey = new ActionKey(remap.KeyNew, movement, ActionQueue.Now());
                 actionKey.Play();
 
@@ -171,18 +188,6 @@ namespace Glue
             }
 
             return inputKey;
-        }
-
-        private static void CheckAndFireTriggers(int vkCode)
-        {
-            // Triggers fire macros (and other things)
-            if (GlueTube.Triggers != null && GlueTube.Triggers.TryGetValue((Keys) vkCode, out Trigger trigger))
-            {
-                if (trigger.AreModKeysActive())
-                {
-                    trigger.Fire();
-                }
-            }
         }
 
         private static string FormatKeyString(int vkCode)
