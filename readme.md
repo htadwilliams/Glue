@@ -10,6 +10,7 @@ EXAMPLE MACROS:
 * Ctrl-C (making sure input focus is not set to console window or application will exit) will type a string of characters immediately with short delay between presses and releases.
 * Ctrl-Z will immediately type an R followed by a Q and ENTER after a delay of ~4 seconds. This is useful for demonstrating asynchronous scheduling of output events.
 * Ctrl-S plays a sound asynchronously. If the sound is already playing it will be restarted. 
+* Space is a toggle and will be held down with every other press.  This won't show in things like Notepad as the held key won't trigger Windows key repeats, but works very well in games.
 
 EXAMPLE REMAPS:
 * LEFT SHIFT types an A if input window process name contains "skies.exe" so it can be mapped in Sunless Skies (and easily change for other unity games where SHIFT can't be remapped).
@@ -27,7 +28,7 @@ Could be improved by hooking the action queue to a thread pool so that macro eve
 Feature TODO list:
 
 * Add queue display window for fun and debugging (shows keyboard state, and representation of events queued for future work).
-* Toggle keys (single key toggles and multi-key exclusive toggles similar to radio buttons on a form).
+* Exclusive toggle keys (last key pressed is held and all others released).
 * Macro looping start/stop events.
 * Game device button triggers, macro events, and button remapping.
 * Remote control - trigger events via network client (most likely REST interface).
@@ -35,4 +36,4 @@ Feature TODO list:
 BONUS: 
 * GUI for recording / editing macros.
 * GUI for remapping keys / buttons.
-* Keyboard / button map diagram output.
+* Keyboard / button map diagram output showing remapped items.
