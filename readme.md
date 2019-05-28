@@ -1,6 +1,6 @@
 Glue
 
-WARNING: This globally hooks keyboard and logs to file. Don't run in DEBUG mode if you don't want your keys logged!
+WARNING: This globally hooks keyboard and logs to file if DEBUG mode is enabled. Don't run in DEBUG mode if you don't want your keys logged!
 
 An input remapping and macroing tool.  Originally written in C++, this a rewrite in C# including low-level keyboard and mouse hooks (with lots of native windows API calls).
 
