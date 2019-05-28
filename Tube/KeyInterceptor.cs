@@ -16,7 +16,7 @@ namespace Glue
     {
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private static LowLevelKeyboardProc s_proc = HookCallback;
+        private static readonly LowLevelKeyboardProc s_proc = HookCallback;
         private static LowLevelKeyboardProc s_handler = null;
         private static IntPtr s_hookID = IntPtr.Zero;
 
@@ -68,13 +68,11 @@ namespace Glue
 
             // MSDN: If nCode is less than zero, the hook procedure must return 
             // the value returned by CallNextHookEx. 
-            
-            // If delegate returned a 0 then it doesn't care, and we need to 
-            // call the next hook proc.
             return CallNextHookEx(s_hookID, nCode, wParam, lParam);
         }
 
         #region Win API Functions and Constants
+
         [StructLayout(LayoutKind.Sequential)]
         public class KBDLLHOOKSTRUCT
         {
@@ -94,7 +92,6 @@ namespace Glue
             LLKHF_UP = 0x80,
         }
 
-        // TODO move windows message constants to enum - preferably one someone else wrote
         public const int WH_KEYBOARD_LL    = 13;
 
         public const int WM_KEYDOWN        = 0x0100;

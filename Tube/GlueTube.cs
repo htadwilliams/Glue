@@ -8,6 +8,7 @@ using log4net.Config;
 using Newtonsoft.Json;
 using SharpDX.DirectInput;
 using WindowsInput.Native;
+using static Glue.Trigger;
 
 [assembly: log4net.Config.XmlConfigurator(Watch = true)]
 
@@ -15,16 +16,19 @@ namespace Glue
 {
     static class GlueTube
     {
-        public static Main MainForm { get => s_mainForm; }
+        public static Main MainForm => s_mainForm;
         public static Dictionary<Keys, Trigger> Triggers => s_triggers;
         public static Dictionary<VirtualKeyCode, KeyRemap> KeyMap => s_keyMap;
         public static Dictionary<String, Macro> Macros => s_macros;
 
-        private const string FILENAME_DEFAULT           = "macros.json";
-        private const string PROCESS_NAME_NOTEPAD        = "notepad.exe";
-        private const string PROCESS_NAME_KILLWASD      = "somegame.exe";
-
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        private const string FILENAME_DEFAULT               = "macros.json";
+        private const string PROCESS_NAME_NOTEPAD           = "notepad";    // also matches Notepad++
+
+//         private const string WASD_PROCESS_NAME = "Fallout4.exe";
+//         private const string WASD_PROCESS_NAME = "Program Files (x86)\\Notepad++";
+        private const string WASD_PROCESS_NAME      = "notepad.exe"; // doesn't match Notepad++
 
         private static Main s_mainForm = null;
         private static bool s_writeOnExit = false;      // Set if loading fails, or if GUI changes contents 
@@ -39,8 +43,8 @@ namespace Glue
         [STAThread]
         static void Main(string[] args)
         {
-            String fileName = args.Length > 0 
-                ? args[0] 
+            String fileName = args.Length > 0
+                ? args[0]
                 : FILENAME_DEFAULT;
 
             if (Thread.CurrentThread.Name == null)
@@ -116,7 +120,7 @@ namespace Glue
             {
                 DirectInput directInput = new DirectInput();
 
-                foreach(DeviceType deviceType in Enum.GetValues(typeof(DeviceType)))
+                foreach (DeviceType deviceType in Enum.GetValues(typeof(DeviceType)))
                 {
                     IList<DeviceInstance> deviceInstances = directInput.GetDevices(deviceType, DeviceEnumerationFlags.AllDevices);
                     if (deviceInstances.Count > 0)
@@ -134,7 +138,7 @@ namespace Glue
                     }
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 LOGGER.Error("Error enumerating DirectX devices: ", e);
             }
@@ -179,22 +183,30 @@ namespace Glue
 
                 // Order of writes and reads to this file must be kept in sync
                 // with LoadFile()
-                writer.WriteComment("Order of this file's contents must be maintained\r\n    1) Macros\r\n    2) Triggers\r\n    3) Input remapping");
+                writer.WriteComment(
+                    "\r\nOrder of this file's contents must be maintained\r\n" + 
+                    "    1) Macros\r\n" + 
+                    "    2) Triggers\r\n" + 
+                    "    3) Remapping\r\n");
 
                 // TODO Serialize lists instead of maps where possible (build maps when deserializing)
-
                 sw.Write("\r\n\r\n");
-                writer.WriteComment("Macros");
+                writer.WriteComment("\r\nMacros\r\n");
                 sw.Write("\r\n");
                 serializer.Serialize(writer, s_macros);
 
                 sw.Write("\r\n\r\n");
-                writer.WriteComment("Triggers");
+                writer.WriteComment("\r\nTriggers\r\n");
                 sw.Write("\r\n");
                 serializer.Serialize(writer, s_triggers);
 
                 sw.Write("\r\n\r\n");
-                writer.WriteComment("Input remapping");
+                writer.WriteComment(
+                    "\r\nInput remapping\r\n\r\n" + 
+                    "Partial process name matches are accepted - TODO added for regex support.\r\n\r\n" + 
+                    "Process names must not include drive letters and backslash must be escaped e.g.\r\n" + 
+                    "    \"C:\\Windows\\System32\\Notepad.exe\" -> \"\\\\Windows\\\\System32\\\\Notepad\"\r\n"
+                );
                 sw.Write("\r\n");
                 serializer.Serialize(writer, s_keyMap);
             }
@@ -285,9 +297,12 @@ namespace Glue
             // 
             macroName = "typing-stuff";
             macro = new Macro(macroName, 2000);
+            
             macro.AddAction(
                 new ActionTyping(
-                    "Lorem ipsum dolor sit amet, tincidunt eget elit vivamus consequat, mi ac urna.",
+                    // Thinking of Maud you forget everything else
+                    // Latin for Maud is actually Matillis but nobody would ever figure it out
+                    "Lorem ipsum dollar sit amet, Cogito Maud obliviscaris aliorum.",
                     10,     // delay MS
                     10));   // dwell time MS
             s_macros.Add(macroName, macro);
@@ -296,15 +311,53 @@ namespace Glue
             Triggers.Add(trigger.TriggerKey, trigger);
 
             //
-            // Create and bind a sound macro
+            // Create and bind a sound macro that alternates sounds
             //
-            macroName = "sound";
+            macroName = "sound-servomotor";
             macro = new Macro(macroName, 0);
             macro.AddAction(new ActionSound("sound_servomotor.wav"));
             s_macros.Add(macroName, macro);
-            trigger = new Trigger(Keys.S, macroName);
+
+            macroName = "sound-ahha";
+            macro = new Macro(macroName, 0);
+            macro.AddAction(new ActionSound("ahha.wav"));
+            s_macros.Add(macroName, macro);
+
+            trigger = new Trigger(Keys.S, new List<String> { "sound-servomotor", "sound-ahha" });
             trigger.AddModifier(Keys.LControlKey);
             Triggers.Add(trigger.TriggerKey, trigger);
+
+            //
+            // Macro bound to mouse button X1 / X2
+            //
+            macroName = "XF10";
+            macro = new Macro(macroName, 0);
+            macro.AddAction(new ActionKey(VirtualKeyCode.LCONTROL, ActionKey.Movement.PRESS, 0));
+            macro.AddAction(new ActionKey(VirtualKeyCode.LCONTROL, ActionKey.Movement.RELEASE, 100));
+            s_macros.Add(macroName, macro);
+
+            // Same macro bound to two triggers            
+            trigger = new Trigger(Keys.XButton1, macroName);
+            Triggers.Add(trigger.TriggerKey, trigger);
+            trigger = new Trigger(Keys.XButton2, macroName);
+            Triggers.Add(trigger.TriggerKey, trigger);
+
+            // 
+            // Toggle - hold G key every other time it's pressed 
+            // BUGBUG Toggle won't work unless key repeat problem is solved
+            //
+            //macroName = "toggle-down";
+            //macro = new Macro(macroName, 0);
+            //macro.AddAction(new ActionKey(VirtualKeyCode.VK_G, ActionKey.Movement.PRESS, 0));
+            //s_macros.Add(macroName, macro);
+
+            //macroName = "toggle-up";
+            //macro = new Macro(macroName, 0);
+            //macro.AddAction(new ActionKey(VirtualKeyCode.VK_G, ActionKey.Movement.RELEASE, 0));
+            //s_macros.Add(macroName, macro);
+
+            //trigger = new Trigger(Keys.G, new List<string> {"toggle-down", "toggle-up"}, true);
+            //Triggers.Add(trigger.TriggerKey, trigger);
 
             // 
             // Create mouse movement
@@ -320,21 +373,67 @@ namespace Glue
 
             // Sunless skies (and other Unity games) won't allow binding to shift key
             // Mapping A to Shift allows binding game functions to that instead.
-            AddRemap(new KeyRemap(VirtualKeyCode.LSHIFT, VirtualKeyCode.VK_A, "skies.exe"));
+            // AddRemap(new KeyRemap(VirtualKeyCode.LSHIFT, VirtualKeyCode.VK_A, "skies.exe"));
 
             // Evil evil swap for people typing into notepad!  Easy for quick functional test.
             AddRemap(new KeyRemap(VirtualKeyCode.VK_B, VirtualKeyCode.VK_V, PROCESS_NAME_NOTEPAD));
             AddRemap(new KeyRemap(VirtualKeyCode.VK_V, VirtualKeyCode.VK_B, PROCESS_NAME_NOTEPAD));
 
-            // KILL WASD!!!
-            AddRemap(new KeyRemap(VirtualKeyCode.VK_E, VirtualKeyCode.VK_W, PROCESS_NAME_KILLWASD));
-            AddRemap(new KeyRemap(VirtualKeyCode.VK_S, VirtualKeyCode.VK_A, PROCESS_NAME_KILLWASD));
-            AddRemap(new KeyRemap(VirtualKeyCode.VK_D, VirtualKeyCode.VK_S, PROCESS_NAME_KILLWASD));
-            AddRemap(new KeyRemap(VirtualKeyCode.VK_F, VirtualKeyCode.VK_D, PROCESS_NAME_KILLWASD));
+            // KILL WASD
+            // 
+            // Remap movement block from this:
+            // 
+            // QWErtyuiop
+            // ASDfghjkl;
+            // 
+            // to this:
+            //
+            // rQWEtyuiop
+            // fASDghjkl;
 
-            // Slide keys over to make room for killing WASD
-            AddRemap(new KeyRemap(VirtualKeyCode.VK_W, VirtualKeyCode.VK_E, PROCESS_NAME_KILLWASD));
-            AddRemap(new KeyRemap(VirtualKeyCode.VK_A, VirtualKeyCode.VK_F, PROCESS_NAME_KILLWASD));
+            // WASD block will slide to right so this displaces R and F to make room
+            AddRemap(new KeyRemap(VirtualKeyCode.VK_Q, VirtualKeyCode.VK_R, WASD_PROCESS_NAME));
+            AddRemap(new KeyRemap(VirtualKeyCode.VK_A, VirtualKeyCode.VK_F, WASD_PROCESS_NAME));
+
+            // Remap WASD movement block to ESDF (plus rotation keys)
+            AddRemap(new KeyRemap(VirtualKeyCode.VK_W, VirtualKeyCode.VK_Q, WASD_PROCESS_NAME));
+            AddRemap(new KeyRemap(VirtualKeyCode.VK_E, VirtualKeyCode.VK_W, WASD_PROCESS_NAME));
+            AddRemap(new KeyRemap(VirtualKeyCode.VK_R, VirtualKeyCode.VK_E, WASD_PROCESS_NAME));
+            AddRemap(new KeyRemap(VirtualKeyCode.VK_S, VirtualKeyCode.VK_A, WASD_PROCESS_NAME));
+            AddRemap(new KeyRemap(VirtualKeyCode.VK_D, VirtualKeyCode.VK_S, WASD_PROCESS_NAME));
+            AddRemap(new KeyRemap(VirtualKeyCode.VK_F, VirtualKeyCode.VK_D, WASD_PROCESS_NAME));
+        }
+
+        public static bool CheckAndFireTriggers(int vkCode, ActionKey.Movement movement)
+        {
+            bool eatInput = false;
+
+            // Triggers fire macros (and other things)
+            if (GlueTube.Triggers != null && GlueTube.Triggers.TryGetValue((Keys) vkCode, out Trigger trigger))
+            {
+                switch (trigger.Type)
+                {
+                    //case TriggerType.Both:
+                    //    eatInput = trigger.Fire();
+                    //break;
+
+                    case TriggerType.Down:
+                    if (ActionKey.Movement.PRESS == movement)
+                    {
+                        eatInput = trigger.Fire();
+                    }
+                    break;
+
+                    case TriggerType.Up:
+                    if (ActionKey.Movement.RELEASE == movement)
+                    {
+                        eatInput = trigger.Fire();
+                    }
+                    break;
+                }
+            }
+
+            return eatInput;
         }
     }
 }

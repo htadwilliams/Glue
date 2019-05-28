@@ -22,6 +22,7 @@ namespace Glue
         [JsonProperty]
         private readonly string processName;
 
+        [JsonConstructor]
         public KeyRemap(VirtualKeyCode keyOld, VirtualKeyCode keyNew, string procName)
         {
             this.keyOld=keyOld;
