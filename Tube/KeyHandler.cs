@@ -69,6 +69,7 @@ namespace Glue
                 if (!KeyWasFromGlue(kbd.dwExtraInfo))
                 {
                     VirtualKeyCode keyRemapped = DoRemap((VirtualKeyCode) vkCode, ActionKey.Movement.PRESS);
+
                     if ((int) keyRemapped != vkCode)
                     {
                         // Eat keystroke
@@ -78,10 +79,7 @@ namespace Glue
                         // procedure.
                         return new IntPtr(1);
                     }
-                }
 
-                if (!KeyWasFromGlue(kbd.dwExtraInfo))
-                {
                     if (GlueTube.CheckAndFireTriggers(vkCode, ActionKey.Movement.PRESS))
                     {
                         // Eat keystroke if trigger tells us to do so
@@ -94,19 +92,16 @@ namespace Glue
 
             if (wParam == (IntPtr) KeyInterceptor.WM_KEYUP || wParam == (IntPtr) KeyInterceptor.WM_SYSKEYUP)
             {
-                // if (!kbd.flags.HasFlag(KBDLLHOOKSTRUCTFlags.LLKHF_INJECTED))
                 if (!KeyWasFromGlue(kbd.dwExtraInfo))
                 {
                     VirtualKeyCode keyRemapped = DoRemap((VirtualKeyCode) vkCode, ActionKey.Movement.RELEASE);
+
                     if ((int) keyRemapped != vkCode)
                     {
                         // Eat keystroke
                         return new IntPtr(1);
                     }
-                }
 
-                if (!KeyWasFromGlue(kbd.dwExtraInfo))
-                {
                     if (GlueTube.CheckAndFireTriggers(vkCode, ActionKey.Movement.RELEASE))
                     {
                         // Eat keystroke if trigger tells us to do so
@@ -129,7 +124,12 @@ namespace Glue
         {
             if (GlueTube.MainForm.LogInput)
             {
-                LOGGER.Debug("- " + (VirtualKeyCode) vkCode);
+                LOGGER.Debug("-" + (VirtualKeyCode) vkCode);
+
+                if (GlueTube.MainForm.RawKeyNames)
+                {
+                    GlueTube.MainForm.AppendText("-" + (VirtualKeyCode) vkCode + " ");
+                }
             }
         }
 
@@ -137,12 +137,12 @@ namespace Glue
         {
             if (GlueTube.MainForm.LogInput)
             {
-                LOGGER.Debug("+ " + (VirtualKeyCode) vkCode);
+                LOGGER.Debug("+" + (VirtualKeyCode) vkCode);
 
                 String output;
                 if (GlueTube.MainForm.RawKeyNames)
                 {
-                    output = ((VirtualKeyCode) vkCode).ToString() + " ";
+                    output = "+" + (VirtualKeyCode) vkCode + " ";
                 }
                 else
                 {
