@@ -2,7 +2,7 @@ Glue
 
 WARNING: This globally hooks keyboard and logs to file if DEBUG mode is enabled. Don't run in DEBUG mode if you don't want your keys logged!
 
-An input remapping and macroing tool.  Originally written in C++, this a rewrite in C# including low-level keyboard and mouse hooks (with lots of native windows API calls).
+An input remapping and macroing tool for Windows.  Originally written in C++ and used to play EverQuest for over 10 years, this a rewrite in C# including low-level keyboard and mouse hooks (with lots of native windows API calls).
 
 The application by default attempts to read MACROS.JSON from its working directory. The file name / path may be optionally specified as a command-line parameter.  If this file isn't found or a command-line isn't specified, one will be created with default mappings and macros. 
 
