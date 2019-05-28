@@ -9,11 +9,12 @@ namespace Glue
     {
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        // Using https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp copied directly into the project for now 
+        // Using https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp copied directly into the project 
         // Thanks to BlueRaja.admin@gmail.com
         private static SimplePriorityQueue<Action, long> actions = new SimplePriorityQueue<Action, long>();
+
         private static Thread thread = null;
-        private static EventWaitHandle eventWait = new AutoResetEvent (false);
+        private static EventWaitHandle eventWaitNextAction = new AutoResetEvent (false);
 
         public static void Start()
         {
@@ -23,6 +24,8 @@ namespace Glue
                 {
                     Name = "ActionQueue"
                 };
+                // set or app won't exit when main thread closes (e.g. form is closed)
+                thread.IsBackground = true;
                 thread.Start();
             }
         }
@@ -30,7 +33,7 @@ namespace Glue
         public static void Enqueue(Action action, long timeScheduledMS)
         {
             actions.Enqueue(action, timeScheduledMS);
-            eventWait.Set();
+            eventWaitNextAction.Set();
         }
 
         public static long Now()
@@ -43,7 +46,7 @@ namespace Glue
             return (long) GetTickCount64();
         }
 
-        private static int GetWaitUntilNextAction()
+        private static int GetMSUntilNextAction()
         {
             if (actions.Count != 0)
             {
@@ -77,9 +80,9 @@ namespace Glue
                     actions.Dequeue();
                 }
 
-                // Wait until next event is ready to fire, 
+                // Wait until next event is ready to fire 
                 // or events are added to the queue
-                eventWait.WaitOne(GetWaitUntilNextAction());
+                eventWaitNextAction.WaitOne(GetMSUntilNextAction());
             }
         }
 
