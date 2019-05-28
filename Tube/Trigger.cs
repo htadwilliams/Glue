@@ -135,7 +135,11 @@ namespace Glue
                 indexMacroCurrent = 0;
             }
 
-            GlueTube.PlayMacro(macroNames[this.indexMacroCurrent]);
+            // null macro names are allowed in list for no-op
+            if (null != macroNames[this.indexMacroCurrent])
+            {
+                GlueTube.PlayMacro(macroNames[this.indexMacroCurrent]);
+            }
             this.indexMacroCurrent++;
 
             return this.eatInput;
