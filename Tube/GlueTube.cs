@@ -8,6 +8,7 @@ using log4net.Config;
 using Newtonsoft.Json;
 using SharpDX.DirectInput;
 using WindowsInput.Native;
+using static Glue.ActionKey;
 using static Glue.Trigger;
 
 [assembly: log4net.Config.XmlConfigurator(Watch = true)]
@@ -24,11 +25,8 @@ namespace Glue
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private const string FILENAME_DEFAULT               = "macros.json";
-        private const string PROCESS_NAME_NOTEPAD           = "notepad";    // also matches Notepad++
-
-//         private const string WASD_PROCESS_NAME = "Fallout4.exe";
-//         private const string WASD_PROCESS_NAME = "Program Files (x86)\\Notepad++";
-        private const string WASD_PROCESS_NAME      = "notepad.exe"; // doesn't match Notepad++
+        private const string PROCESS_NAME_NOTEPAD           = "notepad";      // also matches Notepad++
+        private const string PROCESS_NAME_WASD              = "fallout4.exe"; 
 
         private static Main s_mainForm = null;
         private static bool s_writeOnExit = false;      // Set if loading fails, or if GUI changes contents 
@@ -162,9 +160,9 @@ namespace Glue
             LOGGER.Info("Startup!");
         }
 
-        private static void AddRemap(KeyRemap keyRemap)
+        private static void AddRemap(VirtualKeyCode keyOld, VirtualKeyCode keyNew, string procName)
         {
-            GlueTube.KeyMap.Add(keyRemap.KeyOld, keyRemap);
+            GlueTube.KeyMap.Add(keyOld, new KeyRemap(keyOld, keyNew, procName));
         }
 
         private static void SaveFile(String fileName)
@@ -277,14 +275,14 @@ namespace Glue
             //
             String macroName = "delayed-action";
             Macro macro = new Macro(macroName, 10) // Fire 10ms after triggered
-                .AddAction(new ActionKey(VirtualKeyCode.VK_R, ActionKey.Movement.PRESS, 10))
-                .AddAction(new ActionKey(VirtualKeyCode.VK_R, ActionKey.Movement.RELEASE, 10))
+                .AddAction(new ActionKey(VirtualKeyCode.VK_R, Movement.PRESS, 10))
+                .AddAction(new ActionKey(VirtualKeyCode.VK_R, Movement.RELEASE, 10))
 
-                .AddAction(new ActionKey(VirtualKeyCode.RETURN, ActionKey.Movement.PRESS, 4000))
-                .AddAction(new ActionKey(VirtualKeyCode.RETURN, ActionKey.Movement.RELEASE, 4010))
+                .AddAction(new ActionKey(VirtualKeyCode.RETURN, Movement.PRESS, 4000))
+                .AddAction(new ActionKey(VirtualKeyCode.RETURN, Movement.RELEASE, 4010))
 
-                .AddAction(new ActionKey(VirtualKeyCode.VK_Q, ActionKey.Movement.PRESS, 4020))
-                .AddAction(new ActionKey(VirtualKeyCode.VK_Q, ActionKey.Movement.RELEASE, 4030))
+                .AddAction(new ActionKey(VirtualKeyCode.VK_Q, Movement.PRESS, 4020))
+                .AddAction(new ActionKey(VirtualKeyCode.VK_Q, Movement.RELEASE, 4030))
                 ;
             s_macros.Add(macroName, macro);
             // Setup trigger
@@ -332,8 +330,8 @@ namespace Glue
             //
             macroName = "XF10";
             macro = new Macro(macroName, 0);
-            macro.AddAction(new ActionKey(VirtualKeyCode.LCONTROL, ActionKey.Movement.PRESS, 0));
-            macro.AddAction(new ActionKey(VirtualKeyCode.LCONTROL, ActionKey.Movement.RELEASE, 100));
+            macro.AddAction(new ActionKey(VirtualKeyCode.LCONTROL, Movement.PRESS, 0));
+            macro.AddAction(new ActionKey(VirtualKeyCode.LCONTROL, Movement.RELEASE, 100));
             s_macros.Add(macroName, macro);
 
             // Same macro bound to two triggers            
@@ -343,21 +341,20 @@ namespace Glue
             Triggers.Add(trigger.TriggerKey, trigger);
 
             // 
-            // Toggle - hold G key every other time it's pressed 
-            // BUGBUG Toggle won't work unless key repeat problem is solved
+            // Toggle - hold SPACE key every other time it is pressed 
             //
-            //macroName = "toggle-down";
-            //macro = new Macro(macroName, 0);
-            //macro.AddAction(new ActionKey(VirtualKeyCode.VK_G, ActionKey.Movement.PRESS, 0));
-            //s_macros.Add(macroName, macro);
+            macroName = "toggle-down";
+            macro = new Macro(macroName, 0);
+            macro.AddAction(new ActionKey(VirtualKeyCode.SPACE, Movement.PRESS, 0));
+            s_macros.Add(macroName, macro);
 
-            //macroName = "toggle-up";
-            //macro = new Macro(macroName, 0);
-            //macro.AddAction(new ActionKey(VirtualKeyCode.VK_G, ActionKey.Movement.RELEASE, 0));
-            //s_macros.Add(macroName, macro);
+            macroName = "toggle-up";
+            macro = new Macro(macroName, 0);
+            macro.AddAction(new ActionKey(VirtualKeyCode.SPACE, Movement.RELEASE, 0));
+            s_macros.Add(macroName, macro);
 
-            //trigger = new Trigger(Keys.G, new List<string> {"toggle-down", "toggle-up"}, true);
-            //Triggers.Add(trigger.TriggerKey, trigger);
+            trigger = new Trigger(Keys.Space, new List<string> {"toggle-down", null, "toggle-up", null}, TriggerType.Both, true);
+            Triggers.Add(trigger.TriggerKey, trigger);
 
             // 
             // Create mouse movement
@@ -376,8 +373,8 @@ namespace Glue
             // AddRemap(new KeyRemap(VirtualKeyCode.LSHIFT, VirtualKeyCode.VK_A, "skies.exe"));
 
             // Evil evil swap for people typing into notepad!  Easy for quick functional test.
-            AddRemap(new KeyRemap(VirtualKeyCode.VK_B, VirtualKeyCode.VK_V, PROCESS_NAME_NOTEPAD));
-            AddRemap(new KeyRemap(VirtualKeyCode.VK_V, VirtualKeyCode.VK_B, PROCESS_NAME_NOTEPAD));
+            AddRemap(VirtualKeyCode.VK_B, VirtualKeyCode.VK_V, PROCESS_NAME_NOTEPAD);
+            AddRemap(VirtualKeyCode.VK_V, VirtualKeyCode.VK_B, PROCESS_NAME_NOTEPAD);
 
             // KILL WASD
             // 
@@ -392,19 +389,19 @@ namespace Glue
             // fASDghjkl;
 
             // WASD block will slide to right so this displaces R and F to make room
-            AddRemap(new KeyRemap(VirtualKeyCode.VK_Q, VirtualKeyCode.VK_R, WASD_PROCESS_NAME));
-            AddRemap(new KeyRemap(VirtualKeyCode.VK_A, VirtualKeyCode.VK_F, WASD_PROCESS_NAME));
+            AddRemap(VirtualKeyCode.VK_Q, VirtualKeyCode.VK_R, PROCESS_NAME_WASD);
+            AddRemap(VirtualKeyCode.VK_A, VirtualKeyCode.VK_F, PROCESS_NAME_WASD);
 
             // Remap WASD movement block to ESDF (plus rotation keys)
-            AddRemap(new KeyRemap(VirtualKeyCode.VK_W, VirtualKeyCode.VK_Q, WASD_PROCESS_NAME));
-            AddRemap(new KeyRemap(VirtualKeyCode.VK_E, VirtualKeyCode.VK_W, WASD_PROCESS_NAME));
-            AddRemap(new KeyRemap(VirtualKeyCode.VK_R, VirtualKeyCode.VK_E, WASD_PROCESS_NAME));
-            AddRemap(new KeyRemap(VirtualKeyCode.VK_S, VirtualKeyCode.VK_A, WASD_PROCESS_NAME));
-            AddRemap(new KeyRemap(VirtualKeyCode.VK_D, VirtualKeyCode.VK_S, WASD_PROCESS_NAME));
-            AddRemap(new KeyRemap(VirtualKeyCode.VK_F, VirtualKeyCode.VK_D, WASD_PROCESS_NAME));
+            AddRemap(VirtualKeyCode.VK_W, VirtualKeyCode.VK_Q, PROCESS_NAME_WASD);
+            AddRemap(VirtualKeyCode.VK_E, VirtualKeyCode.VK_W, PROCESS_NAME_WASD);
+            AddRemap(VirtualKeyCode.VK_R, VirtualKeyCode.VK_E, PROCESS_NAME_WASD);
+            AddRemap(VirtualKeyCode.VK_S, VirtualKeyCode.VK_A, PROCESS_NAME_WASD);
+            AddRemap(VirtualKeyCode.VK_D, VirtualKeyCode.VK_S, PROCESS_NAME_WASD);
+            AddRemap(VirtualKeyCode.VK_F, VirtualKeyCode.VK_D, PROCESS_NAME_WASD);
         }
 
-        public static bool CheckAndFireTriggers(int vkCode, ActionKey.Movement movement)
+        public static bool CheckAndFireTriggers(int vkCode, Movement movement)
         {
             bool eatInput = false;
 
@@ -413,19 +410,19 @@ namespace Glue
             {
                 switch (trigger.Type)
                 {
-                    //case TriggerType.Both:
-                    //    eatInput = trigger.Fire();
-                    //break;
+                    case TriggerType.Both:
+                        eatInput = trigger.Fire();
+                    break;
 
                     case TriggerType.Down:
-                    if (ActionKey.Movement.PRESS == movement)
+                    if (Movement.PRESS == movement)
                     {
                         eatInput = trigger.Fire();
                     }
                     break;
 
                     case TriggerType.Up:
-                    if (ActionKey.Movement.RELEASE == movement)
+                    if (Movement.RELEASE == movement)
                     {
                         eatInput = trigger.Fire();
                     }
