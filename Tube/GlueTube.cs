@@ -347,7 +347,7 @@ namespace Glue
             Macros.Add(macroName, macro);
 
             trigger = new Trigger(Keys.Space, new List<string> {"toggle-down", null, "toggle-up", null}, TriggerType.Both, true);
-            // Triggers.Add(trigger.TriggerKey, trigger);
+            Triggers.Add(trigger.TriggerKey, trigger);
 
             // 
             // Create mouse movement
