@@ -142,7 +142,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="glue-files\dawn-of-war.glue" />
-    <None Include="glue-files\macros-debug.glue" />
     <None Include="glue-files\macros.glue" />
     <None Include="Log.Release.config" />
     <None Include="Log.Debug.config" />
