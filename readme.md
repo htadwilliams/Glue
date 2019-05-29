@@ -4,13 +4,13 @@ An input remapping and macroing tool for Windows.  Originally written in C++ and
 
 The application by default attempts to read MACROS.GLUE from its working directory. The file name / path may be optionally specified as a command-line parameter.  If this file isn't found one will be created with example macros, triggers, and remapping entries.
 
-DEFAULT EXAMPLE MACROS AND TRIGGERS:
+DEFAULT FILE MACROS AND TRIGGERS:
 * Ctrl-C (making sure input focus is not set to console window or application will exit) will type a string of characters immediately with short delay between presses and releases.
 * Ctrl-Z will immediately type an R followed by a Q and ENTER after a delay of ~4 seconds. This is useful for demonstrating asynchronous scheduling of output events.
 * Ctrl-S plays a sound asynchronously. If the sound is already playing it will be restarted. 
 * Space is a toggle and will be held down with every other press. This won't show in things like Notepad as the held key won't trigger Windows key repeats, but works very well in games.
 
-DEFAULT EXAMPLE REMAPS:
+DEFAULT FILE REMAPS:
 * LEFT SHIFT types an A if input window process name contains "skies.exe" so it can be mapped in Sunless Skies (and easily change for other unity games where SHIFT can't be remapped).
 * WASD and typical rotation keys Q/E are remapped to ESDF W/R (R/F slide to left over Q/A to make room) for "fallout4.exe". Change to your .exe name to use. WASD is EVIL! 
 * Swap V and B if typing into notepad.exe.
