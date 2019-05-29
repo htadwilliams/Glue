@@ -18,8 +18,6 @@ namespace Glue
         public static IntPtr HookCallback(
             int nCode, IntPtr wParam, IntPtr lParam)
         {
-//            if (nCode >= 0 &&
-//                MouseMessages.WM_LBUTTONDOWN == (MouseMessages)wParam)
             if (nCode >= 0 && MouseMessages.WM_MOUSEMOVE != (MouseMessages) wParam)
             {
                 MouseMessages mouseMessage = (MouseMessages) wParam;

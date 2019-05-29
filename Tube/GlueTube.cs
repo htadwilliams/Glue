@@ -330,8 +330,8 @@ namespace Glue
             //
             macroName = "XF10";
             macro = new Macro(macroName, 0);
-            macro.AddAction(new ActionKey(VirtualKeyCode.LCONTROL, Movement.PRESS, 0));
-            macro.AddAction(new ActionKey(VirtualKeyCode.LCONTROL, Movement.RELEASE, 100));
+            macro.AddAction(new ActionKey(VirtualKeyCode.F10, Movement.PRESS, 0));
+            macro.AddAction(new ActionKey(VirtualKeyCode.F10, Movement.RELEASE, 100));
             s_macros.Add(macroName, macro);
 
             // Same macro bound to two triggers            
@@ -354,7 +354,7 @@ namespace Glue
             s_macros.Add(macroName, macro);
 
             trigger = new Trigger(Keys.Space, new List<string> {"toggle-down", null, "toggle-up", null}, TriggerType.Both, true);
-            Triggers.Add(trigger.TriggerKey, trigger);
+            // Triggers.Add(trigger.TriggerKey, trigger);
 
             // 
             // Create mouse movement
