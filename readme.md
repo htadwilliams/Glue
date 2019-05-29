@@ -1,5 +1,3 @@
-Glue
-
 WARNING: This globally hooks keyboard/mouse input and logs to file if DEBUG mode is enabled. Don't run in DEBUG mode if you don't want your keys logged!
 
 An input remapping and macroing tool for Windows.  Originally written in C++ and used to play EverQuest for over 10 years, this a rewrite in C# including low-level keyboard and mouse hooks (with lots of native windows API calls).
