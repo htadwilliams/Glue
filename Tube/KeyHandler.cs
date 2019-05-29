@@ -155,7 +155,7 @@ namespace Glue
 
         private static VirtualKeyCode DoRemap(VirtualKeyCode inputKey, ActionKey.Movement movement)
         {
-            if (GlueTube.KeyMap != null && GlueTube.KeyMap.TryGetValue(inputKey, out KeyRemap remap))
+            if (GlueTube.KeyMap != null && GlueTube.KeyMap.TryGetValue(inputKey, out KeyMapEntry remap))
             {
                 // Filter remapping to the given process name 
                 // If empty process name is given, perform remap for all of them
