@@ -15,14 +15,36 @@ using static Glue.Trigger;
 
 namespace Glue
 {
-    static class GlueTube
+    // Encapsulates items serialized / deserialized to JSON so there's one root element 
+    internal class JsonWrapper
+    {
+        public Dictionary<Keys, Trigger> triggers = new Dictionary<Keys, Trigger>();
+        public Dictionary<VirtualKeyCode, KeyMapEntry> keyMap = new Dictionary<VirtualKeyCode, KeyMapEntry>();
+        public Dictionary<String, Macro> macros = new Dictionary<String, Macro>();
+    }
+
+    internal static class GlueTube
     {
         public static Main MainForm => s_mainForm;
-        public static Dictionary<Keys, Trigger> Triggers => s_triggers;
-        public static Dictionary<VirtualKeyCode, KeyMapEntry> KeyMap => s_keyMap;
-        public static Dictionary<String, Macro> Macros => s_macros;
+        public static Dictionary<Keys, Trigger> Triggers 
+        {
+            get => s_jsonWrapper.triggers;
+            set => s_jsonWrapper.triggers = value;
+        }
+        public static Dictionary<VirtualKeyCode, KeyMapEntry> KeyMap
+        {
+            get => s_jsonWrapper.keyMap;
+            set => s_jsonWrapper.keyMap = value;
+        }
+        public static Dictionary<String, Macro> Macros 
+        {
+            get => s_jsonWrapper.macros;
+            set => s_jsonWrapper.macros = value;
+        }
 
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        private static JsonWrapper s_jsonWrapper = new JsonWrapper();
 
         private const string FILENAME_DEFAULT               = "macros.glue";
         private const string PROCESS_NAME_NOTEPAD           = "notepad";      // also matches Notepad++
@@ -30,10 +52,6 @@ namespace Glue
 
         private static Main s_mainForm = null;
         private static bool s_writeOnExit = false;      // Set if loading fails, or if GUI changes contents 
-
-        private static Dictionary<Keys, Trigger> s_triggers = new Dictionary<Keys, Trigger>();
-        private static Dictionary<VirtualKeyCode, KeyMapEntry> s_keyMap = new Dictionary<VirtualKeyCode, KeyMapEntry>();
-        private static Dictionary<String, Macro> s_macros = new Dictionary<String, Macro>();
 
         /// <summary>
         /// The main entry point for the application.
@@ -88,7 +106,7 @@ namespace Glue
 
         internal static void PlayMacro(string macroName)
         {
-            if (s_macros.TryGetValue(macroName, out Macro macro))
+            if (Macros.TryGetValue(macroName, out Macro macro))
             {
                 LOGGER.Debug("Playing macro [" + macroName + "]");
                 macro.Play();
@@ -179,34 +197,14 @@ namespace Glue
             {
                 writer.Formatting = Formatting.Indented;
 
-                // Order of writes and reads to this file must be kept in sync
-                // with LoadFile()
                 writer.WriteComment(
-                    "\r\nOrder of this file's contents must be maintained\r\n" + 
-                    "    1) Macros\r\n" + 
-                    "    2) Triggers\r\n" + 
-                    "    3) Remapping\r\n");
-
-                // TODO Serialize lists instead of maps where possible (build maps when deserializing)
-                sw.Write("\r\n\r\n");
-                writer.WriteComment("\r\nMacros\r\n");
+                    "\r\n\r\nGlue macro tool file\r\n\r\n" + 
+                    "Json containing the following elements\r\n\r\n" + 
+                    "    macros     Actions to be performed such as pressing a key or playing a sound.\r\n" + 
+                    "    triggers   Bind keys or key combinations to macros.\r\n" + 
+                    "    keyMap     Each entry remaps a key on the keyboard.\r\n\r\n");
                 sw.Write("\r\n");
-                serializer.Serialize(writer, s_macros);
-
-                sw.Write("\r\n\r\n");
-                writer.WriteComment("\r\nTriggers\r\n");
-                sw.Write("\r\n");
-                serializer.Serialize(writer, s_triggers);
-
-                sw.Write("\r\n\r\n");
-                writer.WriteComment(
-                    "\r\nInput remapping\r\n\r\n" + 
-                    "Partial process name matches are accepted - TODO added for regex support.\r\n\r\n" + 
-                    "Process names must not include drive letters and backslash must be escaped e.g.\r\n" + 
-                    "    \"C:\\Windows\\System32\\Notepad.exe\" -> \"\\\\Windows\\\\System32\\\\Notepad\"\r\n"
-                );
-                sw.Write("\r\n");
-                serializer.Serialize(writer, s_keyMap);
+                serializer.Serialize(writer, s_jsonWrapper);
             }
         }
 
@@ -228,13 +226,8 @@ namespace Glue
                         reader.SupportMultipleContent = true;
 
                         reader.Read();
-                        s_macros = serializer.Deserialize<Dictionary<String, Macro>>(reader);
 
-                        reader.Read();
-                        s_triggers = serializer.Deserialize<Dictionary<Keys, Trigger>>(reader);
-
-                        reader.Read();
-                        s_keyMap = serializer.Deserialize<Dictionary<VirtualKeyCode, KeyMapEntry>>(reader);
+                        s_jsonWrapper = serializer.Deserialize<JsonWrapper>(reader);
                     }
                 }
             }
@@ -249,17 +242,17 @@ namespace Glue
 
             s_writeOnExit = false;
 
-            if (null != s_macros && s_macros.Count != 0)
+            if (null != Macros && Macros.Count != 0)
             {
-                LOGGER.Info(String.Format("    Loaded {0} macros", s_macros.Count));
+                LOGGER.Info(String.Format("    Loaded {0} macros", Macros.Count));
             }
-            if (null != s_triggers && s_triggers.Count != 0)
+            if (null != Triggers && Triggers.Count != 0)
             {
-                LOGGER.Info(String.Format("    Loaded {0} triggers", s_triggers.Count));
+                LOGGER.Info(String.Format("    Loaded {0} triggers", Triggers.Count));
             }
-            if (null != s_keyMap && s_keyMap.Count != 0)
+            if (null != KeyMap && KeyMap.Count != 0)
             {
-                LOGGER.Info(String.Format("    Loaded {0} remapped keys", s_keyMap.Count));
+                LOGGER.Info(String.Format("    Loaded {0} remapped keys", KeyMap.Count));
             }
         }
 
@@ -267,8 +260,8 @@ namespace Glue
         {
             LOGGER.Info("File not found or load failed - creating example content");
 
-            s_triggers = new Dictionary<Keys, Trigger>();
-            s_keyMap = new Dictionary<VirtualKeyCode, KeyMapEntry>();
+            Triggers = new Dictionary<Keys, Trigger>();
+            KeyMap = new Dictionary<VirtualKeyCode, KeyMapEntry>();
 
             //
             // Create macro with several actions bound to CTRL-Z
@@ -284,7 +277,7 @@ namespace Glue
                 .AddAction(new ActionKey(VirtualKeyCode.VK_Q, Movement.PRESS, 4020))
                 .AddAction(new ActionKey(VirtualKeyCode.VK_Q, Movement.RELEASE, 4030))
                 ;
-            s_macros.Add(macroName, macro);
+            Macros.Add(macroName, macro);
             // Setup trigger
             Trigger trigger = new Trigger(Keys.Z, macroName);
             trigger.AddModifier(Keys.LControlKey);
@@ -303,7 +296,7 @@ namespace Glue
                     "Lorem ipsum dollar sit amet, Cogito Maud obliviscaris aliorum.",
                     10,     // delay MS
                     10));   // dwell time MS
-            s_macros.Add(macroName, macro);
+            Macros.Add(macroName, macro);
             trigger = new Trigger(Keys.C, macroName);
             trigger.AddModifier(Keys.LControlKey);
             Triggers.Add(trigger.TriggerKey, trigger);
@@ -314,12 +307,12 @@ namespace Glue
             macroName = "sound-servomotor";
             macro = new Macro(macroName, 0);
             macro.AddAction(new ActionSound("sound_servomotor.wav"));
-            s_macros.Add(macroName, macro);
+            Macros.Add(macroName, macro);
 
             macroName = "sound-ahha";
             macro = new Macro(macroName, 0);
             macro.AddAction(new ActionSound("ahha.wav"));
-            s_macros.Add(macroName, macro);
+            Macros.Add(macroName, macro);
 
             trigger = new Trigger(Keys.S, new List<String> { "sound-servomotor", "sound-ahha" });
             trigger.AddModifier(Keys.LControlKey);
@@ -332,7 +325,7 @@ namespace Glue
             macro = new Macro(macroName, 0);
             macro.AddAction(new ActionKey(VirtualKeyCode.F10, Movement.PRESS, 0));
             macro.AddAction(new ActionKey(VirtualKeyCode.F10, Movement.RELEASE, 100));
-            s_macros.Add(macroName, macro);
+            Macros.Add(macroName, macro);
 
             // Same macro bound to two triggers            
             trigger = new Trigger(Keys.XButton1, macroName);
@@ -346,12 +339,12 @@ namespace Glue
             macroName = "toggle-down";
             macro = new Macro(macroName, 0);
             macro.AddAction(new ActionKey(VirtualKeyCode.SPACE, Movement.PRESS, 0));
-            s_macros.Add(macroName, macro);
+            Macros.Add(macroName, macro);
 
             macroName = "toggle-up";
             macro = new Macro(macroName, 0);
             macro.AddAction(new ActionKey(VirtualKeyCode.SPACE, Movement.RELEASE, 0));
-            s_macros.Add(macroName, macro);
+            Macros.Add(macroName, macro);
 
             trigger = new Trigger(Keys.Space, new List<string> {"toggle-down", null, "toggle-up", null}, TriggerType.Both, true);
             // Triggers.Add(trigger.TriggerKey, trigger);
@@ -363,7 +356,7 @@ namespace Glue
             macro = new Macro(macroName, 20);
             // macro.AddAction(new ActionMouse(ActionMouse.Movement.ABSOLUTE, 65535 / 2, 65535 / 2, 500));
             macro.AddAction(new ActionMouse(ActionMouse.Movement.RELATIVE, 1, 1, 500));
-            s_macros.Add(macroName, macro);
+            Macros.Add(macroName, macro);
             trigger = new Trigger(Keys.Left, macroName);
             trigger.AddModifier(Keys.LMenu);
             Triggers.Add(trigger.TriggerKey, trigger);

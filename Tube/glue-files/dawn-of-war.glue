@@ -1,65 +1,58 @@
 /*
-Order of this file's contents must be maintained
-    1) Macros
-    2) Triggers
-    3) Remapping
-*/
 
-/*
-Macros
+Glue macro tool file
+
+Json containing the following elements
+
+    macros     Actions to be performed such as pressing a key or playing a sound.
+    triggers   Bind keys or key combinations to macros.
+    keyMap     Each entry remaps a key on the keyboard.
+
+This file is a simple example I use to play dawn of war II to quickly 
+pause / unpause the game.
+
 */
 {
-  "XF10": {
-    "name": "XF10",
-    "delayTimeMS": 0,
-    "actions": [
-      {
-        "movement": "PRESS",
-        "timeTriggerMS": 0,
-        "key": "F10",
-        "type": "KEY"
-      },
-      {
-        "movement": "RELEASE",
-        "timeTriggerMS": 100,
-        "key": "F10",
-        "type": "KEY"
-      }
-    ]
-  }
-}
-
-/*
-Triggers
-*/
-{
-  "XButton1": {
-    "triggerKey": "XButton1",
-    "type": "Down",
-    "macroNames": [
-      "XF10"
-    ],
-    "modKeys": [],
-    "eatInput": true
+  "triggers": {
+    "XButton1": {
+      "triggerKey": "XButton1",
+      "type": "Down",
+      "macroNames": [
+        "XF10"
+      ],
+      "modKeys": [],
+      "eatInput": false
+    },
+    "XButton2": {
+      "triggerKey": "XButton2",
+      "type": "Down",
+      "macroNames": [
+        "XF10"
+      ],
+      "modKeys": [],
+      "eatInput": false
+    }
   },
-  "XButton2": {
-    "triggerKey": "XButton2",
-    "type": "Down",
-    "macroNames": [
-      "XF10"
-    ],
-    "modKeys": [],
-    "eatInput": true
+  "keyMap": {
+  },
+  "macros": {
+    "XF10": {
+      "name": "XF10",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "movement": "PRESS",
+          "timeTriggerMS": 0,
+          "key": "F10",
+          "type": "KEY"
+        },
+        {
+          "movement": "RELEASE",
+          "timeTriggerMS": 100,
+          "key": "F10",
+          "type": "KEY"
+        }
+      ]
+    }
   }
-}
-
-  /*
-Input remapping
-
-Partial process name matches are accepted - TODO added for regex support.
-
-Process names must not include drive letters and backslash must be escaped e.g.
-    "C:\Windows\System32\Notepad.exe" -> "\\Windows\\System32\\Notepad"
-*/
-{
 }
