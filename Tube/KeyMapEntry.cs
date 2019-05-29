@@ -5,7 +5,7 @@ using WindowsInput.Native;
 namespace Glue
 {
     [JsonObject(MemberSerialization.OptIn)]
-    class KeyRemap
+    class KeyMapEntry
     {
         public VirtualKeyCode KeyOld => this.keyOld;
         public VirtualKeyCode KeyNew => this.keyNew;
@@ -23,7 +23,7 @@ namespace Glue
         private readonly string processName;
 
         [JsonConstructor]
-        public KeyRemap(VirtualKeyCode keyOld, VirtualKeyCode keyNew, string procName)
+        public KeyMapEntry(VirtualKeyCode keyOld, VirtualKeyCode keyNew, string procName)
         {
             this.keyOld=keyOld;
             this.keyNew=keyNew;

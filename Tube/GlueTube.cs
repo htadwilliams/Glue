@@ -19,12 +19,12 @@ namespace Glue
     {
         public static Main MainForm => s_mainForm;
         public static Dictionary<Keys, Trigger> Triggers => s_triggers;
-        public static Dictionary<VirtualKeyCode, KeyRemap> KeyMap => s_keyMap;
+        public static Dictionary<VirtualKeyCode, KeyMapEntry> KeyMap => s_keyMap;
         public static Dictionary<String, Macro> Macros => s_macros;
 
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private const string FILENAME_DEFAULT               = "macros.json";
+        private const string FILENAME_DEFAULT               = "macros.glue";
         private const string PROCESS_NAME_NOTEPAD           = "notepad";      // also matches Notepad++
         private const string PROCESS_NAME_WASD              = "fallout4.exe"; 
 
@@ -32,7 +32,7 @@ namespace Glue
         private static bool s_writeOnExit = false;      // Set if loading fails, or if GUI changes contents 
 
         private static Dictionary<Keys, Trigger> s_triggers = new Dictionary<Keys, Trigger>();
-        private static Dictionary<VirtualKeyCode, KeyRemap> s_keyMap = new Dictionary<VirtualKeyCode, KeyRemap>();
+        private static Dictionary<VirtualKeyCode, KeyMapEntry> s_keyMap = new Dictionary<VirtualKeyCode, KeyMapEntry>();
         private static Dictionary<String, Macro> s_macros = new Dictionary<String, Macro>();
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace Glue
 
         private static void AddRemap(VirtualKeyCode keyOld, VirtualKeyCode keyNew, string procName)
         {
-            GlueTube.KeyMap.Add(keyOld, new KeyRemap(keyOld, keyNew, procName));
+            GlueTube.KeyMap.Add(keyOld, new KeyMapEntry(keyOld, keyNew, procName));
         }
 
         private static void SaveFile(String fileName)
@@ -234,7 +234,7 @@ namespace Glue
                         s_triggers = serializer.Deserialize<Dictionary<Keys, Trigger>>(reader);
 
                         reader.Read();
-                        s_keyMap = serializer.Deserialize<Dictionary<VirtualKeyCode, KeyRemap>>(reader);
+                        s_keyMap = serializer.Deserialize<Dictionary<VirtualKeyCode, KeyMapEntry>>(reader);
                     }
                 }
             }
@@ -268,7 +268,7 @@ namespace Glue
             LOGGER.Info("File not found or load failed - creating example content");
 
             s_triggers = new Dictionary<Keys, Trigger>();
-            s_keyMap = new Dictionary<VirtualKeyCode, KeyRemap>();
+            s_keyMap = new Dictionary<VirtualKeyCode, KeyMapEntry>();
 
             //
             // Create macro with several actions bound to CTRL-Z

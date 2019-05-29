@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.IDE_INPUTSTREAM = new System.Windows.Forms.TextBox();
             this.IDB_CLEAR = new System.Windows.Forms.Button();
             this.IDC_LOGDISPLAY = new System.Windows.Forms.CheckBox();
@@ -92,6 +93,7 @@
             this.Controls.Add(this.IDC_LOGDISPLAY);
             this.Controls.Add(this.IDB_CLEAR);
             this.Controls.Add(this.IDE_INPUTSTREAM);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Main";
             this.Text = "Glue";
             this.ResumeLayout(false);
