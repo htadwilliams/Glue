@@ -11,6 +11,7 @@ namespace Glue
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private bool logInput = true;
         private bool rawKeyNames = false;
+        private string baseCaptionText = "";
 
         public Main()
         {
@@ -22,7 +23,15 @@ namespace Glue
             this.IDC_LOGDISPLAY.DataBindings.Add("Checked", this, "logInput", true, DataSourceUpdateMode.OnPropertyChanged);
             this.IDC_RAWKEYNAMES.DataBindings.Add("Checked", this, "rawKeyNames", true, DataSourceUpdateMode.OnPropertyChanged);
 
+            baseCaptionText = this.Text;
+            SetCaption(GlueTube.FileName);
+
             IDC_RAWKEYNAMES.Enabled = logInput;
+        }
+
+        private void SetCaption(string fileName)
+        {
+            this.Text = baseCaptionText + " - " + fileName;
         }
 
         internal void AppendText(string text)
@@ -44,6 +53,22 @@ namespace Glue
             Properties.Settings.Default.Save();
 
             base.OnFormClosed(e);
+        }
+
+        private void FileOpen_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            if(openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                GlueTube.LoadFile(openFileDialog.FileName);
+                SetCaption(GlueTube.FileName);
+            }
+        }
+
+        private void FileExit_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }
