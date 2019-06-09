@@ -33,7 +33,6 @@ Other dependencies:
 Feature / TODO list:
 
 * Add queue display window for fun and debugging (shows keyboard state, and representation of events queued for future work).
-* Macro looping start/stop events.
 * Game device button triggers, macro events, and button remapping.
 * Remote control - trigger events via network client (most likely REST interface).
 
