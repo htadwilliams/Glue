@@ -15,20 +15,20 @@ namespace Glue
             XBUTTON2 = 0x20000
         };
 
-        public static IntPtr HookCallback(
-            int nCode, IntPtr wParam, IntPtr lParam)
+        public static IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
         {
-            if (nCode >= 0 && MouseMessages.WM_MOUSEMOVE != (MouseMessages) wParam)
+            if (nCode >= 0)
             {
                 MouseMessages mouseMessage = (MouseMessages) wParam;
                 MSLLHOOKSTRUCT hookStruct = (MSLLHOOKSTRUCT) Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
+
+                // Translate mouse button into key code and action (press / release)
                 VirtualKeyCode keyCode = 0x00;
                 ActionKey.Movement triggerMovement = ActionKey.Movement.PRESS;
-
                 switch (mouseMessage)
                 {
                     case MouseMessages.WM_XBUTTONDOWN:
-                        keyCode=GetXButton(hookStruct);
+                        keyCode = GetXButton(hookStruct);
                     break;
 
                     case MouseMessages.WM_LBUTTONDOWN:
@@ -55,16 +55,16 @@ namespace Glue
                     break;
                 }
 
+                // Fire trigger the same way keyboard input does
                 if (GlueTube.CheckAndFireTriggers((int) keyCode, triggerMovement))
                 {
                     // Eat keystroke if trigger tells us to do so
                     return new IntPtr(1);
                 }
-
-                LOGGER.Info(mouseMessage.ToString() + " " + hookStruct.pt.x + ", " + hookStruct.pt.y);
             }
 
-            // Freeze the mouse
+            // TODO implement mouse lock "safety" feature 
+            // Freeze the mouse 
             // return new IntPtr(1);
 
             return new IntPtr(0);

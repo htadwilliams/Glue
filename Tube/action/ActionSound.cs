@@ -6,10 +6,10 @@ namespace Glue
 {
     public class ActionSound : Action
     {
-        private static readonly SoundPlayer PLAYER = new SoundPlayer();     // They claim to be thread safe
+        private static readonly SoundPlayer PLAYER = new SoundPlayer();
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private String soundPath;
+        private string soundPath;
 
         [JsonProperty]
         public string SoundPath
@@ -18,17 +18,15 @@ namespace Glue
             set => this.soundPath=value;
         }
 
-        public ActionSound(string soundPath)
+        public ActionSound(string soundPath, long timeTriggerMS)
         {
             this.soundPath = soundPath;
+            this.TimeTriggerMS = timeTriggerMS;
             this.Type = "SOUND";
         }
 
         public override void Play()
         {
-            // TODO Sharing sound player instance isn't thread safe.
-            // Either multiple instances of player need to be used or this 
-            // needs a lock.
             PLAYER.SoundLocation = soundPath;
             try
             {
@@ -44,16 +42,16 @@ namespace Glue
 
         public override Action[] Schedule()
         {
-            ActionSound scheduledCopy = new ActionSound(this.soundPath);
+            ActionSound scheduledCopy = new ActionSound(this.soundPath, this.TimeTriggerMS)
             {
-                TimeScheduledMS = ActionQueue.Now();
+                TimeScheduledMS = ActionQueue.Now() + this.TimeTriggerMS
             };
 
             if (LOGGER.IsDebugEnabled)
             {
-                String message = String.Format("Scheduled     now {0:n0}: {1}",
-                    // Absolute time scheduled to play
-                    this.TimeScheduledMS,           
+                string message = String.Format("Scheduled at tick {0:n0} in {1:n0}ms: {2}",
+                    scheduledCopy.TimeScheduledMS,
+                    this.TimeTriggerMS,
                     this.soundPath);
                 LOGGER.Debug(message);
             }

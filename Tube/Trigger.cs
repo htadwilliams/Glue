@@ -43,7 +43,7 @@ namespace Glue
         internal int indexMacroCurrent = 0;
 
         [JsonConstructor]
-        public Trigger(Keys triggerKey, List<String> macroNames, TriggerType type, bool eatInput)
+        public Trigger(Keys triggerKey, List<string> macroNames, TriggerType type, bool eatInput)
         {
             this.triggerKey = triggerKey;
             this.macroNames.AddRange(macroNames);
@@ -51,7 +51,7 @@ namespace Glue
             this.eatInput = eatInput;
         }
 
-        public Trigger(Keys triggerKey, List<String> macroNames, bool eatInput)
+        public Trigger(Keys triggerKey, List<string> macroNames, bool eatInput)
         {
             this.triggerKey = triggerKey;
             this.macroNames.AddRange(macroNames);
@@ -59,21 +59,21 @@ namespace Glue
             this.type = TriggerType.Down;
         }
 
-        public Trigger(Keys triggerKey, List<String> macroNames, TriggerType type)
+        public Trigger(Keys triggerKey, List<string> macroNames, TriggerType type)
         {
             this.triggerKey = triggerKey;
             this.macroNames.AddRange(macroNames);
             this.type = type;
         }
 
-        public Trigger(Keys triggerKey, List<String> macroNames)
+        public Trigger(Keys triggerKey, List<string> macroNames)
         {
             this.triggerKey = triggerKey;
             this.macroNames.AddRange(macroNames);
             this.type = TriggerType.Down;
         }
 
-        public Trigger(Keys triggerKey, String macroName)
+        public Trigger(Keys triggerKey, string macroName)
         {
             this.triggerKey = triggerKey;
             this.macroNames.Add(macroName);
@@ -102,6 +102,22 @@ namespace Glue
             return modKeysAreActive;
         }
 
+        internal static string FormatSeparatedList<T>(List<T> list, string separator)
+        {
+            string formattedList = "";
+            int itemCount = 0;
+            foreach (T item in list)
+            {
+                formattedList += item.ToString();
+                if (++itemCount < list.Count)
+                {
+                    formattedList += ", ";
+                }
+            }
+
+            return formattedList;
+        }
+
         internal bool Fire()
         {
             if (!AreModKeysActive())
@@ -109,26 +125,17 @@ namespace Glue
                 return false;
             }
 
-            String message = "TRIGGER FIRED: triggerKey=" + TriggerKey;
-
-            if (this.modKeys.Count > 0)
+            if (LOGGER.IsInfoEnabled)
             {
-                message += " modKeys={";
-
-                int modCount = 0;
-                foreach (Keys key in this.modKeys)
+                string message = "TRIGGER FIRED: triggerKey = [" + TriggerKey + "]";
+                if (this.modKeys.Count > 0)
                 {
-                    message += key;
-                    modCount++;
-                    if (modCount < this.modKeys.Count)
-                    {
-                        message += ", ";
-                    }
+                    message += " modKeys = [";
+                    message += FormatSeparatedList(this.modKeys, ", ");
+                    message += "]";
                 }
-                message += "}";
+                LOGGER.Info(message);
             }
-
-            LOGGER.Info(message);
 
             if (this.indexMacroCurrent >= this.macroNames.Count)
             {

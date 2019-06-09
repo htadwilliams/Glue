@@ -30,7 +30,7 @@ namespace Glue
             return (int) inputProcessId;
         }
 
-        public static String GetProcessFileName(int processId)
+        public static string GetProcessFileName(int processId)
         {
             StringBuilder processFileName = new StringBuilder(MAX_PATH);
 

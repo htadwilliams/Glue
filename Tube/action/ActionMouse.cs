@@ -20,14 +20,10 @@ namespace Glue
         }
 
         public static readonly IntPtr INJECTION_ID = new IntPtr(0xF00D);
-        public long TimeTriggerMS => timeTriggerMS;
 
         [JsonProperty]
         [JsonConverter(typeof(StringEnumConverter))]
         private readonly Movement movement;
-
-        [JsonProperty]
-        private readonly long timeTriggerMS;            // Time relative to triggering event
 
         [JsonProperty]
         private readonly int moveX;
@@ -66,7 +62,7 @@ namespace Glue
 
             if (LOGGER.IsDebugEnabled)
             {
-                String message = String.Format("Scheduled at tick {0:n0} in {1}ms: {4} ({2},{3})",
+                string message = String.Format("Scheduled at tick {0:n0} in {1}ms: {4} ({2},{3})",
                     scheduledCopy.TimeScheduledMS,      // Absolute time scheduled to play
                     this.timeTriggerMS,                 // Time relative to prevous action
                     this.moveX,
@@ -102,7 +98,7 @@ namespace Glue
             if (LOGGER.IsDebugEnabled)
             {
                 long now = ActionQueue.Now();
-                String message = String.Format("   Played at tick {0:n0} dt {1}ms: {4} ({2},{3})",
+                string message = String.Format("   Played at tick {0:n0} dt {1}ms: {4} ({2},{3})",
                     now,                            // Time actually played
                     now - this.TimeScheduledMS,     // Time delta (how late were we?)
                     this.moveX,

@@ -5,7 +5,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Glue
 {
-    public class BaseSpecifiedConcreteClassConverter : DefaultContractResolver
+    internal class BaseSpecifiedConcreteClassConverter : DefaultContractResolver
     {
         protected override JsonConverter ResolveContractConverter(Type objectType)
         {
@@ -15,8 +15,11 @@ namespace Glue
         }
     }
 
-    public class ActionConverter : JsonConverter
+    internal class ActionConverter : JsonConverter
     {
+        private static readonly log4net.ILog LOGGER = 
+            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         static readonly JsonSerializerSettings SpecifiedSubclassConversion = new JsonSerializerSettings() 
         { 
             ContractResolver = new BaseSpecifiedConcreteClassConverter() 
@@ -30,7 +33,8 @@ namespace Glue
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             JObject jo = JObject.Load(reader);
-            switch (jo["type"].Value<String>())
+            string type = jo["type"].Value<string>();
+            switch (type)
             {
                 case "KEY":
                     return JsonConvert.DeserializeObject<ActionKey>(jo.ToString(), SpecifiedSubclassConversion);
@@ -40,11 +44,16 @@ namespace Glue
                     return JsonConvert.DeserializeObject<ActionSound>(jo.ToString(), SpecifiedSubclassConversion);
                 case "MOUSE":
                     return JsonConvert.DeserializeObject<ActionMouse>(jo.ToString(), SpecifiedSubclassConversion);
+                case "REPEAT":
+                    return JsonConvert.DeserializeObject<ActionRepeat>(jo.ToString(), SpecifiedSubclassConversion);
+                case "CANCEL":
+                    return JsonConvert.DeserializeObject<ActionCancel>(jo.ToString(), SpecifiedSubclassConversion);
 
                 default:
-                    throw new Exception();
+                    string message = "Unknown type [" + type + "] encountered during deserialization";
+                    LOGGER.Warn(message);
+                    return null;
             }
-            throw new NotImplementedException();
         }
 
         public override bool CanWrite
@@ -54,7 +63,8 @@ namespace Glue
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            throw new NotImplementedException(); // won't be called because CanWrite returns false
+            // won't be called because CanWrite returns false
+            throw new NotImplementedException(); 
         }
     }
 
@@ -62,25 +72,46 @@ namespace Glue
     [JsonObject(MemberSerialization.OptIn)]
     public abstract class Action
     {
-        [JsonProperty]
-        private String type;
-
-        public long TimeScheduledMS
+        public long TimeTriggerMS
         {
-            get => this.timeScheduledMS;
-            set => this.timeScheduledMS=value;
+            get => this.timeTriggerMS;
+            set => this.timeTriggerMS = value;
         }
-        protected string Type
+
+        public string Type
         {
             get => this.type;
             set => this.type=value;
         }
 
-        private long timeScheduledMS;         // Time relative to triggering event
+        public long TimeScheduledMS
+        {
+            get => this.timeScheduledMS;
+            set => this.timeScheduledMS = value;
+        }
+        
+        public string Name
+        {
+            get => this.name;
+            set => this.name = value;
+        }
+
+        [JsonProperty]
+        protected string type;
+
+        [JsonProperty]
+        // Used to schedule action relative to triggering event
+        protected long timeTriggerMS;
+
+        protected string name;
+
+        // Time scheduled for this action instance 
+        protected long timeScheduledMS;
 
         public abstract void Play();
 
         // TODO split Action scheduling into Scheduler class 
+        // Actions may schedule more than one instance of themselves - see ActionTyping
         public abstract Action[] Schedule();
     }
 }

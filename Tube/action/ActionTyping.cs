@@ -17,7 +17,7 @@ namespace Glue
         [JsonProperty]
         public long DwellTimeMS => this.dwellTimeMS;
 
-        private readonly String typedString;
+        private readonly string typedString;
         private readonly long charDelayMS;
         private readonly long dwellTimeMS;
 

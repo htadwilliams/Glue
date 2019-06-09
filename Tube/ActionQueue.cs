@@ -22,10 +22,12 @@ namespace Glue
             {
                 thread = new Thread(new ThreadStart(Threadproc))
                 {
-                    Name = "ActionQueue"
+                    Name = "ActionQueue",
+
+                    // set or app won't exit when main thread closes (e.g. form is closed)
+                    IsBackground = true
                 };
-                // set or app won't exit when main thread closes (e.g. form is closed)
-                thread.IsBackground = true;
+
                 thread.Start();
             }
         }
@@ -34,6 +36,21 @@ namespace Glue
         {
             actions.Enqueue(action, timeScheduledMS);
             eventWaitNextAction.Set();
+        }
+
+        internal static void Cancel(string name)
+        {
+            short cancelCount = 0;
+            foreach (Action action in actions)
+            {
+                if (null != action.Name && action.Name.Equals(name))
+                {
+                    cancelCount++;
+                    actions.Remove(action);
+                }
+            }
+
+            LOGGER.Info(String.Format("Canceled {0} instances of Action with name = [" + name + "]", cancelCount));
         }
 
         public static long Now()
@@ -76,7 +93,6 @@ namespace Glue
                     // asynchronous action processing will be supported.
                     // TODO Asynchronous action support: Submit actions.Play to worker thread pool
                     action.Play();
-
                     actions.Dequeue();
                 }
 

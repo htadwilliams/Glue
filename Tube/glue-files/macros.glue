@@ -1,271 +1,273 @@
 /*
-Order of this file's contents must be maintained
-    1) Macros
-    2) Triggers
-    3) Remapping
-*/
 
-/*
-Macros
-*/
-{
-  "delayed-action": {
-    "name": "delayed-action",
-    "delayTimeMS": 10,
-    "actions": [
-      {
-        "movement": "PRESS",
-        "timeTriggerMS": 10,
-        "key": "VK_R",
-        "type": "KEY"
-      },
-      {
-        "movement": "RELEASE",
-        "timeTriggerMS": 10,
-        "key": "VK_R",
-        "type": "KEY"
-      },
-      {
-        "movement": "PRESS",
-        "timeTriggerMS": 4000,
-        "key": "RETURN",
-        "type": "KEY"
-      },
-      {
-        "movement": "RELEASE",
-        "timeTriggerMS": 4010,
-        "key": "RETURN",
-        "type": "KEY"
-      },
-      {
-        "movement": "PRESS",
-        "timeTriggerMS": 4020,
-        "key": "VK_Q",
-        "type": "KEY"
-      },
-      {
-        "movement": "RELEASE",
-        "timeTriggerMS": 4030,
-        "key": "VK_Q",
-        "type": "KEY"
-      }
-    ]
-  },
-  "typing-stuff": {
-    "name": "typing-stuff",
-    "delayTimeMS": 2000,
-    "actions": [
-      {
-        "type": "TYPING",
-        "TypedString": "Lorem ipsum dollar sit amet, Cogito Maud obliviscaris aliorum.",
-        "CharDelayMS": 10,
-        "DwellTimeMS": 10
-      }
-    ]
-  },
-  "sound-servomotor": {
-    "name": "sound-servomotor",
-    "delayTimeMS": 0,
-    "actions": [
-      {
-        "type": "SOUND",
-        "SoundPath": "sound_servomotor.wav"
-      }
-    ]
-  },
-  "sound-ahha": {
-    "name": "sound-ahha",
-    "delayTimeMS": 0,
-    "actions": [
-      {
-        "type": "SOUND",
-        "SoundPath": "ahha.wav"
-      }
-    ]
-  },
-  "XF10": {
-    "name": "XF10",
-    "delayTimeMS": 0,
-    "actions": [
-      {
-        "movement": "PRESS",
-        "timeTriggerMS": 0,
-        "key": "F10",
-        "type": "KEY"
-      },
-      {
-        "movement": "RELEASE",
-        "timeTriggerMS": 100,
-        "key": "F10",
-        "type": "KEY"
-      }
-    ]
-  },
-  "toggle-down": {
-    "name": "toggle-down",
-    "delayTimeMS": 0,
-    "actions": [
-      {
-        "movement": "PRESS",
-        "timeTriggerMS": 0,
-        "key": "SPACE",
-        "type": "KEY"
-      }
-    ]
-  },
-  "toggle-up": {
-    "name": "toggle-up",
-    "delayTimeMS": 0,
-    "actions": [
-      {
-        "movement": "RELEASE",
-        "timeTriggerMS": 0,
-        "key": "SPACE",
-        "type": "KEY"
-      }
-    ]
-  },
-  "mouse-nudge": {
-    "name": "mouse-nudge",
-    "delayTimeMS": 20,
-    "actions": [
-      {
-        "movement": "RELATIVE",
-        "timeTriggerMS": 500,
-        "moveX": 1,
-        "moveY": 1,
-        "type": "MOUSE"
-      }
-    ]
-  }
-}
+Glue macro tool file
 
-/*
-Triggers
+Json containing the following elements
+
+    macros     Actions to be performed such as pressing a key or playing a sound.
+    triggers   Bind keys or key combinations to macros.
+    keyMap     Each entry remaps a key on the keyboard.
+
 */
 {
-  "Z": {
-    "triggerKey": "Z",
-    "type": "Down",
-    "macroNames": [
-      "delayed-action"
-    ],
-    "modKeys": [
-      "LControlKey"
-    ],
-    "eatInput": false
+  "triggers": {
+    "Z": {
+      "triggerKey": "Z",
+      "type": "Down",
+      "macroNames": [
+        "delayed-action"
+      ],
+      "modKeys": [
+        "LControlKey"
+      ],
+      "eatInput": false
+    },
+    "C": {
+      "triggerKey": "C",
+      "type": "Down",
+      "macroNames": [
+        "typing-stuff"
+      ],
+      "modKeys": [
+        "LControlKey"
+      ],
+      "eatInput": false
+    },
+    "S": {
+      "triggerKey": "S",
+      "type": "Down",
+      "macroNames": [
+        "sound-servomotor",
+        "sound-ahha"
+      ],
+      "modKeys": [
+        "LControlKey"
+      ],
+      "eatInput": false
+    },
+    "XButton1": {
+      "triggerKey": "XButton1",
+      "type": "Down",
+      "macroNames": [
+        "XF10"
+      ],
+      "modKeys": [],
+      "eatInput": false
+    },
+    "XButton2": {
+      "triggerKey": "XButton2",
+      "type": "Down",
+      "macroNames": [
+        "XF10"
+      ],
+      "modKeys": [],
+      "eatInput": false
+    },
+    "Space": {
+      "triggerKey": "Space",
+      "type": "Both",
+      "macroNames": [
+        "toggle-down",
+        null,
+        "toggle-up",
+        null
+      ],
+      "modKeys": [],
+      "eatInput": true
+    },
+    "Left": {
+      "triggerKey": "Left",
+      "type": "Down",
+      "macroNames": [
+        "mouse-nudge"
+      ],
+      "modKeys": [
+        "LMenu"
+      ],
+      "eatInput": false
+    }
   },
-  "C": {
-    "triggerKey": "C",
-    "type": "Down",
-    "macroNames": [
-      "typing-stuff"
-    ],
-    "modKeys": [
-      "LControlKey"
-    ],
-    "eatInput": false
+  "keyMap": {
+    "VK_B": {
+      "keyOld": "VK_B",
+      "keyNew": "VK_V",
+      "processName": "notepad"
+    },
+    "VK_V": {
+      "keyOld": "VK_V",
+      "keyNew": "VK_B",
+      "processName": "notepad"
+    },
+    "VK_Q": {
+      "keyOld": "VK_Q",
+      "keyNew": "VK_R",
+      "processName": "fallout4.exe"
+    },
+    "VK_A": {
+      "keyOld": "VK_A",
+      "keyNew": "VK_F",
+      "processName": "fallout4.exe"
+    },
+    "VK_W": {
+      "keyOld": "VK_W",
+      "keyNew": "VK_Q",
+      "processName": "fallout4.exe"
+    },
+    "VK_E": {
+      "keyOld": "VK_E",
+      "keyNew": "VK_W",
+      "processName": "fallout4.exe"
+    },
+    "VK_R": {
+      "keyOld": "VK_R",
+      "keyNew": "VK_E",
+      "processName": "fallout4.exe"
+    },
+    "VK_S": {
+      "keyOld": "VK_S",
+      "keyNew": "VK_A",
+      "processName": "fallout4.exe"
+    },
+    "VK_D": {
+      "keyOld": "VK_D",
+      "keyNew": "VK_S",
+      "processName": "fallout4.exe"
+    },
+    "VK_F": {
+      "keyOld": "VK_F",
+      "keyNew": "VK_D",
+      "processName": "fallout4.exe"
+    }
   },
-  "S": {
-    "triggerKey": "S",
-    "type": "Down",
-    "macroNames": [
-      "sound-servomotor",
-      "sound-ahha"
-    ],
-    "modKeys": [
-      "LControlKey"
-    ],
-    "eatInput": false
-  },
-  "XButton1": {
-    "triggerKey": "XButton1",
-    "type": "Down",
-    "macroNames": [
-      "XF10"
-    ],
-    "modKeys": [],
-    "eatInput": false
-  },
-  "XButton2": {
-    "triggerKey": "XButton2",
-    "type": "Down",
-    "macroNames": [
-      "XF10"
-    ],
-    "modKeys": [],
-    "eatInput": false
-  },
-  "Left": {
-    "triggerKey": "Left",
-    "type": "Down",
-    "macroNames": [
-      "mouse-nudge"
-    ],
-    "modKeys": [
-      "LMenu"
-    ],
-    "eatInput": false
-  }
-}
-
-/*
-Input remapping
-
-Partial process name matches are accepted - TODO added for regex support.
-
-Process names must not include drive letters and backslash must be escaped e.g.
-    "C:\Windows\System32\Notepad.exe" -> "\\Windows\\System32\\Notepad"
-*/
-{
-  "VK_B": {
-    "keyOld": "VK_B",
-    "keyNew": "VK_V",
-    "processName": "notepad"
-  },
-  "VK_V": {
-    "keyOld": "VK_V",
-    "keyNew": "VK_B",
-    "processName": "notepad"
-  },
-  "VK_Q": {
-    "keyOld": "VK_Q",
-    "keyNew": "VK_R",
-    "processName": "fallout4.exe"
-  },
-  "VK_A": {
-    "keyOld": "VK_A",
-    "keyNew": "VK_F",
-    "processName": "fallout4.exe"
-  },
-  "VK_W": {
-    "keyOld": "VK_W",
-    "keyNew": "VK_Q",
-    "processName": "fallout4.exe"
-  },
-  "VK_E": {
-    "keyOld": "VK_E",
-    "keyNew": "VK_W",
-    "processName": "fallout4.exe"
-  },
-  "VK_R": {
-    "keyOld": "VK_R",
-    "keyNew": "VK_E",
-    "processName": "fallout4.exe"
-  },
-  "VK_S": {
-    "keyOld": "VK_S",
-    "keyNew": "VK_A",
-    "processName": "fallout4.exe"
-  },
-  "VK_D": {
-    "keyOld": "VK_D",
-    "keyNew": "VK_S",
-    "processName": "fallout4.exe"
-  },
-  "VK_F": {
-    "keyOld": "VK_F",
-    "keyNew": "VK_D",
-    "processName": "fallout4.exe"
+  "macros": {
+    "delayed-action": {
+      "name": "delayed-action",
+      "delayTimeMS": 10,
+      "actions": [
+        {
+          "movement": "PRESS",
+          "timeTriggerMS": 10,
+          "key": "VK_R",
+          "type": "KEY"
+        },
+        {
+          "movement": "RELEASE",
+          "timeTriggerMS": 10,
+          "key": "VK_R",
+          "type": "KEY"
+        },
+        {
+          "movement": "PRESS",
+          "timeTriggerMS": 4000,
+          "key": "RETURN",
+          "type": "KEY"
+        },
+        {
+          "movement": "RELEASE",
+          "timeTriggerMS": 4010,
+          "key": "RETURN",
+          "type": "KEY"
+        },
+        {
+          "movement": "PRESS",
+          "timeTriggerMS": 4020,
+          "key": "VK_Q",
+          "type": "KEY"
+        },
+        {
+          "movement": "RELEASE",
+          "timeTriggerMS": 4030,
+          "key": "VK_Q",
+          "type": "KEY"
+        }
+      ]
+    },
+    "typing-stuff": {
+      "name": "typing-stuff",
+      "delayTimeMS": 2000,
+      "actions": [
+        {
+          "type": "TYPING",
+          "TypedString": "Lorem ipsum dollar sit amet, Cogito Maud obliviscaris aliorum.",
+          "CharDelayMS": 10,
+          "DwellTimeMS": 10
+        }
+      ]
+    },
+    "sound-servomotor": {
+      "name": "sound-servomotor",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "type": "SOUND",
+          "SoundPath": "sound_servomotor.wav"
+        }
+      ]
+    },
+    "sound-ahha": {
+      "name": "sound-ahha",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "type": "SOUND",
+          "SoundPath": "ahha.wav"
+        }
+      ]
+    },
+    "XF10": {
+      "name": "XF10",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "movement": "PRESS",
+          "timeTriggerMS": 0,
+          "key": "F10",
+          "type": "KEY"
+        },
+        {
+          "movement": "RELEASE",
+          "timeTriggerMS": 100,
+          "key": "F10",
+          "type": "KEY"
+        }
+      ]
+    },
+    "toggle-down": {
+      "name": "toggle-down",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "movement": "PRESS",
+          "timeTriggerMS": 0,
+          "key": "SPACE",
+          "type": "KEY"
+        }
+      ]
+    },
+    "toggle-up": {
+      "name": "toggle-up",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "movement": "RELEASE",
+          "timeTriggerMS": 0,
+          "key": "SPACE",
+          "type": "KEY"
+        }
+      ]
+    },
+    "mouse-nudge": {
+      "name": "mouse-nudge",
+      "delayTimeMS": 20,
+      "actions": [
+        {
+          "movement": "RELATIVE",
+          "timeTriggerMS": 500,
+          "moveX": 1,
+          "moveY": 1,
+          "type": "MOUSE"
+        }
+      ]
+    }
   }
 }
