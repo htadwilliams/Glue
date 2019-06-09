@@ -45,11 +45,33 @@ Json containing the following elements
       ],
       "eatInput": false
     },
+    "Oemcomma": {
+      "triggerKey": "Oemcomma",
+      "type": "Down",
+      "macroNames": [
+        "repeat-sound"
+      ],
+      "modKeys": [
+        "LMenu"
+      ],
+      "eatInput": false
+    },
+    "OemPeriod": {
+      "triggerKey": "OemPeriod",
+      "type": "Down",
+      "macroNames": [
+        "cancel-repeat-sound"
+      ],
+      "modKeys": [
+        "LMenu"
+      ],
+      "eatInput": false
+    },
     "XButton1": {
       "triggerKey": "XButton1",
       "type": "Down",
       "macroNames": [
-        "XF10"
+        "F10"
       ],
       "modKeys": [],
       "eatInput": false
@@ -58,7 +80,7 @@ Json containing the following elements
       "triggerKey": "XButton2",
       "type": "Down",
       "macroNames": [
-        "XF10"
+        "F10"
       ],
       "modKeys": [],
       "eatInput": false
@@ -146,39 +168,39 @@ Json containing the following elements
       "actions": [
         {
           "movement": "PRESS",
-          "timeTriggerMS": 10,
           "key": "VK_R",
-          "type": "KEY"
+          "type": "KEY",
+          "timeTriggerMS": 10
         },
         {
           "movement": "RELEASE",
-          "timeTriggerMS": 10,
           "key": "VK_R",
-          "type": "KEY"
+          "type": "KEY",
+          "timeTriggerMS": 10
         },
         {
           "movement": "PRESS",
-          "timeTriggerMS": 4000,
           "key": "RETURN",
-          "type": "KEY"
+          "type": "KEY",
+          "timeTriggerMS": 4000
         },
         {
           "movement": "RELEASE",
-          "timeTriggerMS": 4010,
           "key": "RETURN",
-          "type": "KEY"
+          "type": "KEY",
+          "timeTriggerMS": 4010
         },
         {
           "movement": "PRESS",
-          "timeTriggerMS": 4020,
           "key": "VK_Q",
-          "type": "KEY"
+          "type": "KEY",
+          "timeTriggerMS": 4020
         },
         {
           "movement": "RELEASE",
-          "timeTriggerMS": 4030,
           "key": "VK_Q",
-          "type": "KEY"
+          "type": "KEY",
+          "timeTriggerMS": 4030
         }
       ]
     },
@@ -188,6 +210,7 @@ Json containing the following elements
       "actions": [
         {
           "type": "TYPING",
+          "timeTriggerMS": 0,
           "TypedString": "Lorem ipsum dollar sit amet, Cogito Maud obliviscaris aliorum.",
           "CharDelayMS": 10,
           "DwellTimeMS": 10
@@ -200,6 +223,7 @@ Json containing the following elements
       "actions": [
         {
           "type": "SOUND",
+          "timeTriggerMS": 0,
           "SoundPath": "sound_servomotor.wav"
         }
       ]
@@ -210,25 +234,49 @@ Json containing the following elements
       "actions": [
         {
           "type": "SOUND",
+          "timeTriggerMS": 0,
           "SoundPath": "ahha.wav"
         }
       ]
     },
-    "XF10": {
-      "name": "XF10",
+    "repeat-sound": {
+      "name": "repeat-sound",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "macroRepeater": "repeat-sound",
+          "macro": "sound-servomotor",
+          "type": "REPEAT",
+          "timeTriggerMS": 3000
+        }
+      ]
+    },
+    "cancel-repeat-sound": {
+      "name": "cancel-repeat-sound",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "macro": "repeat-sound",
+          "type": "CANCEL",
+          "timeTriggerMS": 0
+        }
+      ]
+    },
+    "F10": {
+      "name": "F10",
       "delayTimeMS": 0,
       "actions": [
         {
           "movement": "PRESS",
-          "timeTriggerMS": 0,
           "key": "F10",
-          "type": "KEY"
+          "type": "KEY",
+          "timeTriggerMS": 0
         },
         {
           "movement": "RELEASE",
-          "timeTriggerMS": 100,
           "key": "F10",
-          "type": "KEY"
+          "type": "KEY",
+          "timeTriggerMS": 50
         }
       ]
     },
@@ -238,9 +286,9 @@ Json containing the following elements
       "actions": [
         {
           "movement": "PRESS",
-          "timeTriggerMS": 0,
           "key": "SPACE",
-          "type": "KEY"
+          "type": "KEY",
+          "timeTriggerMS": 0
         }
       ]
     },
@@ -250,9 +298,9 @@ Json containing the following elements
       "actions": [
         {
           "movement": "RELEASE",
-          "timeTriggerMS": 0,
           "key": "SPACE",
-          "type": "KEY"
+          "type": "KEY",
+          "timeTriggerMS": 0
         }
       ]
     },
@@ -262,10 +310,10 @@ Json containing the following elements
       "actions": [
         {
           "movement": "RELATIVE",
-          "timeTriggerMS": 500,
           "moveX": 1,
           "moveY": 1,
-          "type": "MOUSE"
+          "type": "MOUSE",
+          "timeTriggerMS": 500
         }
       ]
     }
