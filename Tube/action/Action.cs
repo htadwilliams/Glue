@@ -103,6 +103,7 @@ namespace Glue
         // Used to schedule action relative to triggering event
         protected long timeTriggerMS;
 
+        // Name of scheduled instance 
         protected string name;
 
         // Time scheduled for this action instance 
@@ -110,8 +111,7 @@ namespace Glue
 
         public abstract void Play();
 
-        // TODO split Action scheduling into Scheduler class 
-        // Actions may schedule more than one instance of themselves - see ActionTyping
+        // Actions may schedule multiple instances - see ActionTyping
         public abstract Action[] Schedule();
     }
 }

@@ -18,9 +18,9 @@ namespace Glue
     // Encapsulates items serialized / deserialized to JSON so there's one root element 
     internal class JsonWrapper
     {
-        public Dictionary<Keys, Trigger> triggers = new Dictionary<Keys, Trigger>();
-        public Dictionary<VirtualKeyCode, KeyMapEntry> keyMap = new Dictionary<VirtualKeyCode, KeyMapEntry>();
-        public Dictionary<string, Macro> macros = new Dictionary<string, Macro>();
+        public Dictionary<Keys, Trigger> triggers;
+        public Dictionary<VirtualKeyCode, KeyMapEntry> keyMap;
+        public Dictionary<string, Macro> macros;
     }
 
     internal static class GlueTube
@@ -42,6 +42,12 @@ namespace Glue
             set => s_jsonWrapper.macros = value;
         }
 
+        public static string FileName
+        {
+            get => s_fileName;
+            set => s_fileName = value;
+        }
+
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private static JsonWrapper s_jsonWrapper = new JsonWrapper();
@@ -52,6 +58,7 @@ namespace Glue
 
         private static Main s_mainForm = null;
         private static bool s_writeOnExit = false;      // Set if loading fails, or if GUI changes contents 
+        private static string s_fileName = FILENAME_DEFAULT;
 
         /// <summary>
         /// The main entry point for the application.
@@ -59,7 +66,7 @@ namespace Glue
         [STAThread]
         static void Main(string[] args)
         {
-            string fileName = args.Length > 0
+            s_fileName = args.Length > 0
                 ? args[0]
                 : FILENAME_DEFAULT;
 
@@ -74,7 +81,7 @@ namespace Glue
             {
                 InitLogging();
                 InitDirectX();
-                LoadFile(fileName);
+                LoadFile(s_fileName);
 
                 // Native keyboard and mouse hook initialization
                 KeyInterceptor.Initialize(KeyHandler.HookCallback);
@@ -98,7 +105,7 @@ namespace Glue
 
             if (s_writeOnExit)
             {
-                SaveFile(fileName);
+                SaveFile(s_fileName);
             }
 
             LOGGER.Info("Exiting");
@@ -208,8 +215,17 @@ namespace Glue
             }
         }
 
-        private static void LoadFile(string fileName)
+        private static void InitData()
         {
+            Triggers = new Dictionary<Keys, Trigger>();
+            KeyMap = new Dictionary<VirtualKeyCode, KeyMapEntry>();
+            Macros = new Dictionary<string, Macro>();
+        }
+
+        public static void LoadFile(string fileName)
+        {
+            InitData();
+
             LOGGER.Info("Loading file [" + fileName + "]");
 
             JsonSerializer serializer = new JsonSerializer
@@ -240,8 +256,6 @@ namespace Glue
                 return;
             }
 
-            s_writeOnExit = false;
-
             if (null != Macros && Macros.Count != 0)
             {
                 LOGGER.Info(String.Format("    Loaded {0} macros", Macros.Count));
@@ -254,14 +268,15 @@ namespace Glue
             {
                 LOGGER.Info(String.Format("    Loaded {0} remapped keys", KeyMap.Count));
             }
+
+            s_fileName = fileName;
+            s_writeOnExit = false;
+            return;
         }
 
         private static void CreateDefaultContent()
         {
             LOGGER.Info("File not found or load failed - creating example content");
-
-            Triggers = new Dictionary<Keys, Trigger>();
-            KeyMap = new Dictionary<VirtualKeyCode, KeyMapEntry>();
 
             //
             // Create macro with several actions bound to CTRL-Z
