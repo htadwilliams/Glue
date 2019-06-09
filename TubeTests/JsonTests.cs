@@ -20,8 +20,8 @@ namespace GlueTests
     {
         // TODO should be readonly
         [JsonProperty]
-        protected String type;
-        private String move;
+        protected string type;
+        private string move;
 
         public string Move
         {
@@ -75,7 +75,7 @@ namespace GlueTests
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             JObject jo = JObject.Load(reader);
-            switch (jo["type"].Value<String>())
+            switch (jo["type"].Value<string>())
             {
                 case "CAT":
                     return JsonConvert.DeserializeObject<Cat>(jo.ToString(), SpecifiedSubclassConversion);

@@ -20,7 +20,7 @@ namespace Glue
     {
         public Dictionary<Keys, Trigger> triggers = new Dictionary<Keys, Trigger>();
         public Dictionary<VirtualKeyCode, KeyMapEntry> keyMap = new Dictionary<VirtualKeyCode, KeyMapEntry>();
-        public Dictionary<String, Macro> macros = new Dictionary<String, Macro>();
+        public Dictionary<string, Macro> macros = new Dictionary<string, Macro>();
     }
 
     internal static class GlueTube
@@ -36,7 +36,7 @@ namespace Glue
             get => s_jsonWrapper.keyMap;
             set => s_jsonWrapper.keyMap = value;
         }
-        public static Dictionary<String, Macro> Macros 
+        public static Dictionary<string, Macro> Macros 
         {
             get => s_jsonWrapper.macros;
             set => s_jsonWrapper.macros = value;
@@ -59,7 +59,7 @@ namespace Glue
         [STAThread]
         static void Main(string[] args)
         {
-            String fileName = args.Length > 0
+            string fileName = args.Length > 0
                 ? args[0]
                 : FILENAME_DEFAULT;
 
@@ -145,7 +145,7 @@ namespace Glue
 
                         foreach (DeviceInstance deviceInstance in deviceInstances)
                         {
-                            String message = String.Format(
+                            string message = String.Format(
                                 "        {0} : GUID=[{1}]",
                                 deviceInstance.InstanceName,
                                 deviceInstance.ProductGuid.ToString());
@@ -183,7 +183,7 @@ namespace Glue
             GlueTube.KeyMap.Add(keyOld, new KeyMapEntry(keyOld, keyNew, procName));
         }
 
-        private static void SaveFile(String fileName)
+        private static void SaveFile(string fileName)
         {
             LOGGER.Info("Saving to [" + fileName + "]");
             JsonSerializer serializer = new JsonSerializer
@@ -208,7 +208,7 @@ namespace Glue
             }
         }
 
-        private static void LoadFile(String fileName)
+        private static void LoadFile(string fileName)
         {
             LOGGER.Info("Loading file [" + fileName + "]");
 
@@ -266,7 +266,7 @@ namespace Glue
             //
             // Create macro with several actions bound to CTRL-Z
             //
-            String macroName = "delayed-action";
+            string macroName = "delayed-action";
             Macro macro = new Macro(macroName, 10) // Fire 10ms after triggered
                 .AddAction(new ActionKey(VirtualKeyCode.VK_R, Movement.PRESS, 10))
                 .AddAction(new ActionKey(VirtualKeyCode.VK_R, Movement.RELEASE, 10))
@@ -302,29 +302,50 @@ namespace Glue
             Triggers.Add(trigger.TriggerKey, trigger);
 
             //
-            // Create and bind a sound macro that alternates sounds
+            // Create a trigger that alternates between macros that play sound events
             //
             macroName = "sound-servomotor";
             macro = new Macro(macroName, 0);
-            macro.AddAction(new ActionSound("sound_servomotor.wav"));
+            macro.AddAction(new ActionSound("sound_servomotor.wav", 0));
             Macros.Add(macroName, macro);
 
             macroName = "sound-ahha";
             macro = new Macro(macroName, 0);
-            macro.AddAction(new ActionSound("ahha.wav"));
+            macro.AddAction(new ActionSound("ahha.wav", 0));
             Macros.Add(macroName, macro);
 
-            trigger = new Trigger(Keys.S, new List<String> { "sound-servomotor", "sound-ahha" });
+            trigger = new Trigger(Keys.S, new List<string> { "sound-servomotor", "sound-ahha" });
             trigger.AddModifier(Keys.LControlKey);
+            Triggers.Add(trigger.TriggerKey, trigger);
+
+            //
+            // Schedule repeating sound every N MS
+            //
+            macroName = "repeat-sound";
+            macro = new Macro(macroName, 0);
+            macro.AddAction(new ActionRepeat(3000, macroName, "sound-servomotor" ));
+            Macros.Add(macroName, macro);
+
+            trigger = new Trigger(Keys.Oemcomma, "repeat-sound");
+            trigger.AddModifier(Keys.LMenu);
+            Triggers.Add(trigger.TriggerKey, trigger);
+
+            macroName = "cancel-repeat-sound";
+            macro = new Macro(macroName, 0);
+            macro.AddAction(new ActionCancel("repeat-sound"));
+            Macros.Add(macroName, macro);
+
+            trigger = new Trigger(Keys.OemPeriod, "cancel-repeat-sound");
+            trigger.AddModifier(Keys.LMenu);
             Triggers.Add(trigger.TriggerKey, trigger);
 
             //
             // Macro bound to mouse button X1 / X2
             //
-            macroName = "XF10";
+            macroName = "F10";
             macro = new Macro(macroName, 0);
             macro.AddAction(new ActionKey(VirtualKeyCode.F10, Movement.PRESS, 0));
-            macro.AddAction(new ActionKey(VirtualKeyCode.F10, Movement.RELEASE, 100));
+            macro.AddAction(new ActionKey(VirtualKeyCode.F10, Movement.RELEASE, 50));
             Macros.Add(macroName, macro);
 
             // Same macro bound to two triggers            

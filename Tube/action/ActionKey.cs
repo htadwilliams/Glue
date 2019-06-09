@@ -15,15 +15,11 @@ namespace Glue
         }
 
         public static readonly IntPtr INJECTION_ID = new IntPtr(0xD00D);
-        public long TimeTriggerMS => timeTriggerMS;
         public Nullable<VirtualKeyCode> Key => key;
 
         [JsonProperty]
         [JsonConverter(typeof(StringEnumConverter))]
         private readonly Movement movement;
-
-        [JsonProperty]
-        private readonly long timeTriggerMS;            // Time relative to triggering event
 
         [JsonProperty]
         [JsonConverter(typeof(StringEnumConverter))]
@@ -38,7 +34,7 @@ namespace Glue
             this.key = key;
             this.movement = movement;
             this.input = null;
-            this.timeTriggerMS = timeTriggerMS;
+            this.TimeTriggerMS = timeTriggerMS;
             this.Type = "KEY";
         }
 
@@ -47,7 +43,7 @@ namespace Glue
             this.input=input;
             this.key = null;
             this.movement = movement;
-            this.timeTriggerMS = timeTriggerMS;
+            this.TimeTriggerMS = timeTriggerMS;
         }
 
         public override Action[] Schedule()
@@ -59,7 +55,7 @@ namespace Glue
 
             if (LOGGER.IsDebugEnabled)
             {
-                String message = String.Format("Scheduled at tick {0:n0} in {1}ms: {2}-{3}",
+                string message = String.Format("Scheduled at tick {0:n0} in {1:n0}ms: {2}-{3}",
                     scheduledCopy.TimeScheduledMS,      // Absolute time scheduled to play
                     this.timeTriggerMS,                 // Time relative to prevous action
                     this.key,                   
@@ -104,7 +100,7 @@ namespace Glue
             if (LOGGER.IsDebugEnabled)
             {
                 long now = ActionQueue.Now();
-                String message = String.Format("   Played at tick {0:n0} dt {1}ms: {2}-{3}",
+                string message = String.Format("   Played at tick {0:n0} dt {1}ms: {2}-{3}",
                     now,                            // Time actually played
                     now - this.TimeScheduledMS,     // Time delta (how late were we?)
                     this.key,                       

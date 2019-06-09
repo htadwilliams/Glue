@@ -16,7 +16,7 @@ namespace Glue
         private static readonly SoundPlayer PLAYER = new SoundPlayer();
         
         // For friendly display of keys in GUI
-        private static readonly Dictionary<Keys, String> keyMap = new Dictionary<Keys, String>();
+        private static readonly Dictionary<Keys, string> keyMap = new Dictionary<Keys, string>();
 
         public static void InitKeyTable()
         {
@@ -139,7 +139,7 @@ namespace Glue
             {
                 LOGGER.Debug("+" + (VirtualKeyCode) vkCode);
 
-                String output;
+                string output;
                 if (GlueTube.MainForm.RawKeyNames)
                 {
                     output = "+" + (VirtualKeyCode) vkCode + " ";
@@ -159,7 +159,7 @@ namespace Glue
             {
                 // Filter remapping to the given process name 
                 // If empty process name is given, perform remap for all of them
-                String inputFocusProcessName = "";
+                string inputFocusProcessName = "";
                 if (remap.ProcessName != null && remap.ProcessName.Length != 0)
                 {
                     inputFocusProcessName = ProcessInfo.GetProcessFileName(
@@ -193,7 +193,7 @@ namespace Glue
         private static string FormatKeyString(int vkCode)
         {
             string output;
-            if (keyMap.TryGetValue((Keys) vkCode, out String text))
+            if (keyMap.TryGetValue((Keys) vkCode, out string text))
             {
                 output = text;
             }

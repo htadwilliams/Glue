@@ -85,6 +85,8 @@
   <ItemGroup>
     <Compile Include="action\Action.cs" />
     <Compile Include="action\ActionMouse.cs" />
+    <Compile Include="action\ActionCancel.cs" />
+    <Compile Include="action\ActionRepeat.cs" />
     <Compile Include="action\ActionSound.cs" />
     <Compile Include="action\ActionKey.cs" />
     <Compile Include="action\ActionTyping.cs" />

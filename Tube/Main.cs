@@ -25,7 +25,7 @@ namespace Glue
             IDC_RAWKEYNAMES.Enabled = logInput;
         }
 
-        internal void AppendText(String text)
+        internal void AppendText(string text)
         {
              IDE_INPUTSTREAM.AppendText(text);
         }
