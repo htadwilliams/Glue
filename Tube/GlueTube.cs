@@ -11,7 +11,7 @@ using WindowsInput.Native;
 using static Glue.ActionKey;
 using static Glue.Trigger;
 
-[assembly: log4net.Config.XmlConfigurator(Watch = true)]
+[assembly: XmlConfigurator(Watch = true)]
 
 namespace Glue
 {

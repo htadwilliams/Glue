@@ -70,5 +70,11 @@ namespace Glue
         {
             this.Close();
         }
+
+        private void HelpAbout_Click(object sender, EventArgs e)
+        {
+            HelpAbout helpAbout = new HelpAbout();
+            helpAbout.ShowDialog();
+        }
     }
 }
