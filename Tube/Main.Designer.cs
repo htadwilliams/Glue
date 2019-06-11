@@ -56,20 +56,22 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.IDE_INPUTSTREAM.Font = new System.Drawing.Font("Courier New", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.IDE_INPUTSTREAM.Location = new System.Drawing.Point(-6, 43);
+            this.IDE_INPUTSTREAM.Location = new System.Drawing.Point(-3, 26);
+            this.IDE_INPUTSTREAM.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.IDE_INPUTSTREAM.Multiline = true;
             this.IDE_INPUTSTREAM.Name = "IDE_INPUTSTREAM";
             this.IDE_INPUTSTREAM.ReadOnly = true;
             this.IDE_INPUTSTREAM.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.IDE_INPUTSTREAM.Size = new System.Drawing.Size(1630, 947);
+            this.IDE_INPUTSTREAM.Size = new System.Drawing.Size(817, 460);
             this.IDE_INPUTSTREAM.TabIndex = 0;
             // 
             // IDB_CLEAR
             // 
             this.IDB_CLEAR.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.IDB_CLEAR.Location = new System.Drawing.Point(12, 1010);
+            this.IDB_CLEAR.Location = new System.Drawing.Point(10, 498);
+            this.IDB_CLEAR.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.IDB_CLEAR.Name = "IDB_CLEAR";
-            this.IDB_CLEAR.Size = new System.Drawing.Size(129, 41);
+            this.IDB_CLEAR.Size = new System.Drawing.Size(64, 21);
             this.IDB_CLEAR.TabIndex = 1;
             this.IDB_CLEAR.Text = "&Clear";
             this.IDB_CLEAR.UseVisualStyleBackColor = true;
@@ -79,9 +81,10 @@
             // 
             this.IDC_LOGDISPLAY.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.IDC_LOGDISPLAY.AutoSize = true;
-            this.IDC_LOGDISPLAY.Location = new System.Drawing.Point(170, 1022);
+            this.IDC_LOGDISPLAY.Location = new System.Drawing.Point(89, 502);
+            this.IDC_LOGDISPLAY.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.IDC_LOGDISPLAY.Name = "IDC_LOGDISPLAY";
-            this.IDC_LOGDISPLAY.Size = new System.Drawing.Size(133, 29);
+            this.IDC_LOGDISPLAY.Size = new System.Drawing.Size(70, 17);
             this.IDC_LOGDISPLAY.TabIndex = 2;
             this.IDC_LOGDISPLAY.Text = "&Log input";
             this.IDC_LOGDISPLAY.UseVisualStyleBackColor = true;
@@ -90,9 +93,10 @@
             // 
             this.IDC_RAWKEYNAMES.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.IDC_RAWKEYNAMES.AutoSize = true;
-            this.IDC_RAWKEYNAMES.Location = new System.Drawing.Point(309, 1022);
+            this.IDC_RAWKEYNAMES.Location = new System.Drawing.Point(158, 502);
+            this.IDC_RAWKEYNAMES.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.IDC_RAWKEYNAMES.Name = "IDC_RAWKEYNAMES";
-            this.IDC_RAWKEYNAMES.Size = new System.Drawing.Size(196, 29);
+            this.IDC_RAWKEYNAMES.Size = new System.Drawing.Size(102, 17);
             this.IDC_RAWKEYNAMES.TabIndex = 3;
             this.IDC_RAWKEYNAMES.Text = "&Raw key names";
             this.IDC_RAWKEYNAMES.UseVisualStyleBackColor = true;
@@ -107,7 +111,8 @@
             this.helpToolStripMenuItem});
             this.menuStripMain.Location = new System.Drawing.Point(0, 0);
             this.menuStripMain.Name = "menuStripMain";
-            this.menuStripMain.Size = new System.Drawing.Size(1616, 42);
+            this.menuStripMain.Padding = new System.Windows.Forms.Padding(3, 1, 0, 1);
+            this.menuStripMain.Size = new System.Drawing.Size(808, 24);
             this.menuStripMain.TabIndex = 4;
             this.menuStripMain.Text = "menuStrip1";
             // 
@@ -117,14 +122,14 @@
             this.FileOpen,
             this.FileExit});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(64, 38);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 22);
             this.fileToolStripMenuItem.Text = "&File";
             // 
             // FileOpen
             // 
             this.FileOpen.Name = "FileOpen";
             this.FileOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.FileOpen.Size = new System.Drawing.Size(324, 38);
+            this.FileOpen.Size = new System.Drawing.Size(155, 22);
             this.FileOpen.Text = "&Open...";
             this.FileOpen.TextImageRelation = System.Windows.Forms.TextImageRelation.Overlay;
             this.FileOpen.Click += new System.EventHandler(this.FileOpen_Click);
@@ -133,7 +138,7 @@
             // 
             this.FileExit.Name = "FileExit";
             this.FileExit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.FileExit.Size = new System.Drawing.Size(324, 38);
+            this.FileExit.Size = new System.Drawing.Size(155, 22);
             this.FileExit.Text = "E&xit";
             this.FileExit.Click += new System.EventHandler(this.FileExit_Click);
             // 
@@ -145,37 +150,37 @@
             this.triggersToolStripMenuItem,
             this.remapKeysToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(67, 38);
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 22);
             this.editToolStripMenuItem.Text = "&Edit";
             // 
             // preferencesToolStripMenuItem
             // 
             this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
-            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(258, 38);
+            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
             this.preferencesToolStripMenuItem.Text = "&Preferences...";
             // 
             // macrosToolStripMenuItem
             // 
             this.macrosToolStripMenuItem.Name = "macrosToolStripMenuItem";
-            this.macrosToolStripMenuItem.Size = new System.Drawing.Size(258, 38);
+            this.macrosToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
             this.macrosToolStripMenuItem.Text = "&Macros...";
             // 
             // triggersToolStripMenuItem
             // 
             this.triggersToolStripMenuItem.Name = "triggersToolStripMenuItem";
-            this.triggersToolStripMenuItem.Size = new System.Drawing.Size(258, 38);
+            this.triggersToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
             this.triggersToolStripMenuItem.Text = "&Triggers...";
             // 
             // remapKeysToolStripMenuItem
             // 
             this.remapKeysToolStripMenuItem.Name = "remapKeysToolStripMenuItem";
-            this.remapKeysToolStripMenuItem.Size = new System.Drawing.Size(258, 38);
+            this.remapKeysToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
             this.remapKeysToolStripMenuItem.Text = "&Remap Keys...";
             // 
             // viewToolStripMenuItem
             // 
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-            this.viewToolStripMenuItem.Size = new System.Drawing.Size(78, 38);
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 22);
             this.viewToolStripMenuItem.Text = "&View";
             // 
             // helpToolStripMenuItem
@@ -183,20 +188,20 @@
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.aboutToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(77, 38);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 22);
             this.helpToolStripMenuItem.Text = "&Help";
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(235, 38);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.aboutToolStripMenuItem.Text = "&About Glue";
             // 
             // Main
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1616, 1063);
+            this.ClientSize = new System.Drawing.Size(808, 530);
             this.Controls.Add(this.IDC_RAWKEYNAMES);
             this.Controls.Add(this.IDC_LOGDISPLAY);
             this.Controls.Add(this.IDB_CLEAR);
@@ -205,6 +210,7 @@
             this.HelpButton = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStripMain;
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "Main";
             this.Text = "Glue";
             this.menuStripMain.ResumeLayout(false);
