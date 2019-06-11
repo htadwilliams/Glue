@@ -44,7 +44,7 @@
             this.remapKeysToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.HelpAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStripMain.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -57,7 +57,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.IDE_INPUTSTREAM.Font = new System.Drawing.Font("Courier New", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.IDE_INPUTSTREAM.Location = new System.Drawing.Point(-3, 26);
-            this.IDE_INPUTSTREAM.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.IDE_INPUTSTREAM.Margin = new System.Windows.Forms.Padding(2);
             this.IDE_INPUTSTREAM.Multiline = true;
             this.IDE_INPUTSTREAM.Name = "IDE_INPUTSTREAM";
             this.IDE_INPUTSTREAM.ReadOnly = true;
@@ -69,7 +69,7 @@
             // 
             this.IDB_CLEAR.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.IDB_CLEAR.Location = new System.Drawing.Point(10, 498);
-            this.IDB_CLEAR.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.IDB_CLEAR.Margin = new System.Windows.Forms.Padding(2);
             this.IDB_CLEAR.Name = "IDB_CLEAR";
             this.IDB_CLEAR.Size = new System.Drawing.Size(64, 21);
             this.IDB_CLEAR.TabIndex = 1;
@@ -82,7 +82,7 @@
             this.IDC_LOGDISPLAY.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.IDC_LOGDISPLAY.AutoSize = true;
             this.IDC_LOGDISPLAY.Location = new System.Drawing.Point(89, 502);
-            this.IDC_LOGDISPLAY.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.IDC_LOGDISPLAY.Margin = new System.Windows.Forms.Padding(2);
             this.IDC_LOGDISPLAY.Name = "IDC_LOGDISPLAY";
             this.IDC_LOGDISPLAY.Size = new System.Drawing.Size(70, 17);
             this.IDC_LOGDISPLAY.TabIndex = 2;
@@ -94,7 +94,7 @@
             this.IDC_RAWKEYNAMES.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.IDC_RAWKEYNAMES.AutoSize = true;
             this.IDC_RAWKEYNAMES.Location = new System.Drawing.Point(158, 502);
-            this.IDC_RAWKEYNAMES.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.IDC_RAWKEYNAMES.Margin = new System.Windows.Forms.Padding(2);
             this.IDC_RAWKEYNAMES.Name = "IDC_RAWKEYNAMES";
             this.IDC_RAWKEYNAMES.Size = new System.Drawing.Size(102, 17);
             this.IDC_RAWKEYNAMES.TabIndex = 3;
@@ -186,16 +186,17 @@
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aboutToolStripMenuItem});
+            this.HelpAbout});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 22);
             this.helpToolStripMenuItem.Text = "&Help";
             // 
-            // aboutToolStripMenuItem
+            // HelpAbout
             // 
-            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
-            this.aboutToolStripMenuItem.Text = "&About Glue";
+            this.HelpAbout.Name = "HelpAbout";
+            this.HelpAbout.Size = new System.Drawing.Size(180, 22);
+            this.HelpAbout.Text = "&About Glue";
+            this.HelpAbout.Click += new System.EventHandler(this.HelpAbout_Click);
             // 
             // Main
             // 
@@ -210,7 +211,7 @@
             this.HelpButton = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStripMain;
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Main";
             this.Text = "Glue";
             this.menuStripMain.ResumeLayout(false);
@@ -231,7 +232,7 @@
         private System.Windows.Forms.ToolStripMenuItem FileOpen;
         private System.Windows.Forms.ToolStripMenuItem FileExit;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem HelpAbout;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem preferencesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem macrosToolStripMenuItem;
