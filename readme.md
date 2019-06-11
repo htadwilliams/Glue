@@ -8,7 +8,7 @@ DEFAULT FILE MACROS AND TRIGGERS:
 * Ctrl-C (making sure input focus is not set to console window or application will exit) will type a string of characters immediately with short delay between presses and releases.
 * Ctrl-Z will immediately type an R followed by a Q and ENTER after a delay of 4 seconds. This is useful for demonstrating asynchronous scheduling of output events.
 * Ctrl-S plays a sound asynchronously. If the sound is already playing it will be restarted. 
-* Space is a toggle and will be held down with every other press. This won't show in things like Notepad as the held key won't trigger Windows key repeats, but works in many apps and games.
+* Alt-Space toggles the space bar so it's held down with every other press. This won't have much effect in Windows apps such as notepad because the held key won't trigger Windows key repeats, but works in many apps and games.
 * MBX1 / MBX2 (mouse side buttons) trigger a press of F10.
 * Alt-, begins repeating a sound every 3 seconds.
 * Alt-. cancels all repeating instances started with Alt-, (there may be more than one).
