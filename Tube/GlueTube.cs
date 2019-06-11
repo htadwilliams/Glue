@@ -52,6 +52,7 @@ namespace Glue
 
         private static JsonWrapper s_jsonWrapper = new JsonWrapper();
 
+        // used to generate example content 
         private const string FILENAME_DEFAULT               = "macros.glue";
         private const string PROCESS_NAME_NOTEPAD           = "notepad";      // also matches Notepad++
         private const string PROCESS_NAME_WASD              = "fallout4.exe"; 
@@ -345,12 +346,12 @@ namespace Glue
             trigger.AddModifier(Keys.LMenu);
             Triggers.Add(trigger.TriggerKey, trigger);
 
-            macroName = "cancel-repeat-sound";
+            macroName = "repeat-sound-cancel";
             macro = new Macro(macroName, 0);
             macro.AddAction(new ActionCancel("repeat-sound"));
             Macros.Add(macroName, macro);
 
-            trigger = new Trigger(Keys.OemPeriod, "cancel-repeat-sound");
+            trigger = new Trigger(Keys.OemPeriod, "repeat-sound-cancel");
             trigger.AddModifier(Keys.LMenu);
             Triggers.Add(trigger.TriggerKey, trigger);
 
@@ -383,6 +384,7 @@ namespace Glue
             Macros.Add(macroName, macro);
 
             trigger = new Trigger(Keys.Space, new List<string> {"toggle-down", null, "toggle-up", null}, TriggerType.Both, true);
+            trigger.AddModifier(Keys.LControlKey);
             Triggers.Add(trigger.TriggerKey, trigger);
 
             // 
@@ -434,8 +436,9 @@ namespace Glue
         {
             bool eatInput = false;
 
-            // Triggers fire macros (and other things)
-            if (GlueTube.Triggers != null && GlueTube.Triggers.TryGetValue((Keys) vkCode, out Trigger trigger))
+            // Triggers fire macros 
+            if (GlueTube.Triggers != null && 
+                GlueTube.Triggers.TryGetValue((Keys) vkCode, out Trigger trigger))
             {
                 switch (trigger.Type)
                 {
