@@ -125,9 +125,24 @@ namespace Glue
                 return false;
             }
 
+            if (this.indexMacroCurrent >= this.macroNames.Count)
+            {
+                indexMacroCurrent = 0;
+            }
+
+            String macroName = macroNames[this.indexMacroCurrent];
+
+            // null macro names are allowed in list - useful for key toggles or other 
+            // no-op entries in macro "ripple" effect 
+            if (null != macroName)
+            {
+                GlueTube.PlayMacro(macroNames[this.indexMacroCurrent]);
+            }
+            this.indexMacroCurrent++;
+
             if (LOGGER.IsInfoEnabled)
             {
-                string message = "TRIGGER FIRED: triggerKey = [" + TriggerKey + "]";
+                string message = "TRIGGER FIRED: macro = [" + macroName + "] triggerKey = [" + TriggerKey + "]";
                 if (this.modKeys.Count > 0)
                 {
                     message += " modKeys = [";
@@ -137,17 +152,12 @@ namespace Glue
                 LOGGER.Info(message);
             }
 
-            if (this.indexMacroCurrent >= this.macroNames.Count)
+            if (GlueTube.MainForm.LogInput && 
+                GlueTube.MainForm.RawKeyNames && 
+                null != macroName)
             {
-                indexMacroCurrent = 0;
+                GlueTube.MainForm.AppendText("[" + macroName + "] ");
             }
-
-            // null macro names are allowed in list for no-op
-            if (null != macroNames[this.indexMacroCurrent])
-            {
-                GlueTube.PlayMacro(macroNames[this.indexMacroCurrent]);
-            }
-            this.indexMacroCurrent++;
 
             return this.eatInput;
         }
