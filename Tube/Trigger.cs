@@ -136,7 +136,7 @@ namespace Glue
             // no-op entries in macro "ripple" effect 
             if (null != macroName)
             {
-                GlueTube.PlayMacro(macroNames[this.indexMacroCurrent]);
+                Tube.PlayMacro(macroNames[this.indexMacroCurrent]);
             }
             this.indexMacroCurrent++;
 
@@ -152,11 +152,11 @@ namespace Glue
                 LOGGER.Info(message);
             }
 
-            if (GlueTube.MainForm.LogInput && 
-                GlueTube.MainForm.RawKeyNames && 
+            if (Tube.MainForm.LogInput && 
+                Tube.MainForm.RawKeyNames && 
                 null != macroName)
             {
-                GlueTube.MainForm.AppendText("[" + macroName + "] ");
+                Tube.MainForm.AppendText("[" + macroName + "] ");
             }
 
             return this.eatInput;

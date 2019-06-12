@@ -24,10 +24,10 @@ namespace Glue
         public override void Play()
         {
             // play macro to be repeated
-            GlueTube.PlayMacro(macro);
+            Tube.PlayMacro(macro);
 
             // schedule another instance to be played later
-            GlueTube.PlayMacro(macroRepeater);
+            Tube.PlayMacro(macroRepeater);
         }
 
         public override Action[] Schedule()

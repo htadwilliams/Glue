@@ -8,7 +8,7 @@ using static Glue.KeyInterceptor;
 
 namespace Glue
 {
-    static class KeyHandler
+    static class KeyboardHandler
     {
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private static bool s_lastInsertWasSpace = false;
@@ -80,7 +80,7 @@ namespace Glue
                         return new IntPtr(1);
                     }
 
-                    if (GlueTube.CheckAndFireTriggers(vkCode, ActionKey.Movement.PRESS))
+                    if (Tube.CheckAndFireTriggers(vkCode, ActionKey.Movement.PRESS))
                     {
                         // Eat keystroke if trigger tells us to do so
                         return new IntPtr(1);
@@ -102,7 +102,7 @@ namespace Glue
                         return new IntPtr(1);
                     }
 
-                    if (GlueTube.CheckAndFireTriggers(vkCode, ActionKey.Movement.RELEASE))
+                    if (Tube.CheckAndFireTriggers(vkCode, ActionKey.Movement.RELEASE))
                     {
                         // Eat keystroke if trigger tells us to do so
                         return new IntPtr(1);
@@ -122,25 +122,25 @@ namespace Glue
 
         private static void LogKeyUp(int vkCode)
         {
-            if (GlueTube.MainForm.LogInput)
+            if (Tube.MainForm.LogInput)
             {
                 LOGGER.Debug("-" + (VirtualKeyCode) vkCode);
 
-                if (GlueTube.MainForm.RawKeyNames)
+                if (Tube.MainForm.RawKeyNames)
                 {
-                    GlueTube.MainForm.AppendText("-" + (VirtualKeyCode) vkCode + " ");
+                    Tube.MainForm.AppendText("-" + (VirtualKeyCode) vkCode + " ");
                 }
             }
         }
 
         private static void LogKeyDown(int vkCode)
         {
-            if (GlueTube.MainForm.LogInput)
+            if (Tube.MainForm.LogInput)
             {
                 LOGGER.Debug("+" + (VirtualKeyCode) vkCode);
 
                 string output;
-                if (GlueTube.MainForm.RawKeyNames)
+                if (Tube.MainForm.RawKeyNames)
                 {
                     output = "+" + (VirtualKeyCode) vkCode + " ";
                 }
@@ -149,13 +149,13 @@ namespace Glue
                     output = FormatKeyString(vkCode);
                 }
 
-                GlueTube.MainForm.AppendText(output);
+                Tube.MainForm.AppendText(output);
             }
         }
 
         private static VirtualKeyCode DoRemap(VirtualKeyCode inputKey, ActionKey.Movement movement)
         {
-            if (GlueTube.KeyMap != null && GlueTube.KeyMap.TryGetValue(inputKey, out KeyMapEntry remap))
+            if (Tube.KeyMap != null && Tube.KeyMap.TryGetValue(inputKey, out KeyboardRemapEntry remap))
             {
                 // Filter remapping to the given process name 
                 // If empty process name is given, perform remap for all of them
