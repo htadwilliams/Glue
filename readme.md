@@ -1,6 +1,8 @@
+Keyboard remapping and macroing tool for Windows written in C#.
+
 WARNING: This globally hooks keyboard/mouse input and logs to file if DEBUG mode is enabled. Don't run in DEBUG mode if you don't want your keys logged!
 
-An input remapping and macroing tool for Windows.  Originally written in C++ and used to play EverQuest for over 10 years, this a rewrite in C# including low-level keyboard and mouse hooks (with lots of native windows API calls).
+Originally written in C++ and used to play EverQuest for over 10 years, this a rewrite in C# including low-level keyboard and mouse hooks (with lots of native windows API calls).
 
 The application by default attempts to read MACROS.GLUE from its working directory. The file name / path may be optionally specified as a command-line parameter.  If this file isn't found one will be created with example macros, triggers, and remapping entries.
 
