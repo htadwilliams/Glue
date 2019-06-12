@@ -24,7 +24,7 @@ namespace Glue
             this.IDC_RAWKEYNAMES.DataBindings.Add("Checked", this, "rawKeyNames", true, DataSourceUpdateMode.OnPropertyChanged);
 
             baseCaptionText = this.Text;
-            SetCaption(GlueTube.FileName);
+            SetCaption(Tube.FileName);
 
             IDC_RAWKEYNAMES.Enabled = logInput;
         }
@@ -61,8 +61,8 @@ namespace Glue
 
             if(openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                GlueTube.LoadFile(openFileDialog.FileName);
-                SetCaption(GlueTube.FileName);
+                Tube.LoadFile(openFileDialog.FileName);
+                SetCaption(Tube.FileName);
             }
         }
 

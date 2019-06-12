@@ -19,11 +19,11 @@ namespace Glue
     internal class JsonWrapper
     {
         public Dictionary<Keys, Trigger> triggers;
-        public Dictionary<VirtualKeyCode, KeyMapEntry> keyMap;
+        public Dictionary<VirtualKeyCode, KeyboardRemapEntry> keyMap;
         public Dictionary<string, Macro> macros;
     }
 
-    internal static class GlueTube
+    internal static class Tube
     {
         public static Main MainForm => s_mainForm;
         public static Dictionary<Keys, Trigger> Triggers 
@@ -31,7 +31,7 @@ namespace Glue
             get => s_jsonWrapper.triggers;
             set => s_jsonWrapper.triggers = value;
         }
-        public static Dictionary<VirtualKeyCode, KeyMapEntry> KeyMap
+        public static Dictionary<VirtualKeyCode, KeyboardRemapEntry> KeyMap
         {
             get => s_jsonWrapper.keyMap;
             set => s_jsonWrapper.keyMap = value;
@@ -76,7 +76,7 @@ namespace Glue
                 Thread.CurrentThread.Name = "Main";
             }
 
-            KeyHandler.InitKeyTable();
+            KeyboardHandler.InitKeyTable();
 
             try
             {
@@ -85,7 +85,7 @@ namespace Glue
                 LoadFile(s_fileName);
 
                 // Native keyboard and mouse hook initialization
-                KeyInterceptor.Initialize(KeyHandler.HookCallback);
+                KeyInterceptor.Initialize(KeyboardHandler.HookCallback);
                 MouseInterceptor.Initialize(MouseHandler.HookCallback);
 
                 // Starts thread for timed queue of actions such as pressing keys,
@@ -188,7 +188,7 @@ namespace Glue
 
         private static void AddRemap(VirtualKeyCode keyOld, VirtualKeyCode keyNew, string procName)
         {
-            GlueTube.KeyMap.Add(keyOld, new KeyMapEntry(keyOld, keyNew, procName));
+            Tube.KeyMap.Add(keyOld, new KeyboardRemapEntry(keyOld, keyNew, procName));
         }
 
         private static void SaveFile(string fileName)
@@ -219,7 +219,7 @@ namespace Glue
         private static void InitData()
         {
             Triggers = new Dictionary<Keys, Trigger>();
-            KeyMap = new Dictionary<VirtualKeyCode, KeyMapEntry>();
+            KeyMap = new Dictionary<VirtualKeyCode, KeyboardRemapEntry>();
             Macros = new Dictionary<string, Macro>();
         }
 
@@ -437,8 +437,8 @@ namespace Glue
             bool eatInput = false;
 
             // Triggers fire macros 
-            if (GlueTube.Triggers != null && 
-                GlueTube.Triggers.TryGetValue((Keys) vkCode, out Trigger trigger))
+            if (Tube.Triggers != null && 
+                Tube.Triggers.TryGetValue((Keys) vkCode, out Trigger trigger))
             {
                 switch (trigger.Type)
                 {
