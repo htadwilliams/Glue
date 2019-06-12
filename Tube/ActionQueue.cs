@@ -1,112 +1,52 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using System.Threading;
+﻿using Glue.native;
 using Priority_Queue;
+using System;
 
 namespace Glue
 {
     class ActionQueue
     {
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly SimplePriorityQueue<Action, long> s_actions = new SimplePriorityQueue<Action, long>();
 
-        // Using https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp copied directly into the project 
-        // Thanks to BlueRaja.admin@gmail.com
-        private static SimplePriorityQueue<Action, long> actions = new SimplePriorityQueue<Action, long>();
+        public int Count { get => s_actions.Count; }
+        public Action First { get => s_actions.First; }
 
-        private static Thread thread = null;
-        private static EventWaitHandle eventWaitNextAction = new AutoResetEvent (false);
-
-        public static void Start()
+        internal void Enqueue(Action action)
         {
-            if (null == thread)
-            {
-                thread = new Thread(new ThreadStart(Threadproc))
-                {
-                    Name = "ActionQueue",
-
-                    // set or app won't exit when main thread closes (e.g. form is closed)
-                    IsBackground = true
-                };
-
-                thread.Start();
-            }
+            s_actions.Enqueue(action, action.TimeScheduledMS);
         }
 
-        public static void Enqueue(Action action, long timeScheduledMS)
-        {
-            actions.Enqueue(action, timeScheduledMS);
-            eventWaitNextAction.Set();
-        }
-
-        internal static void Cancel(string name)
+        internal void Cancel(string name)
         {
             short cancelCount = 0;
-            foreach (Action action in actions)
+            foreach (Action action in s_actions)
             {
                 if (null != action.Name && action.Name.Equals(name))
                 {
                     cancelCount++;
-                    actions.Remove(action);
+                    s_actions.Remove(action);
                 }
             }
 
             LOGGER.Info(String.Format("Canceled {0} instances of Action with name = [" + name + "]", cancelCount));
         }
 
-        public static long Now()
+        internal int GetMSUntilNextAction()
         {
-            // LOGGER.Debug("Now=" + GetTickCount64());
-
-            // Commented out first attempt - may wish to play with it again
-            // (long)(new TimeSpan(DateTime.Now.Ticks)).TotalMilliseconds;
-
-            return (long) GetTickCount64();
-        }
-
-        private static int GetMSUntilNextAction()
-        {
-            if (actions.Count != 0)
+            if (s_actions.Count != 0)
             {
                 // BUGBUG assumes 1 tick == 1 MS which is not true on all systems
-                return (int) (actions.First.TimeScheduledMS - Now());
+                return (int) (s_actions.First.TimeScheduledMS - TimeProvider.GetTickCount());
             }
-                
+
             // to wait indefinitely
             return -1;
         }
 
-        private static void Threadproc()
+        internal void Dequeue()
         {
-            LOGGER.Debug("Thread starting...");
-
-            while (true)
-            {
-                Action action;
-                while 
-                    (
-                        (actions.Count > 0) && 
-                        ((action = actions.First).TimeScheduledMS <= Now())
-                    )
-                {
-                    // Actions should play quickly ~1MS for now (see) 
-                    // following comment).  If worker thread pool is used 
-                    // asynchronous action processing will be supported.
-                    // TODO Asynchronous action support: Submit actions.Play to worker thread pool
-                    action.Play();
-                    actions.Dequeue();
-                }
-
-                // Wait until next event is ready to fire 
-                // or events are added to the queue
-                eventWaitNextAction.WaitOne(GetMSUntilNextAction());
-            }
+            s_actions.Dequeue();
         }
-
-        #region Win API Functions and Constants
-
-        [DllImport("kernel32")]
-        extern static UInt64 GetTickCount64();
-
-        #endregion
     }
 }

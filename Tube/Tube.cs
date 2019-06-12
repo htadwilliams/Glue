@@ -90,7 +90,7 @@ namespace Glue
 
                 // Starts thread for timed queue of actions such as pressing keys,
                 // activating game controller buttons, playing sounds, etc.
-                ActionQueue.Start();
+                ActionQueueThread.Start();
 
                 LOGGER.Debug("Entering Application.Run()...");
                 InitForm();

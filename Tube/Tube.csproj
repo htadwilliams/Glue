@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>Glue</RootNamespace>
     <AssemblyName>Glue</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
@@ -83,6 +83,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActionQueue.cs" />
     <Compile Include="forms\HelpAbout.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -96,6 +97,7 @@
     <Compile Include="action\ActionSound.cs" />
     <Compile Include="action\ActionKey.cs" />
     <Compile Include="action\ActionTyping.cs" />
+    <Compile Include="native\TimeProvider.cs" />
     <Compile Include="priority-queue\GenericPriorityQueue.cs" />
     <Compile Include="priority-queue\GenericPriorityQueueNode.cs" />
     <Compile Include="priority-queue\IFixedSizePriorityQueue.cs" />
@@ -108,7 +110,7 @@
     <Compile Include="native\MouseButton.cs" />
     <Compile Include="MouseHandler.cs" />
     <Compile Include="native\MouseInterceptor.cs" />
-    <Compile Include="ActionQueue.cs" />
+    <Compile Include="ActionQueueThread.cs" />
     <Compile Include="windows-input\HARDWAREINPUT.cs" />
     <Compile Include="windows-input\INPUT.cs" />
     <Compile Include="windows-input\InputType.cs" />

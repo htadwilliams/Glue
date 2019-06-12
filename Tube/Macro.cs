@@ -38,7 +38,7 @@ namespace Glue
 
                 foreach (Action scheduledAction in scheduledActions)
                 {
-                    ActionQueue.Enqueue(scheduledAction, scheduledAction.TimeScheduledMS);
+                    ActionQueueThread.Schedule(scheduledAction);
                 }
             }
         }

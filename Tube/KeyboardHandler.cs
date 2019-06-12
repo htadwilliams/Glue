@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Glue.native;
+using System;
 using System.Collections.Generic;
 using System.Media;
 using System.Runtime.InteropServices;
@@ -181,7 +182,7 @@ namespace Glue
                 }
 
                 LOGGER.Debug("REMAPPED: " + inputKey + " -> " + remap.KeyNew);
-                ActionKey actionKey = new ActionKey(remap.KeyNew, movement, ActionQueue.Now());
+                ActionKey actionKey = new ActionKey(remap.KeyNew, movement, TimeProvider.GetTickCount());
                 actionKey.Play();
 
                 return remap.KeyNew;
