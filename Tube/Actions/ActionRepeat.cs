@@ -1,7 +1,8 @@
 ﻿using System;
+using Glue.Native;
 using Newtonsoft.Json;
 
-namespace Glue
+namespace Glue.Actions
 {
     class ActionRepeat : Action
     {
@@ -37,7 +38,7 @@ namespace Glue
                 this.macroRepeater, 
                 this.macro)
             {
-                TimeScheduledMS = ActionQueue.Now() + this.timeTriggerMS,
+                TimeScheduledMS = TimeProvider.GetTickCount() + this.timeTriggerMS,
                 Name = macroRepeater
             };
 

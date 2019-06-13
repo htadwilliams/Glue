@@ -1,14 +1,17 @@
-﻿using System;
+﻿using Glue.Actions;
+using Glue.Forms;
+using Glue.Native;
+using log4net.Config;
+using Newtonsoft.Json;
+using SharpDX.DirectInput;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
-using log4net.Config;
-using Newtonsoft.Json;
-using SharpDX.DirectInput;
 using WindowsInput.Native;
-using static Glue.ActionKey;
+using static Glue.Actions.ActionKey;
 using static Glue.Trigger;
 
 [assembly: XmlConfigurator(Watch = true)]
@@ -90,7 +93,7 @@ namespace Glue
 
                 // Starts thread for timed queue of actions such as pressing keys,
                 // activating game controller buttons, playing sounds, etc.
-                ActionQueue.Start();
+                ActionQueueThread.Start();
 
                 LOGGER.Debug("Entering Application.Run()...");
                 InitForm();

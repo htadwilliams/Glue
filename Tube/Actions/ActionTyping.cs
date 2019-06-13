@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using Glue.Native;
 using Newtonsoft.Json;
 using WindowsInput;
 using WindowsInput.Native;
 
-namespace Glue
+namespace Glue.Actions
 {
     public class ActionTyping : Action
     {
@@ -38,7 +39,7 @@ namespace Glue
             INPUT[] inputs = new InputBuilder().AddCharacters(this.typedString).ToArray();
 
             int actionCount = 0;
-            long actionTimeMS = ActionQueue.Now();
+            long actionTimeMS = TimeProvider.GetTickCount();
 
             foreach (INPUT input in inputs)
             {

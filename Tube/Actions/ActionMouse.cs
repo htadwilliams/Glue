@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Glue.Native;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using WindowsInput;
 using WindowsInput.Native;
 
-namespace Glue
+namespace Glue.Actions
 {
     class ActionMouse : Action
     {
@@ -57,7 +58,7 @@ namespace Glue
         {
             ActionMouse scheduledCopy = new ActionMouse(this)
             {
-                TimeScheduledMS = ActionQueue.Now() + this.timeTriggerMS
+                TimeScheduledMS = TimeProvider.GetTickCount() + this.timeTriggerMS
             };
 
             if (LOGGER.IsDebugEnabled)
@@ -97,7 +98,7 @@ namespace Glue
 
             if (LOGGER.IsDebugEnabled)
             {
-                long now = ActionQueue.Now();
+                long now = TimeProvider.GetTickCount();
                 string message = String.Format("   Played at tick {0:n0} dt {1}ms: {4} ({2},{3})",
                     now,                            // Time actually played
                     now - this.TimeScheduledMS,     // Time delta (how late were we?)

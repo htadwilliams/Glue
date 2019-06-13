@@ -1,7 +1,8 @@
 ﻿using System;
+using Glue.Native;
 using Newtonsoft.Json;
 
-namespace Glue
+namespace Glue.Actions
 {
     class ActionCancel : Action
     {
@@ -18,14 +19,14 @@ namespace Glue
 
         public override void Play()
         {
-            ActionQueue.Cancel(this.macro);
+            ActionQueueThread.Cancel(this.macro);
         }
 
         public override Action[] Schedule()
         {
             ActionCancel scheduledCopy = new ActionCancel(macro)
             {
-                TimeScheduledMS = ActionQueue.Now() + this.TimeTriggerMS
+                TimeScheduledMS = TimeProvider.GetTickCount() + this.TimeTriggerMS
             };
 
             if (LOGGER.IsDebugEnabled)

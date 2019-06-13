@@ -1,4 +1,4 @@
-﻿namespace Glue
+﻿namespace Glue.Forms
 {
     partial class HelpAbout
     {

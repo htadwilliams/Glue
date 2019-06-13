@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Media;
+using Glue.Native;
 using Newtonsoft.Json;
 
-namespace Glue
+namespace Glue.Actions
 {
     public class ActionSound : Action
     {
@@ -44,7 +45,7 @@ namespace Glue
         {
             ActionSound scheduledCopy = new ActionSound(this.soundPath, this.TimeTriggerMS)
             {
-                TimeScheduledMS = ActionQueue.Now() + this.TimeTriggerMS
+                TimeScheduledMS = TimeProvider.GetTickCount() + this.TimeTriggerMS
             };
 
             if (LOGGER.IsDebugEnabled)

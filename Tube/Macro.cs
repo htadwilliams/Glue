@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Glue.Actions;
 using Newtonsoft.Json;
 
 namespace Glue
@@ -38,7 +39,7 @@ namespace Glue
 
                 foreach (Action scheduledAction in scheduledActions)
                 {
-                    ActionQueue.Enqueue(scheduledAction, scheduledAction.TimeScheduledMS);
+                    ActionQueueThread.Schedule(scheduledAction);
                 }
             }
         }

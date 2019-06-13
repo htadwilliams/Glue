@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 
-namespace Glue
+namespace Glue.Native
 {
     // From http://forums.codeguru.com/showthread.php?503595-GetKeyState-function-in-C
     public abstract class Keyboard

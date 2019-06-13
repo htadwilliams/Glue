@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace Glue
+namespace Glue.Native
 {
     class MouseInterceptor
     {
