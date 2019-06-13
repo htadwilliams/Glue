@@ -57,22 +57,22 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxInputStream.Font = new System.Drawing.Font("Courier New", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxInputStream.Location = new System.Drawing.Point(-6, 50);
-            this.textBoxInputStream.Margin = new System.Windows.Forms.Padding(4);
+            this.textBoxInputStream.Location = new System.Drawing.Point(-1, 26);
+            this.textBoxInputStream.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBoxInputStream.Multiline = true;
             this.textBoxInputStream.Name = "textBoxInputStream";
             this.textBoxInputStream.ReadOnly = true;
             this.textBoxInputStream.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxInputStream.Size = new System.Drawing.Size(1630, 881);
+            this.textBoxInputStream.Size = new System.Drawing.Size(809, 464);
             this.textBoxInputStream.TabIndex = 0;
             // 
             // buttonClear
             // 
             this.buttonClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonClear.Location = new System.Drawing.Point(20, 958);
-            this.buttonClear.Margin = new System.Windows.Forms.Padding(4);
+            this.buttonClear.Location = new System.Drawing.Point(11, 501);
+            this.buttonClear.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonClear.Name = "buttonClear";
-            this.buttonClear.Size = new System.Drawing.Size(128, 40);
+            this.buttonClear.Size = new System.Drawing.Size(64, 21);
             this.buttonClear.TabIndex = 1;
             this.buttonClear.Text = "&Clear";
             this.buttonClear.UseVisualStyleBackColor = true;
@@ -82,10 +82,10 @@
             // 
             this.checkBoxLogDisplay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBoxLogDisplay.AutoSize = true;
-            this.checkBoxLogDisplay.Location = new System.Drawing.Point(178, 969);
-            this.checkBoxLogDisplay.Margin = new System.Windows.Forms.Padding(4);
+            this.checkBoxLogDisplay.Location = new System.Drawing.Point(90, 505);
+            this.checkBoxLogDisplay.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.checkBoxLogDisplay.Name = "checkBoxLogDisplay";
-            this.checkBoxLogDisplay.Size = new System.Drawing.Size(133, 29);
+            this.checkBoxLogDisplay.Size = new System.Drawing.Size(70, 17);
             this.checkBoxLogDisplay.TabIndex = 2;
             this.checkBoxLogDisplay.Text = "&Log input";
             this.checkBoxLogDisplay.UseVisualStyleBackColor = true;
@@ -94,10 +94,10 @@
             // 
             this.checkBoxRawKeyNames.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBoxRawKeyNames.AutoSize = true;
-            this.checkBoxRawKeyNames.Location = new System.Drawing.Point(316, 969);
-            this.checkBoxRawKeyNames.Margin = new System.Windows.Forms.Padding(4);
+            this.checkBoxRawKeyNames.Location = new System.Drawing.Point(159, 505);
+            this.checkBoxRawKeyNames.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.checkBoxRawKeyNames.Name = "checkBoxRawKeyNames";
-            this.checkBoxRawKeyNames.Size = new System.Drawing.Size(196, 29);
+            this.checkBoxRawKeyNames.Size = new System.Drawing.Size(102, 17);
             this.checkBoxRawKeyNames.TabIndex = 3;
             this.checkBoxRawKeyNames.Text = "&Raw key names";
             this.checkBoxRawKeyNames.UseVisualStyleBackColor = true;
@@ -112,7 +112,8 @@
             this.helpToolStripMenuItem});
             this.menuStripMain.Location = new System.Drawing.Point(0, 0);
             this.menuStripMain.Name = "menuStripMain";
-            this.menuStripMain.Size = new System.Drawing.Size(1616, 40);
+            this.menuStripMain.Padding = new System.Windows.Forms.Padding(3, 1, 0, 1);
+            this.menuStripMain.Size = new System.Drawing.Size(808, 24);
             this.menuStripMain.TabIndex = 4;
             this.menuStripMain.Text = "menuStrip1";
             // 
@@ -122,14 +123,14 @@
             this.menuItemFileOpen,
             this.menuItemFileExit});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(72, 36);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 22);
             this.fileToolStripMenuItem.Text = "&File";
             // 
             // menuItemFileOpen
             // 
             this.menuItemFileOpen.Name = "menuItemFileOpen";
             this.menuItemFileOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.menuItemFileOpen.Size = new System.Drawing.Size(309, 44);
+            this.menuItemFileOpen.Size = new System.Drawing.Size(155, 22);
             this.menuItemFileOpen.Text = "&Open...";
             this.menuItemFileOpen.TextImageRelation = System.Windows.Forms.TextImageRelation.Overlay;
             this.menuItemFileOpen.Click += new System.EventHandler(this.MenuItemFileOpen_Click);
@@ -138,7 +139,7 @@
             // 
             this.menuItemFileExit.Name = "menuItemFileExit";
             this.menuItemFileExit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.menuItemFileExit.Size = new System.Drawing.Size(309, 44);
+            this.menuItemFileExit.Size = new System.Drawing.Size(155, 22);
             this.menuItemFileExit.Text = "E&xit";
             this.menuItemFileExit.Click += new System.EventHandler(this.MenuItemFileExit_Click);
             // 
@@ -150,35 +151,35 @@
             this.triggersToolStripMenuItem,
             this.remapKeysToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(75, 36);
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 22);
             this.editToolStripMenuItem.Text = "&Edit";
             // 
             // preferencesToolStripMenuItem
             // 
             this.preferencesToolStripMenuItem.Enabled = false;
             this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
-            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(359, 44);
+            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
             this.preferencesToolStripMenuItem.Text = "&Preferences...";
             // 
             // macrosToolStripMenuItem
             // 
             this.macrosToolStripMenuItem.Enabled = false;
             this.macrosToolStripMenuItem.Name = "macrosToolStripMenuItem";
-            this.macrosToolStripMenuItem.Size = new System.Drawing.Size(359, 44);
+            this.macrosToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
             this.macrosToolStripMenuItem.Text = "&Macros...";
             // 
             // triggersToolStripMenuItem
             // 
             this.triggersToolStripMenuItem.Enabled = false;
             this.triggersToolStripMenuItem.Name = "triggersToolStripMenuItem";
-            this.triggersToolStripMenuItem.Size = new System.Drawing.Size(359, 44);
+            this.triggersToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
             this.triggersToolStripMenuItem.Text = "&Triggers...";
             // 
             // remapKeysToolStripMenuItem
             // 
             this.remapKeysToolStripMenuItem.Enabled = false;
             this.remapKeysToolStripMenuItem.Name = "remapKeysToolStripMenuItem";
-            this.remapKeysToolStripMenuItem.Size = new System.Drawing.Size(359, 44);
+            this.remapKeysToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
             this.remapKeysToolStripMenuItem.Text = "&Remap Keys...";
             // 
             // viewToolStripMenuItem
@@ -186,14 +187,14 @@
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItemViewButtons});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-            this.viewToolStripMenuItem.Size = new System.Drawing.Size(86, 36);
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 22);
             this.viewToolStripMenuItem.Text = "&View";
             // 
             // menuItemViewButtons
             // 
             this.menuItemViewButtons.CheckOnClick = true;
             this.menuItemViewButtons.Name = "menuItemViewButtons";
-            this.menuItemViewButtons.Size = new System.Drawing.Size(359, 44);
+            this.menuItemViewButtons.Size = new System.Drawing.Size(144, 22);
             this.menuItemViewButtons.Text = "&Button States";
             this.menuItemViewButtons.Click += new System.EventHandler(this.MenuItemViewButtons_Click);
             // 
@@ -202,21 +203,21 @@
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItemHelpAbout});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(85, 36);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 22);
             this.helpToolStripMenuItem.Text = "&Help";
             // 
             // menuItemHelpAbout
             // 
             this.menuItemHelpAbout.Name = "menuItemHelpAbout";
-            this.menuItemHelpAbout.Size = new System.Drawing.Size(270, 44);
+            this.menuItemHelpAbout.Size = new System.Drawing.Size(134, 22);
             this.menuItemHelpAbout.Text = "&About Glue";
             this.menuItemHelpAbout.Click += new System.EventHandler(this.MenuItemHelpAbout_Click);
             // 
             // Main
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1616, 1019);
+            this.ClientSize = new System.Drawing.Size(808, 533);
             this.Controls.Add(this.checkBoxRawKeyNames);
             this.Controls.Add(this.checkBoxLogDisplay);
             this.Controls.Add(this.buttonClear);
@@ -225,7 +226,7 @@
             this.HelpButton = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStripMain;
-            this.Margin = new System.Windows.Forms.Padding(4);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "Main";
             this.Text = "Glue";
             this.menuStripMain.ResumeLayout(false);

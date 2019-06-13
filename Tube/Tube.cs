@@ -13,11 +13,13 @@ using System.Windows.Forms;
 using WindowsInput.Native;
 using static Glue.Actions.ActionKey;
 using static Glue.Trigger;
+using Keyboard = Glue.Native.Keyboard;
 
 [assembly: XmlConfigurator(Watch = true)]
 
 namespace Glue
 {
+    // TODO Json wrapper should only be created when serializing / deserializing
     // Encapsulates items serialized / deserialized to JSON so there's one root element 
     internal class JsonWrapper
     {
@@ -53,6 +55,9 @@ namespace Glue
 
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        // For friendly display of keys in GUI
+        private static readonly Dictionary<Keys, string> keyMap = new Dictionary<Keys, string>();
+
         private static JsonWrapper s_jsonWrapper = new JsonWrapper();
 
         // used to generate example content 
@@ -63,6 +68,10 @@ namespace Glue
         private static Main s_mainForm = null;
         private static bool s_writeOnExit = false;      // Set if loading fails, or if GUI changes contents 
         private static string s_fileName = FILENAME_DEFAULT;
+
+        private static Stack<VirtualKeyCode> s_keysDown;
+        private static bool s_lastInsertWasSpace = false;
+
 
         /// <summary>
         /// The main entry point for the application.
@@ -79,7 +88,7 @@ namespace Glue
                 Thread.CurrentThread.Name = "Main";
             }
 
-            KeyboardHandler.InitKeyTable();
+            InitKeyTable();
 
             try
             {
@@ -113,6 +122,41 @@ namespace Glue
             }
 
             LOGGER.Info("Exiting");
+        }
+
+        public static void InitKeyTable()
+        {
+            // Maps virtual key codes to friendly text for user display
+            (Keys key, string text)[] keyTable =
+            {
+                // Key code             Friendly text
+                (Keys.D0,               "0"),
+                (Keys.D1,               "1"),
+                (Keys.D2,               "2"),
+                (Keys.D3,               "3"),
+                (Keys.D4,               "4"),
+                (Keys.D5,               "5"),
+                (Keys.D6,               "6"),
+                (Keys.D7,               "7"),
+                (Keys.D8,               "8"),
+                (Keys.D9,               "9"),
+                (Keys.Oemcomma,         ","),
+                (Keys.OemPeriod,        "."),
+                (Keys.OemQuestion,      "?"),
+                (Keys.Add,              "+"),
+                (Keys.Space,            " "),
+                (Keys.Return,           "\r\n"),
+                (Keys.Oem1,             ";"),
+                (Keys.OemOpenBrackets,  "["),
+                (Keys.Oem5,             "\\"),
+                (Keys.Oem6,             "]"),
+                (Keys.Oem7,             "'"),
+                (Keys.Back,             "←"),
+            };
+            foreach ((Keys key, string text) in keyTable)
+            {
+                keyMap.Add(key, text);
+            }
         }
 
         internal static void PlayMacro(string macroName)
@@ -466,6 +510,89 @@ namespace Glue
             }
 
             return eatInput;
+        }
+
+        public static void OnKeyDown(int vkCode)
+        {
+            if (MainForm.LogInput)
+            {
+                LOGGER.Debug("+" + (VirtualKeyCode)vkCode);
+
+                string output;
+                if (MainForm.RawKeyNames)
+                {
+                    output = "+" + (VirtualKeyCode)vkCode + " ";
+                }
+                else
+                {
+                    output = FormatKeyString(vkCode);
+                }
+
+                MainForm.AppendText(output);
+            }
+        }
+
+        public static void OnKeyUp(int vkCode)
+        {
+            if (MainForm.LogInput)
+            {
+                LOGGER.Debug("-" + (VirtualKeyCode)vkCode);
+
+                if (MainForm.RawKeyNames)
+                {
+                    MainForm.AppendText("-" + (VirtualKeyCode)vkCode + " ");
+                }
+            }
+        }
+
+        private static string FormatKeyString(int vkCode)
+        {
+            string output;
+            if (keyMap.TryGetValue((Keys)vkCode, out string text))
+            {
+                output = text;
+            }
+            else
+            {
+                output = ((Keys)vkCode).ToString();
+
+                // Only printed characters are a single character long 
+                if (output.Length == 1)
+                {
+                    // Could be simplified but this is super clear to read
+                    if (Keyboard.IsKeyToggled(Keys.CapsLock))
+                    {
+                        if (Keyboard.IsKeyDown(Keys.LShiftKey) || Keyboard.IsKeyDown(Keys.RShiftKey))
+                        {
+                            output = output.ToLower();
+                        }
+                    }
+                    else
+                    {
+                        if (!Keyboard.IsKeyDown(Keys.LShiftKey) && !Keyboard.IsKeyDown(Keys.RShiftKey))
+                        {
+                            output = output.ToLower();
+                        }
+                    }
+                }
+            }
+
+            // Pad Key names (e.g. LMenu, not single typed characters like "A")
+            if ((output.Length > 1) && (output != "\r\n"))
+            {
+                if (!s_lastInsertWasSpace)
+                {
+                    output = output.Insert(0, " ");
+                }
+                output += " ";
+            }
+
+            // Set flag for next time this method is called
+            s_lastInsertWasSpace
+                = (output.EndsWith(" ") ||
+                   output.EndsWith("\r\n"));
+
+            return output;
         }
     }
 }

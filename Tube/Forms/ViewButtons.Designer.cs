@@ -32,18 +32,19 @@
             this.textBoxButtonStates = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
-            // ButtonStates
+            // textBoxButtonStates
             // 
             this.textBoxButtonStates.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxButtonStates.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBoxButtonStates.Cursor = System.Windows.Forms.Cursors.Default;
-            this.textBoxButtonStates.Location = new System.Drawing.Point(2, 3);
-            this.textBoxButtonStates.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxButtonStates.Location = new System.Drawing.Point(0, 0);
+            this.textBoxButtonStates.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxButtonStates.Multiline = true;
-            this.textBoxButtonStates.Name = "ButtonStates";
+            this.textBoxButtonStates.Name = "textBoxButtonStates";
             this.textBoxButtonStates.ReadOnly = true;
-            this.textBoxButtonStates.Size = new System.Drawing.Size(301, 457);
+            this.textBoxButtonStates.Size = new System.Drawing.Size(303, 463);
             this.textBoxButtonStates.TabIndex = 0;
             // 
             // ViewButtons
@@ -53,7 +54,7 @@
             this.ClientSize = new System.Drawing.Size(302, 460);
             this.Controls.Add(this.textBoxButtonStates);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "ViewButtons";
             this.Text = "ViewButtons";
             this.ResumeLayout(false);
