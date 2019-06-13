@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using Glue.native;
+using Glue.Native;
 using Newtonsoft.Json;
 using WindowsInput;
 using WindowsInput.Native;
 
-namespace Glue
+namespace Glue.Actions
 {
     public class ActionTyping : Action
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Glue.native
+namespace Glue.Native
 {
     class TimeProvider
     {

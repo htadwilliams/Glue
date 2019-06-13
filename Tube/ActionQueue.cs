@@ -1,6 +1,6 @@
-﻿using Glue.native;
+﻿using Glue.Native;
+using Glue.Actions;
 using Priority_Queue;
-using System;
 
 namespace Glue
 {
@@ -29,7 +29,7 @@ namespace Glue
                 }
             }
 
-            LOGGER.Info(String.Format("Canceled {0} instances of Action with name = [" + name + "]", cancelCount));
+            LOGGER.Info(System.String.Format("Canceled {0} instances of Action with name = [" + name + "]", cancelCount));
         }
 
         internal int GetMSUntilNextAction()

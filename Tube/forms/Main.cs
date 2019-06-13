@@ -1,17 +1,22 @@
-﻿using System;
+﻿using Glue.Native;
+using System;
 using System.Windows.Forms;
 
-namespace Glue
+namespace Glue.Forms
 {
     public partial class Main : Form
     {
-        public bool LogInput { get => logInput; set { logInput = value; IDC_RAWKEYNAMES.Enabled = value; } }
+        public bool LogInput { get => logInput; set { logInput = value; checkBoxRawKeyNames.Enabled = value; } }
         public bool RawKeyNames { get => rawKeyNames; set => rawKeyNames = value; }
 
+        private string BaseCaptionText { get => this.baseCaptionText; set => this.baseCaptionText = value; }
+
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private bool logInput = true;
         private bool rawKeyNames = false;
         private string baseCaptionText = "";
+        private ViewButtons viewButtons = null;
 
         public Main()
         {
@@ -20,28 +25,40 @@ namespace Glue
             this.logInput = Properties.Settings.Default.LogInput;
             this.rawKeyNames = Properties.Settings.Default.RawKeyNames;
 
-            this.IDC_LOGDISPLAY.DataBindings.Add("Checked", this, "logInput", true, DataSourceUpdateMode.OnPropertyChanged);
-            this.IDC_RAWKEYNAMES.DataBindings.Add("Checked", this, "rawKeyNames", true, DataSourceUpdateMode.OnPropertyChanged);
+            this.checkBoxLogDisplay.DataBindings.Add("Checked", this, "logInput", true, DataSourceUpdateMode.OnPropertyChanged);
+            this.checkBoxRawKeyNames.DataBindings.Add("Checked", this, "rawKeyNames", true, DataSourceUpdateMode.OnPropertyChanged);
 
-            baseCaptionText = this.Text;
+            BaseCaptionText = this.Text;
             SetCaption(Tube.FileName);
 
-            IDC_RAWKEYNAMES.Enabled = logInput;
+            checkBoxRawKeyNames.Enabled = logInput;
+        }
+
+        protected override void OnShown(EventArgs e)
+        {
+            WindowHandleUtils.HideCaret(this.textBoxInputStream.Handle);
+            base.OnShown(e);
+        }
+
+        private void OnViewButtonsClosing(object sender, EventArgs e)
+        {
+            this.menuItemViewButtons.Checked = false;
         }
 
         private void SetCaption(string fileName)
         {
-            this.Text = baseCaptionText + " - " + fileName;
+            this.Text = BaseCaptionText + " - " + fileName;
         }
 
         internal void AppendText(string text)
         {
-             IDE_INPUTSTREAM.AppendText(text);
+             textBoxInputStream.AppendText(text);
+             WindowHandleUtils.HideCaret(this.textBoxInputStream.Handle);
         }
 
-        private void IDB_CLEAR_Click(object sender, EventArgs e)
+        private void ButtonClear_Click(object sender, EventArgs e)
         {
-            IDE_INPUTSTREAM.Clear();
+            textBoxInputStream.Clear();
         }
 
         protected override void OnFormClosed(FormClosedEventArgs e)
@@ -55,7 +72,7 @@ namespace Glue
             base.OnFormClosed(e);
         }
 
-        private void FileOpen_Click(object sender, EventArgs e)
+        private void MenuItemFileOpen_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
 
@@ -66,15 +83,38 @@ namespace Glue
             }
         }
 
-        private void FileExit_Click(object sender, EventArgs e)
+        private void MenuItemFileExit_Click(object sender, EventArgs e)
         {
             this.Close();
         }
 
-        private void HelpAbout_Click(object sender, EventArgs e)
+        private void MenuItemHelpAbout_Click(object sender, EventArgs e)
         {
             HelpAbout helpAbout = new HelpAbout();
             helpAbout.ShowDialog();
+        }
+
+        public void ToggleViewButtons(bool showView = true)
+        {
+            if (showView)
+            {
+                if (null == viewButtons || viewButtons.IsDisposed)
+                {
+                    this.viewButtons = new ViewButtons();
+                    this.viewButtons.FormClosing += new FormClosingEventHandler(this.OnViewButtonsClosing);
+                }
+
+                this.viewButtons.Show(this);
+            }
+            else if (null != viewButtons && !viewButtons.IsDisposed)
+            {
+                this.viewButtons.Hide();
+            }
+        }
+
+        private void MenuItemViewButtons_Click(object sender, EventArgs e)
+        {
+            ToggleViewButtons(this.menuItemViewButtons.Checked);
         }
     }
 }

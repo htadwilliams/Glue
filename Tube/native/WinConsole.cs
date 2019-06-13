@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace Glue
+namespace Glue.Native
 {
     static class WinConsole
     {

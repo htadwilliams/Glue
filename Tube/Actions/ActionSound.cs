@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Media;
-using Glue.native;
+using Glue.Native;
 using Newtonsoft.Json;
 
-namespace Glue
+namespace Glue.Actions
 {
     public class ActionSound : Action
     {

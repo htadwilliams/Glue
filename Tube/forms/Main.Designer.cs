@@ -1,4 +1,4 @@
-﻿namespace Glue
+﻿namespace Glue.Forms
 {
     partial class Main
     {
@@ -29,77 +29,78 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
-            this.IDE_INPUTSTREAM = new System.Windows.Forms.TextBox();
-            this.IDB_CLEAR = new System.Windows.Forms.Button();
-            this.IDC_LOGDISPLAY = new System.Windows.Forms.CheckBox();
-            this.IDC_RAWKEYNAMES = new System.Windows.Forms.CheckBox();
+            this.textBoxInputStream = new System.Windows.Forms.TextBox();
+            this.buttonClear = new System.Windows.Forms.Button();
+            this.checkBoxLogDisplay = new System.Windows.Forms.CheckBox();
+            this.checkBoxRawKeyNames = new System.Windows.Forms.CheckBox();
             this.menuStripMain = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.FileOpen = new System.Windows.Forms.ToolStripMenuItem();
-            this.FileExit = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemFileOpen = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemFileExit = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.macrosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.triggersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.remapKeysToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemViewButtons = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.HelpAbout = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemHelpAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStripMain.SuspendLayout();
             this.SuspendLayout();
             // 
-            // IDE_INPUTSTREAM
+            // textBoxInputStream
             // 
-            this.IDE_INPUTSTREAM.AcceptsReturn = true;
-            this.IDE_INPUTSTREAM.AcceptsTab = true;
-            this.IDE_INPUTSTREAM.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.textBoxInputStream.AcceptsReturn = true;
+            this.textBoxInputStream.AcceptsTab = true;
+            this.textBoxInputStream.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.IDE_INPUTSTREAM.Font = new System.Drawing.Font("Courier New", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.IDE_INPUTSTREAM.Location = new System.Drawing.Point(-3, 26);
-            this.IDE_INPUTSTREAM.Margin = new System.Windows.Forms.Padding(2);
-            this.IDE_INPUTSTREAM.Multiline = true;
-            this.IDE_INPUTSTREAM.Name = "IDE_INPUTSTREAM";
-            this.IDE_INPUTSTREAM.ReadOnly = true;
-            this.IDE_INPUTSTREAM.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.IDE_INPUTSTREAM.Size = new System.Drawing.Size(817, 460);
-            this.IDE_INPUTSTREAM.TabIndex = 0;
+            this.textBoxInputStream.Font = new System.Drawing.Font("Courier New", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxInputStream.Location = new System.Drawing.Point(-6, 50);
+            this.textBoxInputStream.Margin = new System.Windows.Forms.Padding(4);
+            this.textBoxInputStream.Multiline = true;
+            this.textBoxInputStream.Name = "textBoxInputStream";
+            this.textBoxInputStream.ReadOnly = true;
+            this.textBoxInputStream.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBoxInputStream.Size = new System.Drawing.Size(1630, 881);
+            this.textBoxInputStream.TabIndex = 0;
             // 
-            // IDB_CLEAR
+            // buttonClear
             // 
-            this.IDB_CLEAR.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.IDB_CLEAR.Location = new System.Drawing.Point(10, 498);
-            this.IDB_CLEAR.Margin = new System.Windows.Forms.Padding(2);
-            this.IDB_CLEAR.Name = "IDB_CLEAR";
-            this.IDB_CLEAR.Size = new System.Drawing.Size(64, 21);
-            this.IDB_CLEAR.TabIndex = 1;
-            this.IDB_CLEAR.Text = "&Clear";
-            this.IDB_CLEAR.UseVisualStyleBackColor = true;
-            this.IDB_CLEAR.Click += new System.EventHandler(this.IDB_CLEAR_Click);
+            this.buttonClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.buttonClear.Location = new System.Drawing.Point(20, 958);
+            this.buttonClear.Margin = new System.Windows.Forms.Padding(4);
+            this.buttonClear.Name = "buttonClear";
+            this.buttonClear.Size = new System.Drawing.Size(128, 40);
+            this.buttonClear.TabIndex = 1;
+            this.buttonClear.Text = "&Clear";
+            this.buttonClear.UseVisualStyleBackColor = true;
+            this.buttonClear.Click += new System.EventHandler(this.ButtonClear_Click);
             // 
-            // IDC_LOGDISPLAY
+            // checkBoxLogDisplay
             // 
-            this.IDC_LOGDISPLAY.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.IDC_LOGDISPLAY.AutoSize = true;
-            this.IDC_LOGDISPLAY.Location = new System.Drawing.Point(89, 502);
-            this.IDC_LOGDISPLAY.Margin = new System.Windows.Forms.Padding(2);
-            this.IDC_LOGDISPLAY.Name = "IDC_LOGDISPLAY";
-            this.IDC_LOGDISPLAY.Size = new System.Drawing.Size(70, 17);
-            this.IDC_LOGDISPLAY.TabIndex = 2;
-            this.IDC_LOGDISPLAY.Text = "&Log input";
-            this.IDC_LOGDISPLAY.UseVisualStyleBackColor = true;
+            this.checkBoxLogDisplay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.checkBoxLogDisplay.AutoSize = true;
+            this.checkBoxLogDisplay.Location = new System.Drawing.Point(178, 969);
+            this.checkBoxLogDisplay.Margin = new System.Windows.Forms.Padding(4);
+            this.checkBoxLogDisplay.Name = "checkBoxLogDisplay";
+            this.checkBoxLogDisplay.Size = new System.Drawing.Size(133, 29);
+            this.checkBoxLogDisplay.TabIndex = 2;
+            this.checkBoxLogDisplay.Text = "&Log input";
+            this.checkBoxLogDisplay.UseVisualStyleBackColor = true;
             // 
-            // IDC_RAWKEYNAMES
+            // checkBoxRawKeyNames
             // 
-            this.IDC_RAWKEYNAMES.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.IDC_RAWKEYNAMES.AutoSize = true;
-            this.IDC_RAWKEYNAMES.Location = new System.Drawing.Point(158, 502);
-            this.IDC_RAWKEYNAMES.Margin = new System.Windows.Forms.Padding(2);
-            this.IDC_RAWKEYNAMES.Name = "IDC_RAWKEYNAMES";
-            this.IDC_RAWKEYNAMES.Size = new System.Drawing.Size(102, 17);
-            this.IDC_RAWKEYNAMES.TabIndex = 3;
-            this.IDC_RAWKEYNAMES.Text = "&Raw key names";
-            this.IDC_RAWKEYNAMES.UseVisualStyleBackColor = true;
+            this.checkBoxRawKeyNames.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.checkBoxRawKeyNames.AutoSize = true;
+            this.checkBoxRawKeyNames.Location = new System.Drawing.Point(316, 969);
+            this.checkBoxRawKeyNames.Margin = new System.Windows.Forms.Padding(4);
+            this.checkBoxRawKeyNames.Name = "checkBoxRawKeyNames";
+            this.checkBoxRawKeyNames.Size = new System.Drawing.Size(196, 29);
+            this.checkBoxRawKeyNames.TabIndex = 3;
+            this.checkBoxRawKeyNames.Text = "&Raw key names";
+            this.checkBoxRawKeyNames.UseVisualStyleBackColor = true;
             // 
             // menuStripMain
             // 
@@ -111,36 +112,35 @@
             this.helpToolStripMenuItem});
             this.menuStripMain.Location = new System.Drawing.Point(0, 0);
             this.menuStripMain.Name = "menuStripMain";
-            this.menuStripMain.Padding = new System.Windows.Forms.Padding(3, 1, 0, 1);
-            this.menuStripMain.Size = new System.Drawing.Size(808, 24);
+            this.menuStripMain.Size = new System.Drawing.Size(1616, 40);
             this.menuStripMain.TabIndex = 4;
             this.menuStripMain.Text = "menuStrip1";
             // 
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.FileOpen,
-            this.FileExit});
+            this.menuItemFileOpen,
+            this.menuItemFileExit});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 22);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(72, 36);
             this.fileToolStripMenuItem.Text = "&File";
             // 
-            // FileOpen
+            // menuItemFileOpen
             // 
-            this.FileOpen.Name = "FileOpen";
-            this.FileOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.FileOpen.Size = new System.Drawing.Size(155, 22);
-            this.FileOpen.Text = "&Open...";
-            this.FileOpen.TextImageRelation = System.Windows.Forms.TextImageRelation.Overlay;
-            this.FileOpen.Click += new System.EventHandler(this.FileOpen_Click);
+            this.menuItemFileOpen.Name = "menuItemFileOpen";
+            this.menuItemFileOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this.menuItemFileOpen.Size = new System.Drawing.Size(309, 44);
+            this.menuItemFileOpen.Text = "&Open...";
+            this.menuItemFileOpen.TextImageRelation = System.Windows.Forms.TextImageRelation.Overlay;
+            this.menuItemFileOpen.Click += new System.EventHandler(this.MenuItemFileOpen_Click);
             // 
-            // FileExit
+            // menuItemFileExit
             // 
-            this.FileExit.Name = "FileExit";
-            this.FileExit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.FileExit.Size = new System.Drawing.Size(155, 22);
-            this.FileExit.Text = "E&xit";
-            this.FileExit.Click += new System.EventHandler(this.FileExit_Click);
+            this.menuItemFileExit.Name = "menuItemFileExit";
+            this.menuItemFileExit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
+            this.menuItemFileExit.Size = new System.Drawing.Size(309, 44);
+            this.menuItemFileExit.Text = "E&xit";
+            this.menuItemFileExit.Click += new System.EventHandler(this.MenuItemFileExit_Click);
             // 
             // editToolStripMenuItem
             // 
@@ -150,68 +150,82 @@
             this.triggersToolStripMenuItem,
             this.remapKeysToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 22);
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(75, 36);
             this.editToolStripMenuItem.Text = "&Edit";
             // 
             // preferencesToolStripMenuItem
             // 
+            this.preferencesToolStripMenuItem.Enabled = false;
             this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
-            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(359, 44);
             this.preferencesToolStripMenuItem.Text = "&Preferences...";
             // 
             // macrosToolStripMenuItem
             // 
+            this.macrosToolStripMenuItem.Enabled = false;
             this.macrosToolStripMenuItem.Name = "macrosToolStripMenuItem";
-            this.macrosToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+            this.macrosToolStripMenuItem.Size = new System.Drawing.Size(359, 44);
             this.macrosToolStripMenuItem.Text = "&Macros...";
             // 
             // triggersToolStripMenuItem
             // 
+            this.triggersToolStripMenuItem.Enabled = false;
             this.triggersToolStripMenuItem.Name = "triggersToolStripMenuItem";
-            this.triggersToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+            this.triggersToolStripMenuItem.Size = new System.Drawing.Size(359, 44);
             this.triggersToolStripMenuItem.Text = "&Triggers...";
             // 
             // remapKeysToolStripMenuItem
             // 
+            this.remapKeysToolStripMenuItem.Enabled = false;
             this.remapKeysToolStripMenuItem.Name = "remapKeysToolStripMenuItem";
-            this.remapKeysToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+            this.remapKeysToolStripMenuItem.Size = new System.Drawing.Size(359, 44);
             this.remapKeysToolStripMenuItem.Text = "&Remap Keys...";
             // 
             // viewToolStripMenuItem
             // 
+            this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuItemViewButtons});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-            this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 22);
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(86, 36);
             this.viewToolStripMenuItem.Text = "&View";
+            // 
+            // menuItemViewButtons
+            // 
+            this.menuItemViewButtons.CheckOnClick = true;
+            this.menuItemViewButtons.Name = "menuItemViewButtons";
+            this.menuItemViewButtons.Size = new System.Drawing.Size(359, 44);
+            this.menuItemViewButtons.Text = "&Button States";
+            this.menuItemViewButtons.Click += new System.EventHandler(this.MenuItemViewButtons_Click);
             // 
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.HelpAbout});
+            this.menuItemHelpAbout});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 22);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(85, 36);
             this.helpToolStripMenuItem.Text = "&Help";
             // 
-            // HelpAbout
+            // menuItemHelpAbout
             // 
-            this.HelpAbout.Name = "HelpAbout";
-            this.HelpAbout.Size = new System.Drawing.Size(180, 22);
-            this.HelpAbout.Text = "&About Glue";
-            this.HelpAbout.Click += new System.EventHandler(this.HelpAbout_Click);
+            this.menuItemHelpAbout.Name = "menuItemHelpAbout";
+            this.menuItemHelpAbout.Size = new System.Drawing.Size(270, 44);
+            this.menuItemHelpAbout.Text = "&About Glue";
+            this.menuItemHelpAbout.Click += new System.EventHandler(this.MenuItemHelpAbout_Click);
             // 
             // Main
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(808, 530);
-            this.Controls.Add(this.IDC_RAWKEYNAMES);
-            this.Controls.Add(this.IDC_LOGDISPLAY);
-            this.Controls.Add(this.IDB_CLEAR);
-            this.Controls.Add(this.IDE_INPUTSTREAM);
+            this.ClientSize = new System.Drawing.Size(1616, 1019);
+            this.Controls.Add(this.checkBoxRawKeyNames);
+            this.Controls.Add(this.checkBoxLogDisplay);
+            this.Controls.Add(this.buttonClear);
+            this.Controls.Add(this.textBoxInputStream);
             this.Controls.Add(this.menuStripMain);
             this.HelpButton = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStripMain;
-            this.Margin = new System.Windows.Forms.Padding(2);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Main";
             this.Text = "Glue";
             this.menuStripMain.ResumeLayout(false);
@@ -223,22 +237,23 @@
 
         #endregion
 
-        private System.Windows.Forms.TextBox IDE_INPUTSTREAM;
-        private System.Windows.Forms.Button IDB_CLEAR;
-        private System.Windows.Forms.CheckBox IDC_LOGDISPLAY;
-        private System.Windows.Forms.CheckBox IDC_RAWKEYNAMES;
+        private System.Windows.Forms.TextBox textBoxInputStream;
+        private System.Windows.Forms.Button buttonClear;
+        private System.Windows.Forms.CheckBox checkBoxLogDisplay;
+        private System.Windows.Forms.CheckBox checkBoxRawKeyNames;
         private System.Windows.Forms.MenuStrip menuStripMain;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem FileOpen;
-        private System.Windows.Forms.ToolStripMenuItem FileExit;
+        private System.Windows.Forms.ToolStripMenuItem menuItemFileOpen;
+        private System.Windows.Forms.ToolStripMenuItem menuItemFileExit;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem HelpAbout;
+        private System.Windows.Forms.ToolStripMenuItem menuItemHelpAbout;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem preferencesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem macrosToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem triggersToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem remapKeysToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem menuItemViewButtons;
     }
 }
 

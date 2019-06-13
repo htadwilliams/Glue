@@ -1,8 +1,8 @@
 ﻿using System;
-using Glue.native;
+using Glue.Native;
 using Newtonsoft.Json;
 
-namespace Glue
+namespace Glue.Actions
 {
     class ActionRepeat : Action
     {

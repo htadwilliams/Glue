@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Windows.Input;
 
-namespace Glue
+namespace Glue.Native
 {
     // Based on https://blogs.msdn.microsoft.com/toub/2006/05/03/low-level-keyboard-hook-in-c/
     // Thanks Stephen Toub!  

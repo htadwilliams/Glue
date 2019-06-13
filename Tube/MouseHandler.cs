@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Glue.Actions;
+using System;
 using System.Runtime.InteropServices;
 using WindowsInput.Native;
-using static Glue.MouseInterceptor;
+using static Glue.Native.MouseInterceptor;
 
 namespace Glue
 {

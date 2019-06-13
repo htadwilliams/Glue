@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Glue.native;
+using Glue.Native;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using WindowsInput;
 using WindowsInput.Native;
 
-namespace Glue
+namespace Glue.Actions
 {
     class ActionMouse : Action
     {

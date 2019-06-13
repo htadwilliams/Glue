@@ -4,12 +4,11 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 
-namespace Glue
+namespace Glue.Native
 {
     class ProcessInfo
     {
         private const int MAX_PATH = 2048;
-        private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public static int GetInputFocusProcessId()
         {
@@ -19,11 +18,6 @@ namespace Glue
 
             if (0 != foregroundWindowHandle.ToInt64())
             {
-                //if (LOGGER.IsDebugEnabled)
-                //{
-                //    LOGGER.Debug(String.Format("Foreground window handle: {0:X}", foregroundWindowHandle.ToInt64()));
-                //}
-
                 GetWindowThreadProcessId(foregroundWindowHandle, out inputProcessId);
             }
 
@@ -35,11 +29,6 @@ namespace Glue
             StringBuilder processFileName = new StringBuilder(MAX_PATH);
 
             IntPtr processHandle = OpenProcess(ProcessAccessFlags.All, true, processId);
-
-            //if (LOGGER.IsDebugEnabled)
-            //{
-            //    LOGGER.Debug(String.Format("Process handle for id={0}: {1:X}", processId, processHandle.ToInt64()));
-            //}
 
             if (0 != processHandle.ToInt64())
             {

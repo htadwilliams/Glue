@@ -1,11 +1,11 @@
 ﻿using System;
-using Glue.native;
+using Glue.Native;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using WindowsInput;
 using WindowsInput.Native;
 
-namespace Glue
+namespace Glue.Actions
 {
     public class ActionKey : Action
     {

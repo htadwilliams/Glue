@@ -84,65 +84,75 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActionQueue.cs" />
-    <Compile Include="forms\HelpAbout.cs">
+    <Compile Include="Forms\HelpAbout.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="forms\HelpAbout.Designer.cs">
+    <Compile Include="Forms\HelpAbout.Designer.cs">
       <DependentUpon>HelpAbout.cs</DependentUpon>
     </Compile>
-    <Compile Include="action\Action.cs" />
-    <Compile Include="action\ActionMouse.cs" />
-    <Compile Include="action\ActionCancel.cs" />
-    <Compile Include="action\ActionRepeat.cs" />
-    <Compile Include="action\ActionSound.cs" />
-    <Compile Include="action\ActionKey.cs" />
-    <Compile Include="action\ActionTyping.cs" />
-    <Compile Include="native\TimeProvider.cs" />
-    <Compile Include="priority-queue\GenericPriorityQueue.cs" />
-    <Compile Include="priority-queue\GenericPriorityQueueNode.cs" />
-    <Compile Include="priority-queue\IFixedSizePriorityQueue.cs" />
-    <Compile Include="windows-input\InputBuilder.cs" />
-    <Compile Include="priority-queue\IPriorityQueue.cs" />
-    <Compile Include="native\Keyboard.cs" />
-    <Compile Include="KeyboardHandler.cs" />
-    <Compile Include="native\KeyboardInterceptor.cs" />
-    <Compile Include="Macro.cs" />
-    <Compile Include="native\MouseButton.cs" />
-    <Compile Include="MouseHandler.cs" />
-    <Compile Include="native\MouseInterceptor.cs" />
-    <Compile Include="ActionQueueThread.cs" />
-    <Compile Include="windows-input\HARDWAREINPUT.cs" />
-    <Compile Include="windows-input\INPUT.cs" />
-    <Compile Include="windows-input\InputType.cs" />
-    <Compile Include="windows-input\KEYBDINPUT.cs" />
-    <Compile Include="windows-input\KeyboardFlag.cs" />
-    <Compile Include="windows-input\MouseFlag.cs" />
-    <Compile Include="windows-input\MOUSEINPUT.cs" />
-    <Compile Include="windows-input\MOUSEKEYBDHARDWAREINPUT.cs" />
-    <Compile Include="windows-input\NativeMethods.cs" />
-    <Compile Include="windows-input\VirtualKeyCode.cs" />
-    <Compile Include="windows-input\XButton.cs" />
-    <Compile Include="native\ProcessInfo.cs" />
-    <Compile Include="KeyboardRemapEntry.cs" />
-    <Compile Include="Settings.cs" />
-    <Compile Include="priority-queue\SimplePriorityQueue.cs" />
-    <Compile Include="Trigger.cs" />
-    <Compile Include="native\WinConsole.cs" />
-    <Compile Include="forms\Main.cs">
+    <Compile Include="Actions\Action.cs" />
+    <Compile Include="Actions\ActionMouse.cs" />
+    <Compile Include="Actions\ActionCancel.cs" />
+    <Compile Include="Actions\ActionRepeat.cs" />
+    <Compile Include="Actions\ActionSound.cs" />
+    <Compile Include="Actions\ActionKey.cs" />
+    <Compile Include="Actions\ActionTyping.cs" />
+    <Compile Include="Forms\ViewButtons.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="forms\Main.Designer.cs">
+    <Compile Include="Forms\ViewButtons.Designer.cs">
+      <DependentUpon>ViewButtons.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Native\WindowHandleUtils.cs" />
+    <Compile Include="Native\TimeProvider.cs" />
+    <Compile Include="Priority_Queue\GenericPriorityQueue.cs" />
+    <Compile Include="Priority_Queue\GenericPriorityQueueNode.cs" />
+    <Compile Include="Priority_Queue\IFixedSizePriorityQueue.cs" />
+    <Compile Include="WindowsInput\InputBuilder.cs" />
+    <Compile Include="Priority_Queue\IPriorityQueue.cs" />
+    <Compile Include="Native\Keyboard.cs" />
+    <Compile Include="KeyboardHandler.cs" />
+    <Compile Include="Native\KeyboardInterceptor.cs" />
+    <Compile Include="Macro.cs" />
+    <Compile Include="WindowsInput\MouseButton.cs" />
+    <Compile Include="MouseHandler.cs" />
+    <Compile Include="Native\MouseInterceptor.cs" />
+    <Compile Include="ActionQueueThread.cs" />
+    <Compile Include="WindowsInput\Native\HARDWAREINPUT.cs" />
+    <Compile Include="WindowsInput\Native\INPUT.cs" />
+    <Compile Include="WindowsInput\Native\InputType.cs" />
+    <Compile Include="WindowsInput\Native\KEYBDINPUT.cs" />
+    <Compile Include="WindowsInput\Native\KeyboardFlag.cs" />
+    <Compile Include="WindowsInput\Native\MouseFlag.cs" />
+    <Compile Include="WindowsInput\Native\MOUSEINPUT.cs" />
+    <Compile Include="WindowsInput\Native\MOUSEKEYBDHARDWAREINPUT.cs" />
+    <Compile Include="WindowsInput\Native\NativeMethods.cs" />
+    <Compile Include="WindowsInput\Native\VirtualKeyCode.cs" />
+    <Compile Include="WindowsInput\Native\XButton.cs" />
+    <Compile Include="Native\ProcessInfo.cs" />
+    <Compile Include="KeyboardRemapEntry.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="Priority_Queue\SimplePriorityQueue.cs" />
+    <Compile Include="Trigger.cs" />
+    <Compile Include="Native\WinConsole.cs" />
+    <Compile Include="Forms\Main.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Main.Designer.cs">
       <DependentUpon>Main.cs</DependentUpon>
     </Compile>
     <Compile Include="Tube.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="windows-input\WindowsInputMessageDispatcher.cs" />
-    <EmbeddedResource Include="forms\HelpAbout.resx">
+    <Compile Include="WindowsInput\WindowsInputMessageDispatcher.cs" />
+    <EmbeddedResource Include="Forms\HelpAbout.resx">
       <DependentUpon>HelpAbout.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="forms\Main.resx">
+    <EmbeddedResource Include="Forms\Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ViewButtons.resx">
+      <DependentUpon>ViewButtons.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -188,8 +198,9 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Content Include="glue.ico" />
+    <Content Include="key.ico" />
     <Content Include="resources\glue.ico" />
+    <Content Include="resources\key.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -1,11 +1,12 @@
-﻿using Glue.native;
+﻿using Glue.Actions;
+using Glue.Native;
 using System;
 using System.Collections.Generic;
 using System.Media;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using WindowsInput.Native;
-using static Glue.KeyInterceptor;
+using static Glue.Native.KeyInterceptor;
 
 namespace Glue
 {
