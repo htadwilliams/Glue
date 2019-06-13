@@ -130,7 +130,7 @@
             // 
             this.menuItemFileOpen.Name = "menuItemFileOpen";
             this.menuItemFileOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.menuItemFileOpen.Size = new System.Drawing.Size(155, 22);
+            this.menuItemFileOpen.Size = new System.Drawing.Size(180, 22);
             this.menuItemFileOpen.Text = "&Open...";
             this.menuItemFileOpen.TextImageRelation = System.Windows.Forms.TextImageRelation.Overlay;
             this.menuItemFileOpen.Click += new System.EventHandler(this.MenuItemFileOpen_Click);
@@ -139,7 +139,7 @@
             // 
             this.menuItemFileExit.Name = "menuItemFileExit";
             this.menuItemFileExit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.menuItemFileExit.Size = new System.Drawing.Size(155, 22);
+            this.menuItemFileExit.Size = new System.Drawing.Size(180, 22);
             this.menuItemFileExit.Text = "E&xit";
             this.menuItemFileExit.Click += new System.EventHandler(this.MenuItemFileExit_Click);
             // 
@@ -158,28 +158,28 @@
             // 
             this.preferencesToolStripMenuItem.Enabled = false;
             this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
-            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.preferencesToolStripMenuItem.Text = "&Preferences...";
             // 
             // macrosToolStripMenuItem
             // 
             this.macrosToolStripMenuItem.Enabled = false;
             this.macrosToolStripMenuItem.Name = "macrosToolStripMenuItem";
-            this.macrosToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+            this.macrosToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.macrosToolStripMenuItem.Text = "&Macros...";
             // 
             // triggersToolStripMenuItem
             // 
             this.triggersToolStripMenuItem.Enabled = false;
             this.triggersToolStripMenuItem.Name = "triggersToolStripMenuItem";
-            this.triggersToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+            this.triggersToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.triggersToolStripMenuItem.Text = "&Triggers...";
             // 
             // remapKeysToolStripMenuItem
             // 
             this.remapKeysToolStripMenuItem.Enabled = false;
             this.remapKeysToolStripMenuItem.Name = "remapKeysToolStripMenuItem";
-            this.remapKeysToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+            this.remapKeysToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.remapKeysToolStripMenuItem.Text = "&Remap Keys...";
             // 
             // viewToolStripMenuItem
@@ -193,8 +193,9 @@
             // menuItemViewButtons
             // 
             this.menuItemViewButtons.CheckOnClick = true;
+            this.menuItemViewButtons.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.menuItemViewButtons.Name = "menuItemViewButtons";
-            this.menuItemViewButtons.Size = new System.Drawing.Size(144, 22);
+            this.menuItemViewButtons.Size = new System.Drawing.Size(180, 22);
             this.menuItemViewButtons.Text = "&Button States";
             this.menuItemViewButtons.Click += new System.EventHandler(this.MenuItemViewButtons_Click);
             // 
@@ -209,7 +210,7 @@
             // menuItemHelpAbout
             // 
             this.menuItemHelpAbout.Name = "menuItemHelpAbout";
-            this.menuItemHelpAbout.Size = new System.Drawing.Size(134, 22);
+            this.menuItemHelpAbout.Size = new System.Drawing.Size(180, 22);
             this.menuItemHelpAbout.Text = "&About Glue";
             this.menuItemHelpAbout.Click += new System.EventHandler(this.MenuItemHelpAbout_Click);
             // 

@@ -69,7 +69,7 @@ namespace Glue
         private static bool s_writeOnExit = false;      // Set if loading fails, or if GUI changes contents 
         private static string s_fileName = FILENAME_DEFAULT;
 
-        private static Stack<VirtualKeyCode> s_keysDown;
+        private static List<VirtualKeyCode> s_keysDown = new List<VirtualKeyCode>();
         private static bool s_lastInsertWasSpace = false;
 
 
@@ -514,6 +514,12 @@ namespace Glue
 
         public static void OnKeyDown(int vkCode)
         {
+            if (!s_keysDown.Contains((VirtualKeyCode) vkCode))
+            {
+                s_keysDown.Add((VirtualKeyCode)vkCode);
+                MainForm.UpdateKeys(s_keysDown);
+            }
+
             if (MainForm.LogInput)
             {
                 LOGGER.Debug("+" + (VirtualKeyCode)vkCode);
@@ -534,6 +540,12 @@ namespace Glue
 
         public static void OnKeyUp(int vkCode)
         {
+            while (s_keysDown.Contains((VirtualKeyCode) vkCode))
+            {
+                s_keysDown.Remove((VirtualKeyCode) vkCode);
+            }
+            MainForm.UpdateKeys(s_keysDown);
+
             if (MainForm.LogInput)
             {
                 LOGGER.Debug("-" + (VirtualKeyCode)vkCode);

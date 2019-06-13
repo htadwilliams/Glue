@@ -39,24 +39,27 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxButtonStates.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBoxButtonStates.Cursor = System.Windows.Forms.Cursors.Default;
-            this.textBoxButtonStates.Location = new System.Drawing.Point(0, 0);
+            this.textBoxButtonStates.Location = new System.Drawing.Point(11, 11);
             this.textBoxButtonStates.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxButtonStates.Multiline = true;
             this.textBoxButtonStates.Name = "textBoxButtonStates";
             this.textBoxButtonStates.ReadOnly = true;
-            this.textBoxButtonStates.Size = new System.Drawing.Size(303, 463);
+            this.textBoxButtonStates.Size = new System.Drawing.Size(104, 224);
             this.textBoxButtonStates.TabIndex = 0;
             // 
             // ViewButtons
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(302, 460);
+            this.ClientSize = new System.Drawing.Size(126, 246);
             this.Controls.Add(this.textBoxButtonStates);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "ViewButtons";
-            this.Text = "ViewButtons";
+            this.ShowInTaskbar = false;
+            this.Text = "Buttons";
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -1,6 +1,8 @@
 ﻿using Glue.Native;
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
+using WindowsInput.Native;
 
 namespace Glue.Forms
 {
@@ -34,12 +36,6 @@ namespace Glue.Forms
             checkBoxRawKeyNames.Enabled = logInput;
         }
 
-        protected override void OnShown(EventArgs e)
-        {
-            WindowHandleUtils.HideCaret(this.textBoxInputStream.Handle);
-            base.OnShown(e);
-        }
-
         private void OnViewButtonsClosing(object sender, EventArgs e)
         {
             this.menuItemViewButtons.Checked = false;
@@ -53,7 +49,6 @@ namespace Glue.Forms
         internal void AppendText(string text)
         {
              textBoxInputStream.AppendText(text);
-             WindowHandleUtils.HideCaret(this.textBoxInputStream.Handle);
         }
 
         private void ButtonClear_Click(object sender, EventArgs e)
@@ -108,13 +103,27 @@ namespace Glue.Forms
             }
             else if (null != viewButtons && !viewButtons.IsDisposed)
             {
-                this.viewButtons.Hide();
+                this.viewButtons.Close();
             }
+        }
+
+        protected override void OnActivated(EventArgs e)
+        {
+            WindowHandleUtils.HideCaret(this.textBoxInputStream.Handle);
+            base.OnActivated(e);
         }
 
         private void MenuItemViewButtons_Click(object sender, EventArgs e)
         {
             ToggleViewButtons(this.menuItemViewButtons.Checked);
+        }
+
+        internal void UpdateKeys(List<VirtualKeyCode> keys)
+        {
+            if (this.viewButtons != null && this.viewButtons.Visible)
+            { 
+                this.viewButtons.UpdateKeys(keys);
+            }
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Glue.Native;
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
+using WindowsInput.Native;
 
 namespace Glue.Forms
 {
@@ -11,10 +13,20 @@ namespace Glue.Forms
             InitializeComponent();
         }
 
-        protected override void OnShown(EventArgs e)
+        protected override void OnActivated(EventArgs e)
         {
             WindowHandleUtils.HideCaret(this.textBoxButtonStates.Handle);
-            base.OnShown(e);
+            base.OnActivated(e);
+        }
+
+        internal void UpdateKeys(List<VirtualKeyCode> keys)
+        {
+            this.textBoxButtonStates.Clear();
+            foreach(VirtualKeyCode keyCode in keys)
+            {
+                this.textBoxButtonStates.Text += keyCode.ToString();
+                this.textBoxButtonStates.Text += "\r\n";
+            }
         }
     }
 }
