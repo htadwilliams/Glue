@@ -30,7 +30,11 @@ namespace Glue
 
     internal static class Tube
     {
-        public static Main MainForm => s_mainForm;
+        public static Main MainForm 
+        { 
+            get => s_mainForm; 
+            set => s_mainForm = value; 
+        }
         public static Dictionary<Keys, Trigger> Triggers 
         {
             get => s_jsonWrapper.triggers;
@@ -65,7 +69,7 @@ namespace Glue
         private const string PROCESS_NAME_NOTEPAD           = "notepad";      // also matches Notepad++
         private const string PROCESS_NAME_WASD              = "fallout4.exe"; 
 
-        private static Main s_mainForm = null;
+        private static Main s_mainForm;
         private static bool s_writeOnExit = false;      // Set if loading fails, or if GUI changes contents 
         private static string s_fileName = FILENAME_DEFAULT;
 
@@ -104,9 +108,13 @@ namespace Glue
                 // activating game controller buttons, playing sounds, etc.
                 ActionQueueThread.Start();
 
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                s_mainForm = new Main();
+                ApplicationContext applicationContext = new TrayApplicationContext();
+
                 LOGGER.Debug("Entering Application.Run()...");
-                InitForm();
-                Application.Run(s_mainForm);
+                Application.Run(applicationContext);
                 LOGGER.Debug("...returned from Application.Run().");
             }
             finally
@@ -170,13 +178,6 @@ namespace Glue
             {
                 LOGGER.Warn("Macro not found: " + macroName);
             }
-        }
-
-        private static void InitForm()
-        {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            s_mainForm = new Main();
         }
 
         // TODO All the DirectX stuff should be moved to another wrapper class
@@ -605,6 +606,15 @@ namespace Glue
                    output.EndsWith("\r\n"));
 
             return output;
+        }
+
+        internal static void ShowForm()
+        {
+            if (null == MainForm || MainForm.IsDisposed)
+            {
+                MainForm = new Main();
+            }
+            MainForm.Show();
         }
     }
 }
