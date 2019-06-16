@@ -48,7 +48,10 @@ namespace Glue.Forms
 
         internal void AppendText(string text)
         {
-             textBoxInputStream.AppendText(text);
+            if (!IsDisposed)
+            { 
+                textBoxInputStream.AppendText(text);
+            }
         }
 
         private void ButtonClear_Click(object sender, EventArgs e)
