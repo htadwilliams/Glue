@@ -36,6 +36,15 @@ namespace Glue.Forms
             checkBoxRawKeyNames.Enabled = logInput;
         }
 
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            // Don't really close - hide instead so that state isn't lost 
+            e.Cancel = true;
+            Hide();
+
+            base.OnFormClosing(e);
+        }
+
         private void OnViewButtonsClosing(object sender, EventArgs e)
         {
             this.menuItemViewButtons.Checked = false;
@@ -51,12 +60,14 @@ namespace Glue.Forms
             if (!IsDisposed)
             { 
                 textBoxInputStream.AppendText(text);
+                WindowHandleUtils.HideCaret(this.textBoxInputStream.Handle);
             }
         }
 
         private void ButtonClear_Click(object sender, EventArgs e)
         {
             textBoxInputStream.Clear();
+            WindowHandleUtils.HideCaret(this.textBoxInputStream.Handle);
         }
 
         protected override void OnFormClosed(FormClosedEventArgs e)
