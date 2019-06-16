@@ -27,6 +27,7 @@ namespace Glue.Forms
                 this.textBoxButtonStates.Text += keyCode.ToString();
                 this.textBoxButtonStates.Text += "\r\n";
             }
+            WindowHandleUtils.HideCaret(this.textBoxButtonStates.Handle);
         }
     }
 }
