@@ -17,6 +17,13 @@
             {
                 components.Dispose();
             }
+            if (disposing)
+            {
+                if (null != viewButtons && !viewButtons.IsDisposed)
+                {
+                    viewButtons.Close();
+                }
+            }
             base.Dispose(disposing);
         }
 
