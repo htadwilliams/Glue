@@ -16,8 +16,8 @@ namespace Glue.Native
     {
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private static readonly LowLevelKeyboardProc s_proc = HookCallback;
-        private static LowLevelKeyboardProc s_handler = null;
+        private static readonly LowLevelKeyboardProc s_proc = HookCallback; // registered as hook proc via SetHook
+        private static LowLevelKeyboardProc s_handler = null;               // for specific implementation
         private static IntPtr s_hookID = IntPtr.Zero;
 
         public static void Initialize(LowLevelKeyboardProc lowLevelKeyboardProc)

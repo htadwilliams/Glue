@@ -46,5 +46,17 @@ namespace Glue.Properties {
                 this["RawKeyNames"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ViewButtons {
+            get {
+                return ((bool)(this["ViewButtons"]));
+            }
+            set {
+                this["ViewButtons"] = value;
+            }
+        }
     }
 }
