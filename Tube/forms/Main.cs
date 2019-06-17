@@ -38,16 +38,12 @@ namespace Glue.Forms
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            // Don't really close - hide instead so that state isn't lost 
             e.Cancel = true;
+
             Hide();
+            ShowViewButtons(false);
 
             base.OnFormClosing(e);
-        }
-
-        private void OnViewButtonsClosing(object sender, EventArgs e)
-        {
-            this.menuItemViewButtons.Checked = false;
         }
 
         private void SetCaption(string fileName)
@@ -64,21 +60,28 @@ namespace Glue.Forms
             }
         }
 
+        protected override void OnShown(EventArgs e)
+        {
+            this.menuItemViewButtons.Checked = Properties.Settings.Default.ViewButtons;
+            ShowViewButtons(Properties.Settings.Default.ViewButtons);
+        }
+
         private void ButtonClear_Click(object sender, EventArgs e)
         {
             textBoxInputStream.Clear();
             WindowHandleUtils.HideCaret(this.textBoxInputStream.Handle);
         }
 
-        protected override void OnFormClosed(FormClosedEventArgs e)
+        protected override void OnDeactivate(EventArgs e)
         {
             Properties.Settings.Default.LogInput = this.logInput;
             Properties.Settings.Default.RawKeyNames = this.RawKeyNames;
+            Properties.Settings.Default.ViewButtons = this.menuItemViewButtons.Checked;
 
             LOGGER.Info("Saving settings (Properties.Settings.Default.Save())");
             Properties.Settings.Default.Save();
 
-            base.OnFormClosed(e);
+            base.OnDeactivate(e);
         }
 
         private void MenuItemFileOpen_Click(object sender, EventArgs e)
@@ -103,33 +106,41 @@ namespace Glue.Forms
             helpAbout.ShowDialog();
         }
 
-        public void ToggleViewButtons(bool showView = true)
+        public void ShowViewButtons(bool showView = true)
         {
             if (showView)
             {
                 if (null == viewButtons || viewButtons.IsDisposed)
                 {
+                    // Register for close event only - not Hide()
                     this.viewButtons = new ViewButtons();
-                    this.viewButtons.FormClosing += new FormClosingEventHandler(this.OnViewButtonsClosing);
                 }
 
-                this.viewButtons.Show(this);
+                this.menuItemViewButtons.Checked = true;
+
+                if (!this.viewButtons.Visible)
+                { 
+                    this.viewButtons.Show(this);
+                }
             }
             else if (null != viewButtons && !viewButtons.IsDisposed)
             {
-                this.viewButtons.Close();
+                this.viewButtons.Hide();
             }
         }
 
         protected override void OnActivated(EventArgs e)
         {
+            ShowViewButtons(Properties.Settings.Default.ViewButtons);
             WindowHandleUtils.HideCaret(this.textBoxInputStream.Handle);
+
             base.OnActivated(e);
         }
 
         private void MenuItemViewButtons_Click(object sender, EventArgs e)
         {
-            ToggleViewButtons(this.menuItemViewButtons.Checked);
+            ShowViewButtons(this.menuItemViewButtons.Checked);
+            Properties.Settings.Default.ViewButtons = this.menuItemViewButtons.Checked;
         }
 
         internal void UpdateKeys(List<VirtualKeyCode> keys)

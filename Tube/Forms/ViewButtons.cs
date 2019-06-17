@@ -13,6 +13,15 @@ namespace Glue.Forms
             InitializeComponent();
         }
 
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            e.Cancel = true;
+
+            Hide();
+
+            base.OnFormClosing(e);
+        }
+
         protected override void OnActivated(EventArgs e)
         {
             WindowHandleUtils.HideCaret(this.textBoxButtonStates.Handle);
