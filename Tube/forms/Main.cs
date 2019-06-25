@@ -19,9 +19,12 @@ namespace Glue.Forms
         private bool rawKeyNames = false;
         private string baseCaptionText = "";
         private ViewButtons viewButtons = null;
+        private readonly ApplicationContext context;
 
-        public Main()
+        public Main(ApplicationContext context)
         {
+            this.context = context;
+
             InitializeComponent();
 
             this.logInput = Properties.Settings.Default.LogInput;
@@ -38,12 +41,21 @@ namespace Glue.Forms
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            e.Cancel = true;
+            // Close application if either control key is held, otherwise hide 
+            // window and remain on system notification tray
+            if (!Keyboard.IsKeyDown(Keys.LControlKey) && !Keyboard.IsKeyDown(Keys.RControlKey))
+            {
+                e.Cancel = true;
 
-            Hide();
-            ShowViewButtons(false);
-
-            base.OnFormClosing(e);
+                Hide();
+                ShowViewButtons(false);
+                base.OnFormClosing(e);
+            }
+            
+            else
+            {
+                context.ExitThread();
+            }
         }
 
         private void SetCaption(string fileName)
