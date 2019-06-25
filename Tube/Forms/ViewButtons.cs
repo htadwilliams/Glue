@@ -30,12 +30,15 @@ namespace Glue.Forms
 
         internal void UpdateKeys(List<VirtualKeyCode> keys)
         {
+            this.groupLabel.Text = "Pressed: " + keys.Count;
             this.textBoxButtonStates.Clear();
+            
             foreach(VirtualKeyCode keyCode in keys)
             {
                 this.textBoxButtonStates.Text += keyCode.ToString();
                 this.textBoxButtonStates.Text += "\r\n";
             }
+
             WindowHandleUtils.HideCaret(this.textBoxButtonStates.Handle);
         }
     }
