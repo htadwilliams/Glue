@@ -75,6 +75,7 @@ namespace Glue
 
         private static List<VirtualKeyCode> s_keysDown = new List<VirtualKeyCode>();
         private static bool s_lastInsertWasSpace = false;
+        private static TrayApplicationContext s_context;
 
 
         /// <summary>
@@ -110,11 +111,12 @@ namespace Glue
 
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-                s_mainForm = new Main();
-                ApplicationContext applicationContext = new TrayApplicationContext();
+
+                s_context = new TrayApplicationContext();
+                s_mainForm = (Main) s_context.MainForm;
 
                 LOGGER.Debug("Entering Application.Run()...");
-                Application.Run(applicationContext);
+                Application.Run(s_context);
                 LOGGER.Debug("...returned from Application.Run().");
             }
             finally
@@ -606,15 +608,6 @@ namespace Glue
                    output.EndsWith("\r\n"));
 
             return output;
-        }
-
-        internal static void ShowForm()
-        {
-            if (null == MainForm || MainForm.IsDisposed)
-            {
-                MainForm = new Main();
-            }
-            MainForm.Show();
         }
     }
 }

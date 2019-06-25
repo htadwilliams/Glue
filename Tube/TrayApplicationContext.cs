@@ -13,9 +13,13 @@ namespace Glue
         private Container container;
         private NotifyIcon notifyIcon;
 
-        public void ShowForm()
+        internal void ShowForm()
         {
-            Tube.ShowForm();
+            if (null == MainForm || MainForm.IsDisposed)
+            {
+                MainForm = new Main(this);
+            }
+            MainForm.Show();
         }
 
         public TrayApplicationContext()
@@ -25,11 +29,11 @@ namespace Glue
 
         private void InitializeContext()
         {
-            Container = new System.ComponentModel.Container();
+            Container = new Container();
             NotifyIcon = new NotifyIcon(container)
             {
                 ContextMenuStrip = new ContextMenuStrip(),
-                Icon = Glue.Properties.Resources.glue,
+                Icon = Properties.Resources.glue,
                 Text = "Glue",
                 Visible = true
             };
