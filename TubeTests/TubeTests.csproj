@@ -57,6 +57,9 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TimeFormatFromMillisTests.cs" />
+    <Compile Include="TimeFormatParseTests.cs" />
+    <Compile Include="EmptyTests.cs" />
     <Compile Include="JsonTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

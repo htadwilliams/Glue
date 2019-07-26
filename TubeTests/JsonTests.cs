@@ -3,9 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+
+/// <summary>
+/// 
+/// These tests are just for screwing around with Json and aren't verifying
+/// anything really other than Json assumptions are correct.
+/// 
+/// </summary>
 
 namespace GlueTests
 {
@@ -97,12 +103,6 @@ namespace GlueTests
             throw new NotImplementedException(); // won't be called because CanWrite returns false
         }
     }
-
-    /*
-     * These tests are just for screwing around with Json and aren't verifying
-     * anything really.
-     * 
-     */
 
     [TestClass]
     public class JsonTests
