@@ -19,6 +19,7 @@ using Keyboard = Glue.Native.Keyboard;
 
 namespace Glue
 {
+    // TODO Serialize lists not maps (simplest data structure possible in all cases)
     // Encapsulates items serialized / deserialized to JSON so there's one root element 
     internal class JsonWrapper
     {
