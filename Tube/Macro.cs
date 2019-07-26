@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Glue
 {
-    class Macro
+    public class Macro
     {
         [JsonProperty]
         private readonly string name;
