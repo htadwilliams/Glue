@@ -5,6 +5,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Glue.Actions
 {
+    // TODO Move Json adapter class BaseSpecifiedConcreteClassConverter into its own file
     internal class BaseSpecifiedConcreteClassConverter : DefaultContractResolver
     {
         protected override JsonConverter ResolveContractConverter(Type objectType)
@@ -15,6 +16,7 @@ namespace Glue.Actions
         }
     }
 
+    // TODO Move Json adapter class ActionConverter into its own file
     internal class ActionConverter : JsonConverter
     {
         private static readonly log4net.ILog LOGGER = 
