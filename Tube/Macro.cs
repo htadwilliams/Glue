@@ -6,6 +6,10 @@ namespace Glue
 {
     public class Macro
     {
+        public string Name => name;
+        public long DelayTimeMS => delayTimeMS;
+        public List<Action> Actions => actions;
+
         [JsonProperty]
         private readonly string name;
 
@@ -24,14 +28,14 @@ namespace Glue
 
         public Macro AddAction(Action action)
         {
-            actions.Add(action);
+            Actions.Add(action);
             return this;
         }
 
         internal void Play()
         {
             // Schedule each action in the macro and add it to the output queue
-            foreach (Action action in actions)
+            foreach (Action action in Actions)
             {
                 // TODO use object pooled actions for better GC
                 // BUGBUG Pass in delay time! action.Schedule(this.delayTimeMS);
