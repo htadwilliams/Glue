@@ -22,15 +22,16 @@ namespace Glue
     // Encapsulates items serialized / deserialized to JSON so there's one root element 
     internal class JsonWrapper
     {
+        // JSon should always serialize lower case names or these attributes would tag class properties instead
+        [JsonProperty]
         private Dictionary<Keys, Trigger> triggers;
+        [JsonProperty]
         private Dictionary<VirtualKeyCode, KeyboardRemapEntry> keyMap;
+        [JsonProperty]
         private Dictionary<string, Macro> macros;
 
-        [JsonProperty]
         public Dictionary<string, Macro> Macros { get => macros; set => macros = value; }
-        [JsonProperty]
         public Dictionary<Keys, Trigger> Triggers { get => triggers; set => triggers = value; }
-        [JsonProperty]
         public Dictionary<VirtualKeyCode, KeyboardRemapEntry> KeyMap { get => keyMap; set => keyMap = value; }
 
         public JsonWrapper(
