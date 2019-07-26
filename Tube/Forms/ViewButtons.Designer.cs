@@ -30,8 +30,8 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ViewButtons));
             this.textBoxButtonStates = new System.Windows.Forms.TextBox();
-            this.groupLabel = new System.Windows.Forms.GroupBox();
-            this.groupLabel.SuspendLayout();
+            this.separator = new System.Windows.Forms.Label();
+            this.labelHeading = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // textBoxButtonStates
@@ -41,26 +41,34 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxButtonStates.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBoxButtonStates.Cursor = System.Windows.Forms.Cursors.Default;
-            this.textBoxButtonStates.Location = new System.Drawing.Point(5, 18);
-            this.textBoxButtonStates.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxButtonStates.Location = new System.Drawing.Point(11, 34);
+            this.textBoxButtonStates.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxButtonStates.Multiline = true;
             this.textBoxButtonStates.Name = "textBoxButtonStates";
             this.textBoxButtonStates.ReadOnly = true;
-            this.textBoxButtonStates.Size = new System.Drawing.Size(87, 219);
+            this.textBoxButtonStates.Size = new System.Drawing.Size(98, 221);
             this.textBoxButtonStates.TabIndex = 0;
             // 
-            // groupLabel
+            // separator
             // 
-            this.groupLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.separator.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupLabel.Controls.Add(this.textBoxButtonStates);
-            this.groupLabel.Location = new System.Drawing.Point(11, 12);
-            this.groupLabel.Name = "groupLabel";
-            this.groupLabel.Size = new System.Drawing.Size(97, 242);
-            this.groupLabel.TabIndex = 1;
-            this.groupLabel.TabStop = false;
-            this.groupLabel.Text = "Pressed: 0";
+            this.separator.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.separator.Location = new System.Drawing.Point(11, 30);
+            this.separator.Name = "separator";
+            this.separator.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.separator.Size = new System.Drawing.Size(95, 2);
+            this.separator.TabIndex = 1;
+            this.separator.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // labelHeading
+            // 
+            this.labelHeading.AutoSize = true;
+            this.labelHeading.Location = new System.Drawing.Point(11, 14);
+            this.labelHeading.Name = "labelHeading";
+            this.labelHeading.Size = new System.Drawing.Size(65, 13);
+            this.labelHeading.TabIndex = 2;
+            this.labelHeading.Text = "Pressed: {0}";
             // 
             // ViewButtons
             // 
@@ -68,23 +76,25 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(120, 266);
             this.ControlBox = false;
-            this.Controls.Add(this.groupLabel);
+            this.Controls.Add(this.labelHeading);
+            this.Controls.Add(this.separator);
+            this.Controls.Add(this.textBoxButtonStates);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ViewButtons";
             this.ShowInTaskbar = false;
             this.Text = "Button State";
-            this.groupLabel.ResumeLayout(false);
-            this.groupLabel.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
         private System.Windows.Forms.TextBox textBoxButtonStates;
-        private System.Windows.Forms.GroupBox groupLabel;
+        private System.Windows.Forms.Label separator;
+        private System.Windows.Forms.Label labelHeading;
     }
 }

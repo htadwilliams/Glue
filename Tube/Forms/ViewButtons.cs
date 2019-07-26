@@ -8,9 +8,16 @@ namespace Glue.Forms
 {
     public partial class ViewButtons : Form
     {
+        protected readonly string labelHeadingFormat;
+
         public ViewButtons()
         {
+
             InitializeComponent();
+
+            labelHeadingFormat = labelHeading.Text;
+
+            SetHeadingText(0);
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -28,9 +35,14 @@ namespace Glue.Forms
             base.OnActivated(e);
         }
 
+        protected void SetHeadingText(int countKeysPressed)
+        {
+            this.labelHeading.Text = String.Format(labelHeadingFormat, countKeysPressed);
+        }
+
         internal void UpdateKeys(List<VirtualKeyCode> keys)
         {
-            this.groupLabel.Text = "Pressed: " + keys.Count;
+            SetHeadingText(keys.Count);
             this.textBoxButtonStates.Clear();
             
             foreach(VirtualKeyCode keyCode in keys)
