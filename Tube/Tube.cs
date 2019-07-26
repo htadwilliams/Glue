@@ -19,50 +19,48 @@ using Keyboard = Glue.Native.Keyboard;
 
 namespace Glue
 {
-    // TODO Json wrapper should only be created when serializing / deserializing
     // Encapsulates items serialized / deserialized to JSON so there's one root element 
     internal class JsonWrapper
     {
-        public Dictionary<Keys, Trigger> triggers;
-        public Dictionary<VirtualKeyCode, KeyboardRemapEntry> keyMap;
-        public Dictionary<string, Macro> macros;
+        private Dictionary<Keys, Trigger> triggers;
+        private Dictionary<VirtualKeyCode, KeyboardRemapEntry> keyMap;
+        private Dictionary<string, Macro> macros;
+
+        [JsonProperty]
+        public Dictionary<string, Macro> Macros { get => macros; set => macros = value; }
+        [JsonProperty]
+        public Dictionary<Keys, Trigger> Triggers { get => triggers; set => triggers = value; }
+        [JsonProperty]
+        public Dictionary<VirtualKeyCode, KeyboardRemapEntry> KeyMap { get => keyMap; set => keyMap = value; }
+
+        public JsonWrapper(
+            Dictionary<Keys, Trigger> triggers, 
+            Dictionary<VirtualKeyCode, KeyboardRemapEntry> keyMap, 
+            Dictionary<string, Macro> macros)
+        {
+            this.Triggers = triggers;
+            this.KeyMap = keyMap;
+            this.Macros = macros;
+        }
     }
 
     internal static class Tube
     {
-        public static Main MainForm 
-        { 
-            get => s_mainForm; 
-            set => s_mainForm = value; 
-        }
-        public static Dictionary<Keys, Trigger> Triggers 
-        {
-            get => s_jsonWrapper.triggers;
-            set => s_jsonWrapper.triggers = value;
-        }
-        public static Dictionary<VirtualKeyCode, KeyboardRemapEntry> KeyMap
-        {
-            get => s_jsonWrapper.keyMap;
-            set => s_jsonWrapper.keyMap = value;
-        }
-        public static Dictionary<string, Macro> Macros 
-        {
-            get => s_jsonWrapper.macros;
-            set => s_jsonWrapper.macros = value;
-        }
-
-        public static string FileName
-        {
-            get => s_fileName;
-            set => s_fileName = value;
-        }
+        internal static Dictionary<Keys, Trigger> Triggers { get => s_triggers; set => s_triggers = value; }
+        internal static Dictionary<VirtualKeyCode, KeyboardRemapEntry> KeyMap { get => s_keyMap; set => s_keyMap = value; }
+        public static Dictionary<string, Macro> Macros { get => s_macros; set => s_macros = value; }
+        public static Main MainForm { get => s_mainForm; set => s_mainForm = value; }
+        public static string FileName { get => s_fileName; set => s_fileName = value; }
 
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        // Core data structures
+        private static Dictionary<Keys, Trigger> s_triggers;
+        private static Dictionary<VirtualKeyCode, KeyboardRemapEntry> s_keyMap;
+        private static Dictionary<string, Macro> s_macros;
+
         // For friendly display of keys in GUI
         private static readonly Dictionary<Keys, string> keyMap = new Dictionary<Keys, string>();
-
-        private static JsonWrapper s_jsonWrapper = new JsonWrapper();
 
         // used to generate example content 
         private const string FILENAME_DEFAULT               = "macros.glue";
@@ -84,7 +82,7 @@ namespace Glue
         [STAThread]
         static void Main(string[] args)
         {
-            s_fileName = args.Length > 0
+            FileName = args.Length > 0
                 ? args[0]
                 : FILENAME_DEFAULT;
 
@@ -99,7 +97,7 @@ namespace Glue
             {
                 InitLogging();
                 InitDirectX();
-                LoadFile(s_fileName);
+                LoadFile(FileName);
 
                 // Native keyboard and mouse hook initialization
                 KeyInterceptor.Initialize(KeyboardHandler.HookCallback);
@@ -113,7 +111,7 @@ namespace Glue
                 Application.SetCompatibleTextRenderingDefault(false);
 
                 s_context = new TrayApplicationContext();
-                s_mainForm = (Main) s_context.MainForm;
+                MainForm = (Main) s_context.MainForm;
 
                 LOGGER.Debug("Entering Application.Run()...");
                 Application.Run(s_context);
@@ -128,7 +126,7 @@ namespace Glue
 
             if (s_writeOnExit)
             {
-                SaveFile(s_fileName);
+                SaveFile(FileName);
             }
 
             LOGGER.Info("Exiting");
@@ -262,7 +260,9 @@ namespace Glue
                     "    triggers   Bind keys or key combinations to macros.\r\n" + 
                     "    keyMap     Each entry remaps a key on the keyboard.\r\n\r\n");
                 sw.Write("\r\n");
-                serializer.Serialize(writer, s_jsonWrapper);
+
+                JsonWrapper jsonWrapper = new JsonWrapper(Triggers, KeyMap, Macros);
+                serializer.Serialize(writer, jsonWrapper);
             }
         }
 
@@ -294,7 +294,11 @@ namespace Glue
 
                         reader.Read();
 
-                        s_jsonWrapper = serializer.Deserialize<JsonWrapper>(reader);
+                        JsonWrapper jsonWrapper = serializer.Deserialize<JsonWrapper>(reader);
+
+                        Macros = jsonWrapper.Macros;
+                        Triggers = jsonWrapper.Triggers;
+                        KeyMap = jsonWrapper.KeyMap;
                     }
                 }
             }
@@ -320,7 +324,7 @@ namespace Glue
                 LOGGER.Info(String.Format("    Loaded {0} remapped keys", KeyMap.Count));
             }
 
-            s_fileName = fileName;
+            FileName = fileName;
             s_writeOnExit = false;
             return;
         }
