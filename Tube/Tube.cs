@@ -51,7 +51,7 @@ namespace Glue
         internal static Dictionary<Keys, Trigger> Triggers { get => s_triggers; set => s_triggers = value; }
         internal static Dictionary<VirtualKeyCode, KeyboardRemapEntry> KeyMap { get => s_keyMap; set => s_keyMap = value; }
         public static Dictionary<string, Macro> Macros { get => s_macros; set => s_macros = value; }
-        public static Main MainForm { get => s_mainForm; set => s_mainForm = value; }
+        public static ViewMain MainForm { get => s_mainForm; set => s_mainForm = value; }
         public static string FileName { get => s_fileName; set => s_fileName = value; }
 
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -69,7 +69,7 @@ namespace Glue
         private const string PROCESS_NAME_NOTEPAD           = "notepad";      // also matches Notepad++
         private const string PROCESS_NAME_WASD              = "fallout4.exe"; 
 
-        private static Main s_mainForm;
+        private static ViewMain s_mainForm;
         private static bool s_writeOnExit = false;      // Set if loading fails, or if GUI changes contents 
         private static string s_fileName = FILENAME_DEFAULT;
 
@@ -101,6 +101,17 @@ namespace Glue
                 InitDirectX();
                 LoadFile(FileName);
 
+                // BUGBUG remove me
+                String parseString = "4ss";
+                if (TimeSpan.TryParse(parseString, out TimeSpan timeSpan))
+                { 
+                    LOGGER.Info("Timespan parsed [" + parseString + "] as: " + timeSpan.ToString());
+                }
+                else
+                {
+                    LOGGER.Info("TimeSpan failed to parse " + parseString);
+                }
+
                 // Native keyboard and mouse hook initialization
                 KeyInterceptor.Initialize(KeyboardHandler.HookCallback);
                 MouseInterceptor.Initialize(MouseHandler.HookCallback);
@@ -113,7 +124,7 @@ namespace Glue
                 Application.SetCompatibleTextRenderingDefault(false);
 
                 s_context = new TrayApplicationContext();
-                MainForm = (Main) s_context.MainForm;
+                MainForm = (ViewMain) s_context.MainForm;
 
                 LOGGER.Debug("Entering Application.Run()...");
                 Application.Run(s_context);
@@ -339,7 +350,7 @@ namespace Glue
             // Create macro with several actions bound to CTRL-Z
             //
             string macroName = "delayed-action";
-            Macro macro = new Macro(macroName, 10) // Fire 10ms after triggered
+            Macro macro = new Macro(macroName, 1001) // Fire 1s 1ms after triggered
                 .AddAction(new ActionKey(VirtualKeyCode.VK_R, Movement.PRESS, 10))
                 .AddAction(new ActionKey(VirtualKeyCode.VK_R, Movement.RELEASE, 10))
 
@@ -415,7 +426,7 @@ namespace Glue
             // Macro bound to mouse button X1 / X2
             //
             macroName = "F10";
-            macro = new Macro(macroName, 0);
+            macro = new Macro(macroName, 4);
             macro.AddAction(new ActionKey(VirtualKeyCode.F10, Movement.PRESS, 0));
             macro.AddAction(new ActionKey(VirtualKeyCode.F10, Movement.RELEASE, 50));
             Macros.Add(macroName, macro);

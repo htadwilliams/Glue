@@ -4,9 +4,9 @@ using System.Windows.Forms;
 
 namespace Glue.Forms
 {
-    partial class HelpAbout : Form
+    partial class DialogHelpAbout : Form
     {
-        public HelpAbout()
+        public DialogHelpAbout()
         {
             InitializeComponent();
             this.Text = String.Format("About {0}", AssemblyTitle);

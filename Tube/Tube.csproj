@@ -84,11 +84,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActionQueue.cs" />
-    <Compile Include="Forms\HelpAbout.cs">
+    <Compile Include="Forms\DialogEditMacros.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\HelpAbout.Designer.cs">
-      <DependentUpon>HelpAbout.cs</DependentUpon>
+    <Compile Include="Forms\DialogEditMacros.Designer.cs">
+      <DependentUpon>DialogEditMacros.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\DialogHelpAbout.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DialogHelpAbout.Designer.cs">
+      <DependentUpon>DialogHelpAbout.cs</DependentUpon>
     </Compile>
     <Compile Include="Actions\Action.cs" />
     <Compile Include="Actions\ActionMouse.cs" />
@@ -97,6 +103,18 @@
     <Compile Include="Actions\ActionSound.cs" />
     <Compile Include="Actions\ActionKey.cs" />
     <Compile Include="Actions\ActionTyping.cs" />
+    <Compile Include="Forms\DialogEditKeyMap.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DialogEditKeyMap.Designer.cs">
+      <DependentUpon>DialogEditKeyMap.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\DialogEditTriggers.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DialogEditTriggers.Designer.cs">
+      <DependentUpon>DialogEditTriggers.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\ViewButtons.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -109,6 +127,7 @@
     <Compile Include="Priority_Queue\GenericPriorityQueueNode.cs" />
     <Compile Include="Priority_Queue\IFixedSizePriorityQueue.cs" />
     <Compile Include="TrayApplicationContext.cs" />
+    <Compile Include="Util\FormatDuration.cs" />
     <Compile Include="WindowsInput\InputBuilder.cs" />
     <Compile Include="Priority_Queue\IPriorityQueue.cs" />
     <Compile Include="Native\Keyboard.cs" />
@@ -136,20 +155,23 @@
     <Compile Include="Priority_Queue\SimplePriorityQueue.cs" />
     <Compile Include="Trigger.cs" />
     <Compile Include="Native\WinConsole.cs" />
-    <Compile Include="Forms\Main.cs">
+    <Compile Include="Forms\ViewMain.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Main.Designer.cs">
-      <DependentUpon>Main.cs</DependentUpon>
+    <Compile Include="Forms\ViewMain.Designer.cs">
+      <DependentUpon>ViewMain.cs</DependentUpon>
     </Compile>
     <Compile Include="Tube.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WindowsInput\WindowsInputMessageDispatcher.cs" />
-    <EmbeddedResource Include="Forms\HelpAbout.resx">
-      <DependentUpon>HelpAbout.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\DialogHelpAbout.resx">
+      <DependentUpon>DialogHelpAbout.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Main.resx">
-      <DependentUpon>Main.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\DialogEditMacros.resx">
+      <DependentUpon>DialogEditMacros.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ViewMain.resx">
+      <DependentUpon>ViewMain.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ViewButtons.resx">

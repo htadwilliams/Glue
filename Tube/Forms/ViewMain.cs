@@ -1,12 +1,13 @@
 ﻿using Glue.Native;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows.Forms;
 using WindowsInput.Native;
 
 namespace Glue.Forms
 {
-    public partial class Main : Form
+    public partial class ViewMain : Form
     {
         public bool LogInput { get => logInput; set { logInput = value; checkBoxRawKeyNames.Enabled = value; } }
         public bool RawKeyNames { get => rawKeyNames; set => rawKeyNames = value; }
@@ -21,7 +22,7 @@ namespace Glue.Forms
         private ViewButtons viewButtons = null;
         private readonly ApplicationContext context;
 
-        public Main(ApplicationContext context)
+        public ViewMain(ApplicationContext context)
         {
             this.context = context;
 
@@ -114,7 +115,7 @@ namespace Glue.Forms
 
         private void MenuItemHelpAbout_Click(object sender, EventArgs e)
         {
-            HelpAbout helpAbout = new HelpAbout();
+            DialogHelpAbout helpAbout = new DialogHelpAbout();
             helpAbout.ShowDialog();
         }
 
@@ -161,6 +162,20 @@ namespace Glue.Forms
             { 
                 this.viewButtons.UpdateKeys(keys);
             }
+        }
+
+        private void MenuItemEditMacros_Click(object sender, EventArgs e)
+        {
+            Form macros = new DialogEditMacros(new ReadOnlyDictionary<string, Macro>(Tube.Macros));
+            macros.ShowDialog();
+        }
+
+        private void MenuItemEditTriggers_Click(object sender, EventArgs e)
+        {
+        }
+
+        private void MenuItemEditRemaps_Click(object sender, EventArgs e)
+        {
         }
     }
 }

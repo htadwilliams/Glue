@@ -17,7 +17,7 @@ namespace Glue
         {
             if (null == MainForm || MainForm.IsDisposed)
             {
-                MainForm = new Main(this);
+                MainForm = new ViewMain(this);
             }
             MainForm.Show();
         }
@@ -87,7 +87,7 @@ namespace Glue
 
         private void HelpAbout_Click(object sender, EventArgs e)
         {
-            HelpAbout helpAbout = new HelpAbout();
+            DialogHelpAbout helpAbout = new DialogHelpAbout();
             helpAbout.ShowDialog();
         }
 
