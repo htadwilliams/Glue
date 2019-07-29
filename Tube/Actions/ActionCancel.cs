@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 
 namespace Glue.Actions
 {
+    [JsonObject(MemberSerialization.OptIn)]
     class ActionCancel : Action
     {
         [JsonProperty]

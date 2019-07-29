@@ -121,6 +121,7 @@
     <Compile Include="Forms\ViewButtons.Designer.cs">
       <DependentUpon>ViewButtons.cs</DependentUpon>
     </Compile>
+    <Compile Include="JsonWrapper.cs" />
     <Compile Include="Native\WindowHandleUtils.cs" />
     <Compile Include="Native\TimeProvider.cs" />
     <Compile Include="Priority_Queue\GenericPriorityQueue.cs" />
@@ -187,8 +188,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="glue-files\dawn-of-war.glue" />
-    <None Include="glue-files\macros.glue" />
     <None Include="Log.Release.config" />
     <None Include="Log.Debug.config" />
     <None Include="packages.config">
@@ -228,7 +227,6 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(ProjectDir)\Log.$(ConfigurationName).config $(TargetDir)\Log.config
-copy $(ProjectDir)\*.wav $(TargetDir)
-copy $(ProjectDir)\glue-files\*.glue $(TargetDir)</PostBuildEvent>
+copy $(ProjectDir)\*.wav $(TargetDir)</PostBuildEvent>
   </PropertyGroup>
 </Project>

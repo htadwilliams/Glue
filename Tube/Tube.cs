@@ -19,33 +19,6 @@ using Keyboard = Glue.Native.Keyboard;
 
 namespace Glue
 {
-    // TODO Serialize lists not maps (simplest data structure possible in all cases)
-    // Encapsulates items serialized / deserialized to JSON so there's one root element 
-    internal class JsonWrapper
-    {
-        // JSon should always serialize lower case names or these attributes would tag class properties instead
-        [JsonProperty]
-        private Dictionary<Keys, Trigger> triggers;
-        [JsonProperty]
-        private Dictionary<VirtualKeyCode, KeyboardRemapEntry> keyMap;
-        [JsonProperty]
-        private Dictionary<string, Macro> macros;
-
-        public Dictionary<string, Macro> Macros { get => macros; set => macros = value; }
-        public Dictionary<Keys, Trigger> Triggers { get => triggers; set => triggers = value; }
-        public Dictionary<VirtualKeyCode, KeyboardRemapEntry> KeyMap { get => keyMap; set => keyMap = value; }
-
-        public JsonWrapper(
-            Dictionary<Keys, Trigger> triggers, 
-            Dictionary<VirtualKeyCode, KeyboardRemapEntry> keyMap, 
-            Dictionary<string, Macro> macros)
-        {
-            this.Triggers = triggers;
-            this.KeyMap = keyMap;
-            this.Macros = macros;
-        }
-    }
-
     internal static class Tube
     {
         internal static Dictionary<Keys, Trigger> Triggers { get => s_triggers; set => s_triggers = value; }
@@ -100,17 +73,6 @@ namespace Glue
                 InitLogging();
                 InitDirectX();
                 LoadFile(FileName);
-
-                // BUGBUG remove me
-                String parseString = "4ss";
-                if (TimeSpan.TryParse(parseString, out TimeSpan timeSpan))
-                { 
-                    LOGGER.Info("Timespan parsed [" + parseString + "] as: " + timeSpan.ToString());
-                }
-                else
-                {
-                    LOGGER.Info("TimeSpan failed to parse " + parseString);
-                }
 
                 // Native keyboard and mouse hook initialization
                 KeyInterceptor.Initialize(KeyboardHandler.HookCallback);
@@ -309,9 +271,9 @@ namespace Glue
 
                         JsonWrapper jsonWrapper = serializer.Deserialize<JsonWrapper>(reader);
 
-                        Macros = jsonWrapper.Macros;
-                        Triggers = jsonWrapper.Triggers;
-                        KeyMap = jsonWrapper.KeyMap;
+                        Macros = jsonWrapper.GetMacroMap();
+                        Triggers = jsonWrapper.GetTriggerMap();
+                        KeyMap = jsonWrapper.GetKeyboardMap();
                     }
                 }
             }
