@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 
 namespace Glue
 {
+    [JsonObject(MemberSerialization.OptIn)]
     public class Macro
     {
         public string Name => name;
