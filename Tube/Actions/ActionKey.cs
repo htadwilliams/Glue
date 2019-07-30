@@ -109,5 +109,10 @@ namespace Glue.Actions
                 LOGGER.Debug(message);
             }
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + (movement == Movement.PRESS ? " +" : " -") + this.key;
+        }
     }
 }

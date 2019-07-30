@@ -54,5 +54,10 @@ namespace Glue.Actions
 
             return new Action[] {scheduledCopy};
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + this.macro;
+        }
     }
 }
