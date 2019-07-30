@@ -9,17 +9,15 @@ namespace Glue.Actions
 {
     public class ActionTyping : Action
     {
-        [JsonProperty]
         public string TypedString => this.typedString;
-
-        [JsonProperty]
         public long CharDelayMS => this.charDelayMS;
-
-        [JsonProperty]
         public long DwellTimeMS => this.dwellTimeMS;
 
+        [JsonProperty]
         private readonly string typedString;
+        [JsonProperty]
         private readonly long charDelayMS;
+        [JsonProperty]
         private readonly long dwellTimeMS;
 
         public ActionTyping(string typedString, long keyDelayMS, long dwellTimeMS)
@@ -67,6 +65,11 @@ namespace Glue.Actions
         {
             // ActionTyping is only used to schedule ActionKey 
             throw new NotImplementedException();
+        }
+
+        public override string ToString()
+        {
+            return base.ToString() + " " + this.typedString;
         }
     }
 }

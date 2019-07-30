@@ -105,7 +105,7 @@ namespace Glue.Actions
         // Used to schedule action relative to triggering event
         protected long timeTriggerMS;
 
-        // Name of scheduled instance 
+        // Name of scheduled instance - used to cancel actions in queue
         protected string name;
 
         // Time scheduled for this action instance 
@@ -115,5 +115,10 @@ namespace Glue.Actions
 
         // Actions may schedule multiple instances - see ActionTyping
         public abstract Action[] Schedule();
+
+        public override string ToString()
+        {
+            return type;
+        }
     }
 }
