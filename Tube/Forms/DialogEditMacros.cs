@@ -1,4 +1,4 @@
-﻿using Glue.Util;
+﻿using Glue.PropertyIO;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -65,7 +65,7 @@ namespace Glue.Forms
             {
                 Actions.Action action = macroCurrent.Actions[e.ItemIndex];
                 listViewItem.Text = action.ToString();
-                listViewItemDelay.Text = FormatDuration.StringFromMillis(action.TimeTriggerMS);
+                listViewItemDelay.Text = FormatDuration.Format(action.TimeTriggerMS);
             }
             else
             {

@@ -104,7 +104,8 @@ namespace GlueTests
         }
     }
 
-    [TestClass]
+    // These are really prototypes - not tests
+    // [TestClass]
     public class JsonTests
     {
         [TestMethod]

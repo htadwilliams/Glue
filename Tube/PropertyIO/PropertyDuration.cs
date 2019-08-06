@@ -1,6 +1,4 @@
-﻿using Glue.Util;
-
-namespace Glue.PropertyIO
+﻿namespace Glue.PropertyIO
 {
     public class PropertyDuration : Property<long>
     {
@@ -21,12 +19,12 @@ namespace Glue.PropertyIO
         public override void Parse(string stringValue)
         {
             // TODO FormatDuration.MilisFromString should throw parsing exceptions
-            Value = FormatDuration.MillisFromString(stringValue);
+            Value = FormatDuration.Parse(stringValue);
         }
 
         public override string Format()
         {
-            return FormatDuration.StringFromMillis(Value);
+            return FormatDuration.Format(Value);
         }
     }
 }
