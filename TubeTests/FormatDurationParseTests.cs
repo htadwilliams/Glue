@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Glue.PropertyIO;
 
-namespace GlueTests
+namespace Tests
 {
     [TestClass]
     public class FormatDurationParseTests

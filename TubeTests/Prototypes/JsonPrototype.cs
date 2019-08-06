@@ -8,12 +8,13 @@ using Newtonsoft.Json.Serialization;
 
 /// <summary>
 /// 
-/// These tests are just for screwing around with Json and aren't verifying
-/// anything really other than Json assumptions are correct.
+/// These "tests" are just for screwing around with Json and aren't verifying
+/// anything really other than Json assumptions are correct. 
+/// 
+/// They also serve as a work area if Newtonsoft.Json version updates are breaking changes.
 /// 
 /// </summary>
-
-namespace GlueTests
+namespace Prototypes
 {
     public enum AnimalType
     {
@@ -104,9 +105,8 @@ namespace GlueTests
         }
     }
 
-    // These are really prototypes - not tests
-    // [TestClass]
-    public class JsonTests
+    [TestClass]
+    public class JsonPrototype
     {
         [TestMethod]
         public void SaveAnimals()

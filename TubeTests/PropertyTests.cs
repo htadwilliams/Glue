@@ -1,7 +1,7 @@
 ﻿using Glue.PropertyIO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace GlueTests
+namespace Tests
 {
     /// <summary>
     /// 
