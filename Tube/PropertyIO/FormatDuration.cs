@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace Glue.Util
+namespace Glue.PropertyIO
 {
     public class FormatDuration
     {
-        public static long MillisFromString(string input)
+        public static long Parse(string input)
         {
             long time = 0;
 
@@ -17,13 +17,13 @@ namespace Glue.Util
             // Strip whitespace or match string has to be more complicated
             string inputCooked = Regex.Replace(input, @"\s+", "");
 
+            // TODO remove regex - this should be easy to parse with string.Split() 
             Match match = Regex.Match(
                 inputCooked,
                 @"^((?<hours>\d+)h)?((?<minutes>\d+)m)?((?<seconds>\d+)s)?((?<millis>\d+)ms)?$", 
                     RegexOptions.ExplicitCapture | 
                     RegexOptions.Compiled | 
                     RegexOptions.CultureInvariant | 
-                    // RegexOptions.RightToLeft | 
                     RegexOptions.IgnoreCase
                     );
 
@@ -40,7 +40,7 @@ namespace Glue.Util
             return time;
         }
 
-        public static string StringFromMillis(long milliseconds)
+        public static string Format(long milliseconds)
         {
             string formattedTime = "";
 

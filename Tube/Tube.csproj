@@ -135,7 +135,7 @@
     <Compile Include="PropertyIO\PropertyInt.cs" />
     <Compile Include="PropertyIO\PropertyString.cs" />
     <Compile Include="TrayApplicationContext.cs" />
-    <Compile Include="Util\FormatDuration.cs" />
+    <Compile Include="PropertyIO\FormatDuration.cs" />
     <Compile Include="WindowsInput\InputBuilder.cs" />
     <Compile Include="Priority_Queue\IPriorityQueue.cs" />
     <Compile Include="Native\Keyboard.cs" />
@@ -225,7 +225,9 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Util\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="key.ico" />
     <Content Include="resources\glue.ico" />

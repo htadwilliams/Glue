@@ -58,8 +58,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PropertyTests.cs" />
-    <Compile Include="TimeFormatFromMillisTests.cs" />
-    <Compile Include="TimeFormatParseTests.cs" />
+    <Compile Include="FormatDurationFormatTests.cs" />
+    <Compile Include="FormatDurationParseTests.cs" />
     <Compile Include="EmptyTests.cs" />
     <Compile Include="JsonTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
