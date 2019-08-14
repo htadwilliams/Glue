@@ -1,106 +1,42 @@
-﻿using System;
+﻿using Glue.Actions.JsonContract;
+using Glue.PropertyIO;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
 namespace Glue.Actions
 {
-    // TODO Move Json adapter class BaseSpecifiedConcreteClassConverter into its own file
-    internal class BaseSpecifiedConcreteClassConverter : DefaultContractResolver
+    public enum ActionType
     {
-        protected override JsonConverter ResolveContractConverter(Type objectType)
-        {
-            if (typeof(Action).IsAssignableFrom(objectType) && !objectType.IsAbstract)
-                return null; // pretend TableSortRuleConvert is not specified (thus avoiding a stack overflow)
-            return base.ResolveContractConverter(objectType);
-        }
-    }
-
-    // TODO Move Json adapter class ActionConverter into its own file
-    internal class ActionConverter : JsonConverter
-    {
-        private static readonly log4net.ILog LOGGER = 
-            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-        static readonly JsonSerializerSettings SpecifiedSubclassConversion = new JsonSerializerSettings() 
-        { 
-            ContractResolver = new BaseSpecifiedConcreteClassConverter() 
-        };
-
-        public override bool CanConvert(Type objectType)
-        {
-            return (objectType == typeof(Action));
-        }
-
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            JObject jo = JObject.Load(reader);
-            string type = jo["type"].Value<string>();
-            switch (type)
-            {
-                case "KEY":
-                    return JsonConvert.DeserializeObject<ActionKey>(jo.ToString(), SpecifiedSubclassConversion);
-                case "TYPING":
-                    return JsonConvert.DeserializeObject<ActionTyping>(jo.ToString(), SpecifiedSubclassConversion);
-                case "SOUND":
-                    return JsonConvert.DeserializeObject<ActionSound>(jo.ToString(), SpecifiedSubclassConversion);
-                case "MOUSE":
-                    return JsonConvert.DeserializeObject<ActionMouse>(jo.ToString(), SpecifiedSubclassConversion);
-                case "REPEAT":
-                    return JsonConvert.DeserializeObject<ActionRepeat>(jo.ToString(), SpecifiedSubclassConversion);
-                case "CANCEL":
-                    return JsonConvert.DeserializeObject<ActionCancel>(jo.ToString(), SpecifiedSubclassConversion);
-
-                default:
-                    string message = "Unknown type [" + type + "] encountered during deserialization";
-                    LOGGER.Warn(message);
-                    return null;
-            }
-        }
-
-        public override bool CanWrite
-        {
-            get { return false; }
-        }
-
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            // won't be called because CanWrite returns false
-            throw new NotImplementedException(); 
-        }
-    }
+        KEY,
+        TYPING,
+        SOUND,
+        MOUSE,
+        REPEAT,
+        CANCEL,
+     }
 
     [JsonConverter(typeof(ActionConverter))]
     [JsonObject(MemberSerialization.OptIn)]
     public abstract class Action
     {
-        public long TimeTriggerMS
-        {
-            get => this.timeTriggerMS;
-            set => this.timeTriggerMS = value;
-        }
+        public long TimeTriggerMS { get => this.timeTriggerMS; set => this.timeTriggerMS = value; }
 
-        public string Type
-        {
-            get => this.type;
-            set => this.type=value;
-        }
-
-        public long TimeScheduledMS
-        {
-            get => this.timeScheduledMS;
-            set => this.timeScheduledMS = value;
-        }
+        public long TimeScheduledMS { get => this.timeScheduledMS; set => this.timeScheduledMS = value; }
         
-        public string Name
-        {
-            get => this.name;
-            set => this.name = value;
-        }
+        public string Name { get => this.name; set => this.name = value; }
+
+        protected ActionType Type { get => type; set => type = value; }
+
+        private const string TIME_SCHEDULE_MS = "timeScheduleMS";
 
         [JsonProperty]
-        protected string type;
+        [JsonConverter(typeof(StringEnumConverter))]
+        private ActionType type;
 
+        // TODO Times serialized to Json should be of type Duration instead of long
+        // This would allow times to be specified in the same format as form entry
+        // e.g. 4s 32ms
         [JsonProperty]
         // Used to schedule action relative to triggering event
         protected long timeTriggerMS;
@@ -114,11 +50,45 @@ namespace Glue.Actions
         public abstract void Play();
 
         // Actions may schedule multiple instances - see ActionTyping
-        public abstract Action[] Schedule();
+        public abstract Action[] Schedule(long timeScheduled);
+
+        protected Action(long timeTriggerMS)
+        {
+            this.timeTriggerMS = timeTriggerMS;
+        }
+
+        protected Action(Action copyFrom)
+        {
+            this.timeTriggerMS = copyFrom.timeTriggerMS;
+            this.type = copyFrom.type;
+        }
 
         public override string ToString()
         {
-            return type;
+            return Type.ToString();
+        }
+
+        public virtual void FromProperties(PropertyBag propertyBag)
+        {
+            if (null != propertyBag && propertyBag.Count > 0)
+            {
+                if (propertyBag.TryGetProperty(TIME_SCHEDULE_MS, out PropertyDuration propertyDuration))
+                {
+                    this.TimeScheduledMS = propertyDuration.Value;
+                }
+            }
+        }
+
+        public virtual PropertyBag ToProperties(PropertyBag propertyBag)
+        {
+            if (null == propertyBag)
+            {
+                propertyBag = new PropertyBag();
+            }
+
+            propertyBag.Add(TIME_SCHEDULE_MS, new PropertyDuration(timeScheduledMS));
+
+            return propertyBag;
         }
     }
 }

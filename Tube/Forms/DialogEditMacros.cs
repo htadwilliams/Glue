@@ -1,9 +1,11 @@
 ﻿using Glue.PropertyIO;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Forms;
 using static System.Windows.Forms.ListViewItem;
+using Action = Glue.Actions.Action;
 
 namespace Glue.Forms
 {
@@ -11,6 +13,8 @@ namespace Glue.Forms
     {
         private List<Macro> macros;
         private Macro macroCurrent = null;
+        private Action actionCurrent = null;
+        private PropertyBag propertiesCurrent = null;
 
         public DialogEditMacros(ReadOnlyDictionary<string, Macro> macros)
         {
@@ -48,7 +52,7 @@ namespace Glue.Forms
             this.listViewMacros.Select();
 
             this.listViewMacros.HideSelection = false;
-            this.listViewEvents.HideSelection = false;
+            this.listViewProperties.HideSelection = false;
 
             if (null != this.macroCurrent)
             {
@@ -79,17 +83,43 @@ namespace Glue.Forms
 
         private void ListViewMacros_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
-            if (null != this.macros && this.macros.Count >= e.ItemIndex)
+            if (e.IsSelected)
             {
-                this.macroCurrent = this.macros[e.ItemIndex];
-                this.listViewActions.VirtualListSize = this.macroCurrent.Actions.Count;
+                if (null != this.macros && this.macros.Count >= e.ItemIndex)
+                {
+                    this.macroCurrent = this.macros[e.ItemIndex];
+                    this.listViewActions.VirtualListSize = this.macroCurrent.Actions.Count;
+                }
+                else
+                {
+                    this.listViewActions.VirtualListSize = 0;
+                }
+                this.listViewProperties.HideSelection = false;
+                this.listViewActions.Invalidate();
             }
-            else
+        }
+
+        private void ListViewEvents_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            if (e.IsSelected)
             {
-                this.listViewActions.VirtualListSize = 0;
+                if (null != this.macroCurrent && this.macroCurrent.Actions.Count >= e.ItemIndex)
+                {
+                    this.actionCurrent = this.macroCurrent.Actions[e.ItemIndex];
+                    this.listViewProperties.VirtualListSize = this.propertiesCurrent.Count;
+                }
             }
-            this.listViewEvents.HideSelection = false;
-            this.listViewActions.Invalidate();
+        }
+
+        private void ListViewProperties_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
+        {
+            ListViewItem listViewItemName = new ListViewItem();
+            ListViewSubItem listViewItemValue = new ListViewSubItem();
+
+
+
+            listViewItemName.SubItems.Add(listViewItemValue);
+            e.Item = listViewItemName;
         }
     }
 }

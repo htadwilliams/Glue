@@ -1,64 +1,92 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Glue.Native;
+using System.ComponentModel;
+using System.Windows.Forms;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using WindowsInput;
-using WindowsInput.Native;
 
 namespace Glue.Actions
 {
     class ActionMouse : Action
     {
-        public enum Movement
+        public enum CoordinateMode
         {
             ABSOLUTE,
             ABSOLUTE_VIRTUAL_DESKTOP,
-            RELATIVE
+            RELATIVE,
+        }
+
+        public enum ActionButton
+        {
+            LEFT,
+            MIDDLE,
+            RIGHT,
+        }
+
+        public enum MoveType
+        {
+            MOVE,
+            PRESS,
+            RELEASE,
+            CLICK,
+        }
+
+        [JsonConstructor]
+        public ActionMouse(
+            long timeTriggerMS, 
+            MoveType moveType, 
+            CoordinateMode mode, 
+            ActionButton button, 
+            int moveX, 
+            int moveY) : base(timeTriggerMS)
+        {
+            this.moveType = moveType;
+            this.mode = mode;
+            this.button = button;
+            this.moveX = moveX;
+            this.moveY = moveY;
+            this.Type = ActionType.MOUSE;
         }
 
         public static readonly IntPtr INJECTION_ID = new IntPtr(0xF00D);
 
         [JsonProperty]
         [JsonConverter(typeof(StringEnumConverter))]
-        private readonly Movement movement;
+        private readonly MoveType moveType;
 
         [JsonProperty]
-        private readonly int moveX;
+        [JsonConverter(typeof(StringEnumConverter))]
+        private readonly CoordinateMode mode;
+
+        [JsonProperty]
+        [JsonConverter(typeof(StringEnumConverter))]
+        private readonly ActionButton button;
+
+        [JsonProperty]
+        [DefaultValue(-1)]
+        private readonly int moveX = -1;
         
         [JsonProperty]
-        private readonly int moveY;
+        [DefaultValue(-1)]
+        private readonly int moveY = -1;
 
         private static readonly WindowsInputMessageDispatcher DISPATCHER = new WindowsInputMessageDispatcher();
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        [JsonConstructor]
-        public ActionMouse(Movement movement, int moveX, int moveY, long timeTriggerMS)
-        {
-            this.moveX = moveX;
-            this.moveY = moveY;
-            this.movement = movement;
-            this.timeTriggerMS = timeTriggerMS;
-            this.Type = "MOUSE";
-        }
-
-        public ActionMouse(ActionMouse copyFrom)
+        public ActionMouse(ActionMouse copyFrom) : base(copyFrom)
         {
             this.moveX = copyFrom.moveX;
             this.moveY = copyFrom.moveY;
-            this.movement = copyFrom.movement;
-            this.timeTriggerMS = copyFrom.TimeTriggerMS;
+            this.moveType = copyFrom.moveType;
+            this.mode = copyFrom.mode;
             this.Type = copyFrom.Type;
         }
 
-        public override Action[] Schedule()
+        public override Action[] Schedule(long timeScheduleFrom)
         {
             ActionMouse scheduledCopy = new ActionMouse(this)
             {
-                TimeScheduledMS = TimeProvider.GetTickCount() + this.timeTriggerMS
+                TimeScheduledMS = timeScheduleFrom + this.timeTriggerMS
             };
 
             if (LOGGER.IsDebugEnabled)
@@ -68,29 +96,64 @@ namespace Glue.Actions
                     this.timeTriggerMS,                 // Time relative to prevous action
                     this.moveX,
                     this.moveY,
-                    this.movement);
+                    this.Type);
                 LOGGER.Debug(message);
             }
 
             return new Action[] {scheduledCopy};
         }
 
+        public static int NormalizeX(int xNative)
+        {
+            //
+            //             xscreen                       
+            // 65,535 *     -------             =       xnormalized     
+            //            xresolution                 
+
+            return 65535 * (xNative / Screen.PrimaryScreen.Bounds.Width);
+        }
+
+        public static int NormalizeY(int yNative)
+        {
+            return 65535 * (yNative / Screen.PrimaryScreen.Bounds.Height);
+        }
+
         public override void Play()
         {
+            /*
             INPUT[] inputs = null;
 
-            switch (this.movement)
+            switch (this.mode)
             {
-                case Movement.ABSOLUTE:
+                case CoordinateMode.ABSOLUTE:
                     inputs = new InputBuilder().AddAbsoluteMouseMovement(this.moveX, this.moveY).ToArray();
                     break;
-
-                case Movement.ABSOLUTE_VIRTUAL_DESKTOP:
+                case CoordinateMode.ABSOLUTE_VIRTUAL_DESKTOP:
                     inputs = new InputBuilder().AddAbsoluteMouseMovementOnVirtualDesktop(this.moveX, this.moveY).ToArray();
                     break;
-                
-                case Movement.RELATIVE:
+                case CoordinateMode.RELATIVE:
                     inputs = new InputBuilder().AddRelativeMouseMovement(this.moveX, this.moveY).ToArray();
+                    break;
+
+                default:
+
+                    InputBuilder inputBuilder = new InputBuilder();
+                    // Only use coordinates if they're specified
+                    if ((this.moveX >= 0) && (this.moveY >= 0))
+                    {
+                        inputBuilder.AddAbsoluteMouseMovement(
+                            NormalizeX(this.moveX), 
+                            NormalizeY(this.moveY));
+                    }
+                    inputBuilder.AddMouseButtonClick(MouseButton.LeftButton);
+                    inputs = inputBuilder.ToArray();
+
+                    break;
+                case Mode.CLICK_MIDDLE: 
+                    inputs = new InputBuilder().AddMouseButtonClick(MouseButton.MiddleButton).ToArray();
+                    break;
+                case Mode.CLICK_RIGHT:
+                    inputs = new InputBuilder().AddMouseButtonClick(MouseButton.RightButton).ToArray();
                     break;
             }
 
@@ -107,10 +170,11 @@ namespace Glue.Actions
                     this.movement);
                 LOGGER.Debug(message);
             }
+        */
         }
         public override string ToString()
         {
-            return base.ToString() + " " + this.movement.ToString() + "(" + this.moveX + ", " + this.moveY + ")";
+            return base.ToString() + " " + this.Type.ToString() + "(" + this.moveX + ", " + this.moveY + ")";
         }
     }
 }

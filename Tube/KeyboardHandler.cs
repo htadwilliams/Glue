@@ -26,7 +26,7 @@ namespace Glue
                 // Don't do remap for keys injected by our own process
                 if (!KeyWasFromGlue(kbd.dwExtraInfo))
                 {
-                    VirtualKeyCode keyRemapped = DoRemap((VirtualKeyCode) vkCode, ActionKey.Movement.PRESS);
+                    VirtualKeyCode keyRemapped = DoRemap((VirtualKeyCode) vkCode, ActionKey.MoveType.PRESS);
 
                     if ((int) keyRemapped != vkCode)
                     {
@@ -38,7 +38,7 @@ namespace Glue
                         return new IntPtr(1);
                     }
 
-                    if (Tube.CheckAndFireTriggers(vkCode, ActionKey.Movement.PRESS))
+                    if (Tube.CheckAndFireTriggers(vkCode, ActionKey.MoveType.PRESS))
                     {
                         // Eat keystroke if trigger tells us to do so
                         return new IntPtr(1);
@@ -52,7 +52,7 @@ namespace Glue
             {
                 if (!KeyWasFromGlue(kbd.dwExtraInfo))
                 {
-                    VirtualKeyCode keyRemapped = DoRemap((VirtualKeyCode) vkCode, ActionKey.Movement.RELEASE);
+                    VirtualKeyCode keyRemapped = DoRemap((VirtualKeyCode) vkCode, ActionKey.MoveType.RELEASE);
 
                     if ((int) keyRemapped != vkCode)
                     {
@@ -60,7 +60,7 @@ namespace Glue
                         return new IntPtr(1);
                     }
 
-                    if (Tube.CheckAndFireTriggers(vkCode, ActionKey.Movement.RELEASE))
+                    if (Tube.CheckAndFireTriggers(vkCode, ActionKey.MoveType.RELEASE))
                     {
                         // Eat keystroke if trigger tells us to do so
                         return new IntPtr(1);
@@ -78,7 +78,7 @@ namespace Glue
             return injectionId.ToUInt32() == ActionKey.INJECTION_ID.ToInt32();
         }
 
-        private static VirtualKeyCode DoRemap(VirtualKeyCode inputKey, ActionKey.Movement movement)
+        private static VirtualKeyCode DoRemap(VirtualKeyCode inputKey, ActionKey.MoveType movement)
         {
             if (Tube.KeyMap != null && Tube.KeyMap.TryGetValue(inputKey, out KeyboardRemapEntry remap))
             {
@@ -106,7 +106,7 @@ namespace Glue
                 }
 
                 LOGGER.Debug("REMAPPED: " + inputKey + " -> " + remap.KeyNew);
-                ActionKey actionKey = new ActionKey(remap.KeyNew, movement, TimeProvider.GetTickCount());
+                ActionKey actionKey = new ActionKey(TimeProvider.GetTickCount(), remap.KeyNew, movement);
                 actionKey.Play();
 
                 return remap.KeyNew;

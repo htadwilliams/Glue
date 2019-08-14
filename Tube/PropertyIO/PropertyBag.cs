@@ -4,12 +4,13 @@ namespace Glue.PropertyIO
 {
     public class PropertyBag : Dictionary<string, IProperty>
     {
-        public TProperty GetProperty<TProperty>(string propName)
+        public bool TryGetProperty<TProperty>(string propName, out TProperty propertyOut)
         {
-            TryGetValue(propName, out IProperty property);
+            bool wasFound = TryGetValue(propName, out IProperty property);
 
-            // TODO cast will throw if incorrect type is specified - catch and return null instead?
-            return (TProperty) property;
+            propertyOut = (TProperty) property;
+
+            return wasFound;
         }
     }
 }

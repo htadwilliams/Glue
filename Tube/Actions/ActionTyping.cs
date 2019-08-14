@@ -20,15 +20,15 @@ namespace Glue.Actions
         [JsonProperty]
         private readonly long dwellTimeMS;
 
-        public ActionTyping(string typedString, long keyDelayMS, long dwellTimeMS)
+        public ActionTyping(string typedString, long keyDelayMS, long dwellTimeMS) : base(0)
         {
             this.typedString=typedString;
             this.charDelayMS=keyDelayMS;
             this.dwellTimeMS=dwellTimeMS;
-            this.Type = "TYPING";
+            this.Type = ActionType.TYPING;
         }
 
-        public override Action[] Schedule()
+        public override Action[] Schedule(long timeScheduleFrom)
         {
             List<Action> actions = new List<Action>();
 
@@ -37,16 +37,17 @@ namespace Glue.Actions
             INPUT[] inputs = new InputBuilder().AddCharacters(this.typedString).ToArray();
 
             int actionCount = 0;
-            long actionTimeMS = TimeProvider.GetTickCount();
+            long actionTimeMS = this.TimeScheduledMS + timeScheduleFrom;
 
             foreach (INPUT input in inputs)
             {
                 Action action = new ActionKey(
+                    actionTimeMS,
                     input, 
                     (actionCount % 2) == 0 
-                        ? ActionKey.Movement.PRESS 
-                        : ActionKey.Movement.RELEASE,
-                    actionTimeMS);
+                        ? ActionKey.MoveType.PRESS 
+                        : ActionKey.MoveType.RELEASE
+                    );
 
                 actions.Add(action);
 

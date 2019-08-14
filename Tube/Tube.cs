@@ -282,7 +282,7 @@ namespace Glue
                 LOGGER.Error("Failed to load file with exception: " + e);
 
                 CreateDefaultContent();
-                s_writeOnExit = true;
+                SaveFile(s_fileName);
                 return;
             }
 
@@ -312,15 +312,11 @@ namespace Glue
             // Create macro with several actions bound to CTRL-Z
             //
             string macroName = "delayed-action";
-            Macro macro = new Macro(macroName, 1001) // Fire 1s 1ms after triggered
-                .AddAction(new ActionKey(VirtualKeyCode.VK_R, Movement.PRESS, 10))
-                .AddAction(new ActionKey(VirtualKeyCode.VK_R, Movement.RELEASE, 10))
-
-                .AddAction(new ActionKey(VirtualKeyCode.RETURN, Movement.PRESS, 4000))
-                .AddAction(new ActionKey(VirtualKeyCode.RETURN, Movement.RELEASE, 4010))
-
-                .AddAction(new ActionKey(VirtualKeyCode.VK_Q, Movement.PRESS, 4020))
-                .AddAction(new ActionKey(VirtualKeyCode.VK_Q, Movement.RELEASE, 4030))
+            Macro macro = new Macro(macroName, 0) // Fire 1s 1ms after triggered
+                .AddAction(new ActionKey(4000,  VirtualKeyCode.RETURN,  MoveType.PRESS))
+                .AddAction(new ActionKey(50,    VirtualKeyCode.RETURN,  MoveType.RELEASE))
+                .AddAction(new ActionKey(50,    VirtualKeyCode.VK_Q,    MoveType.PRESS))
+                .AddAction(new ActionKey(50,    VirtualKeyCode.VK_Q,    MoveType.RELEASE))
                 ;
             Macros.Add(macroName, macro);
             // Setup trigger
@@ -351,12 +347,12 @@ namespace Glue
             //
             macroName = "sound-servomotor";
             macro = new Macro(macroName, 0);
-            macro.AddAction(new ActionSound("sound_servomotor.wav", 0));
+            macro.AddAction(new ActionSound(0, "sound_servomotor.wav"));
             Macros.Add(macroName, macro);
 
             macroName = "sound-ahha";
             macro = new Macro(macroName, 0);
-            macro.AddAction(new ActionSound("ahha.wav", 0));
+            macro.AddAction(new ActionSound(0, "ahha.wav"));
             Macros.Add(macroName, macro);
 
             trigger = new Trigger(Keys.S, new List<string> { "sound-servomotor", "sound-ahha" });
@@ -366,6 +362,8 @@ namespace Glue
             //
             // Schedule repeating sound every N MS
             //
+
+            // TODO Repeated sound should play when trigger fires (currently only plays after first delay interval)
             macroName = "repeat-sound";
             macro = new Macro(macroName, 0);
             macro.AddAction(new ActionRepeat(3000, macroName, "sound-servomotor" ));
@@ -389,8 +387,7 @@ namespace Glue
             //
             macroName = "F10";
             macro = new Macro(macroName, 4);
-            macro.AddAction(new ActionKey(VirtualKeyCode.F10, Movement.PRESS, 0));
-            macro.AddAction(new ActionKey(VirtualKeyCode.F10, Movement.RELEASE, 50));
+            macro.AddAction(new ActionKey(50, VirtualKeyCode.F10, MoveType.CLICK));
             Macros.Add(macroName, macro);
 
             // Same macro bound to two triggers            
@@ -404,12 +401,12 @@ namespace Glue
             //
             macroName = "toggle-down";
             macro = new Macro(macroName, 0);
-            macro.AddAction(new ActionKey(VirtualKeyCode.SPACE, Movement.PRESS, 0));
+            macro.AddAction(new ActionKey(0, VirtualKeyCode.SPACE, MoveType.PRESS));
             Macros.Add(macroName, macro);
 
             macroName = "toggle-up";
             macro = new Macro(macroName, 0);
-            macro.AddAction(new ActionKey(VirtualKeyCode.SPACE, Movement.RELEASE, 0));
+            macro.AddAction(new ActionKey(0, VirtualKeyCode.SPACE, MoveType.RELEASE));
             Macros.Add(macroName, macro);
 
             trigger = new Trigger(Keys.Space, new List<string> {"toggle-down", null, "toggle-up", null}, TriggerType.Both, true);
@@ -422,7 +419,14 @@ namespace Glue
             macroName = "mouse-nudge";
             macro = new Macro(macroName, 20);
             // macro.AddAction(new ActionMouse(ActionMouse.Movement.ABSOLUTE, 65535 / 2, 65535 / 2, 500));
-            macro.AddAction(new ActionMouse(ActionMouse.Movement.RELATIVE, 1, 1, 500));
+            macro.AddAction(
+                new ActionMouse(
+                    0, 
+                    ActionMouse.MoveType.MOVE, 
+                    ActionMouse.CoordinateMode.RELATIVE,
+                    ActionMouse.ActionButton.LEFT,
+                    1, 1));
+
             Macros.Add(macroName, macro);
             trigger = new Trigger(Keys.Left, macroName);
             trigger.AddModifier(Keys.LMenu);
@@ -461,7 +465,7 @@ namespace Glue
             AddRemap(VirtualKeyCode.VK_F, VirtualKeyCode.VK_D, PROCESS_NAME_WASD);
         }
 
-        public static bool CheckAndFireTriggers(int vkCode, Movement movement)
+        public static bool CheckAndFireTriggers(int vkCode, MoveType movement)
         {
             bool eatInput = false;
 
@@ -476,14 +480,14 @@ namespace Glue
                     break;
 
                     case TriggerType.Down:
-                    if (Movement.PRESS == movement)
+                    if (MoveType.PRESS == movement)
                     {
                         eatInput = trigger.Fire();
                     }
                     break;
 
                     case TriggerType.Up:
-                    if (Movement.RELEASE == movement)
+                    if (MoveType.RELEASE == movement)
                     {
                         eatInput = trigger.Fire();
                     }
