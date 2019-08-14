@@ -14,12 +14,12 @@ namespace Glue.Actions
 
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public ActionRepeat(long timeRepeatMS, string macroRepeater, string macro)
+        public ActionRepeat(long timeRepeatMS, string macroRepeater, string macro) 
+            : base (timeRepeatMS)
         {
             this.macroRepeater = macroRepeater;
             this.macro = macro;
-            this.TimeTriggerMS = timeRepeatMS;
-            this.Type = "REPEAT";
+            this.Type = ActionType.REPEAT;
         }
 
         public override void Play()
@@ -31,14 +31,14 @@ namespace Glue.Actions
             Tube.PlayMacro(macroRepeater);
         }
 
-        public override Action[] Schedule()
+        public override Action[] Schedule(long timeScheduleFrom)
         {
             ActionRepeat scheduledCopy = new ActionRepeat(
                 this.TimeTriggerMS,
                 this.macroRepeater, 
                 this.macro)
             {
-                TimeScheduledMS = TimeProvider.GetTickCount() + this.timeTriggerMS,
+                TimeScheduledMS = timeScheduleFrom + this.timeTriggerMS,
                 Name = macroRepeater
             };
 

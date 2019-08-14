@@ -11,6 +11,12 @@
             Parse(stringValue);
         }
 
+        public PropertyDuration(long durationMS) : base(durationMS.ToString())
+        {
+            this.stringValue = durationMS.ToString();
+            this.value = durationMS;
+        }
+
         public long GetValue()
         {
             return Value;

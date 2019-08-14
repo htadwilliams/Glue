@@ -133,14 +133,6 @@ namespace Glue
 
             String macroName = macroNames[this.indexMacroCurrent];
 
-            // null macro names are allowed in list - useful for key toggles or other 
-            // no-op entries in macro "ripple" effect 
-            if (null != macroName)
-            {
-                Tube.PlayMacro(macroNames[this.indexMacroCurrent]);
-            }
-            this.indexMacroCurrent++;
-
             if (LOGGER.IsInfoEnabled)
             {
                 string message = "TRIGGER FIRED: macro = [" + macroName + "] triggerKey = [" + TriggerKey + "]";
@@ -152,6 +144,14 @@ namespace Glue
                 }
                 LOGGER.Info(message);
             }
+
+            // null macro names are allowed in list - useful for key toggles or other 
+            // no-op entries in macro "ripple" effect 
+            if (null != macroName)
+            {
+                Tube.PlayMacro(macroNames[this.indexMacroCurrent]);
+            }
+            this.indexMacroCurrent++;
 
             if (Tube.MainForm.LogInput && 
                 Tube.MainForm.RawKeyNames && 

@@ -29,7 +29,10 @@ namespace Tests
         [TestMethod]
         public void TestPropertyDurationHappyPath()
         {
-            PropertyDuration propertyDuration = PropertyBag.GetProperty<PropertyDuration>("someDuration");
+            if (!PropertyBag.TryGetProperty("someDuration", out PropertyDuration propertyDuration))
+            {
+                Assert.Fail();
+            }
 
             Assert.AreEqual(PropertyType.Duration,  propertyDuration.Type);
             Assert.AreEqual("4s 323ms",             propertyDuration.StringValue);
@@ -39,7 +42,10 @@ namespace Tests
         [TestMethod]
         public void TestPropertyStringHappyPath()
         {
-            PropertyString propertyString = PropertyBag.GetProperty<PropertyString>("someString");
+            if (!PropertyBag.TryGetProperty("someString", out PropertyString propertyString))
+            {
+                Assert.Fail();
+            }
 
             Assert.AreEqual(PropertyType.String,    propertyString.Type);
             Assert.AreEqual("someStringValue",      propertyString.StringValue);
@@ -48,7 +54,10 @@ namespace Tests
         [TestMethod]
         public void TestPropertyIntHappyPath()
         {
-            PropertyInt propertyAnswer = PropertyBag.GetProperty<PropertyInt>("someAnswer");
+            if (!PropertyBag.TryGetProperty("someAnswer", out PropertyInt propertyAnswer))
+            {
+                Assert.Fail();
+            }
 
             Assert.AreEqual(PropertyType.Int,       propertyAnswer.Type);
             Assert.AreEqual("42",                   propertyAnswer.StringValue);

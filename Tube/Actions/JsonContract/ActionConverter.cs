@@ -31,20 +31,24 @@ namespace Glue.Actions.JsonContract
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             JObject jo = JObject.Load(reader);
-            string type = jo["type"].Value<string>();
+            string typeString = jo["type"].Value<string>();
+
+            ActionType type = (ActionType) Enum.Parse(typeof(ActionType), typeString, true);
+
             switch (type)
             {
-                case "KEY":
+                // TODO Type constants should be defined in one place, and possibly use an enum if the contract will support it
+                case ActionType.KEY:
                     return JsonConvert.DeserializeObject<ActionKey>(jo.ToString(), SpecifiedSubclassConversion);
-                case "TYPING":
+                case ActionType.TYPING:
                     return JsonConvert.DeserializeObject<ActionTyping>(jo.ToString(), SpecifiedSubclassConversion);
-                case "SOUND":
+                case ActionType.SOUND:
                     return JsonConvert.DeserializeObject<ActionSound>(jo.ToString(), SpecifiedSubclassConversion);
-                case "MOUSE":
+                case ActionType.MOUSE:
                     return JsonConvert.DeserializeObject<ActionMouse>(jo.ToString(), SpecifiedSubclassConversion);
-                case "REPEAT":
+                case ActionType.REPEAT:
                     return JsonConvert.DeserializeObject<ActionRepeat>(jo.ToString(), SpecifiedSubclassConversion);
-                case "CANCEL":
+                case ActionType.CANCEL:
                     return JsonConvert.DeserializeObject<ActionCancel>(jo.ToString(), SpecifiedSubclassConversion);
 
                 default:

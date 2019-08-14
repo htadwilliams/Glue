@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.listViewEvents = new System.Windows.Forms.ListView();
+            this.listViewProperties = new System.Windows.Forms.ListView();
             this.PropertyName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.PropertyValue = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.panel1 = new System.Windows.Forms.Panel();
@@ -44,23 +44,25 @@
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // listViewEvents
+            // listViewProperties
             // 
-            this.listViewEvents.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.listViewProperties.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.listViewEvents.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.listViewProperties.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.PropertyName,
             this.PropertyValue});
-            this.listViewEvents.FullRowSelect = true;
-            this.listViewEvents.GridLines = true;
-            this.listViewEvents.Location = new System.Drawing.Point(14, 534);
-            this.listViewEvents.Name = "listViewEvents";
-            this.listViewEvents.Size = new System.Drawing.Size(1490, 272);
-            this.listViewEvents.TabIndex = 4;
-            this.listViewEvents.UseCompatibleStateImageBehavior = false;
-            this.listViewEvents.View = System.Windows.Forms.View.Details;
-            this.listViewEvents.VirtualMode = true;
+            this.listViewProperties.FullRowSelect = true;
+            this.listViewProperties.GridLines = true;
+            this.listViewProperties.Location = new System.Drawing.Point(14, 534);
+            this.listViewProperties.Name = "listViewProperties";
+            this.listViewProperties.Size = new System.Drawing.Size(1490, 272);
+            this.listViewProperties.TabIndex = 4;
+            this.listViewProperties.UseCompatibleStateImageBehavior = false;
+            this.listViewProperties.View = System.Windows.Forms.View.Details;
+            this.listViewProperties.VirtualMode = true;
+            this.listViewProperties.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.ListViewEvents_ItemSelectionChanged);
+            this.listViewProperties.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.ListViewProperties_RetrieveVirtualItem);
             // 
             // PropertyName
             // 
@@ -185,7 +187,7 @@
             this.Controls.Add(this.buttonNew);
             this.Controls.Add(this.textBoxNew);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.listViewEvents);
+            this.Controls.Add(this.listViewProperties);
             this.Name = "DialogEditMacros";
             this.Text = "Glue - Edit Macros";
             this.Load += new System.EventHandler(this.OnFormLoad);
@@ -197,7 +199,7 @@
 
         #endregion
 
-        private System.Windows.Forms.ListView listViewEvents;
+        private System.Windows.Forms.ListView listViewProperties;
         private System.Windows.Forms.ColumnHeader PropertyName;
         private System.Windows.Forms.ColumnHeader PropertyValue;
         private System.Windows.Forms.Panel panel1;

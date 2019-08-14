@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
@@ -27,7 +28,8 @@ namespace Prototypes
     {
         // TODO should be readonly
         [JsonProperty]
-        protected string type;
+        [JsonConverter(typeof(StringEnumConverter))]
+        protected AnimalType type;
         private string move;
 
         public string Move
@@ -42,7 +44,7 @@ namespace Prototypes
         public Cat() : base()
         {
             
-            this.type = AnimalType.CAT.ToString();
+            this.type = AnimalType.CAT;
             this.Move = "Cats run";
         }
     }
@@ -51,7 +53,7 @@ namespace Prototypes
     {
         public Salmon()
         {
-            this.type = AnimalType.SALMON.ToString();
+            this.type = AnimalType.SALMON;
             this.Move = "Salmon swim";
         }
     }
@@ -82,11 +84,13 @@ namespace Prototypes
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             JObject jo = JObject.Load(reader);
-            switch (jo["type"].Value<string>())
+            AnimalType animalType = (AnimalType) Enum.Parse(typeof(AnimalType), jo["type"].Value<string>(), true);
+
+            switch (animalType)
             {
-                case "CAT":
+                case AnimalType.CAT:
                     return JsonConvert.DeserializeObject<Cat>(jo.ToString(), SpecifiedSubclassConversion);
-                case "SALMON":
+                case AnimalType.SALMON:
                     return JsonConvert.DeserializeObject<Salmon>(jo.ToString(), SpecifiedSubclassConversion);
                 default:
                     throw new Exception();

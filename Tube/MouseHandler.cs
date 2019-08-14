@@ -25,7 +25,7 @@ namespace Glue
 
                 // Translate mouse button into key code and action (press / release)
                 VirtualKeyCode keyCode = 0x00;
-                ActionKey.Movement triggerMovement = ActionKey.Movement.PRESS;
+                ActionKey.MoveType triggerMovement = ActionKey.MoveType.PRESS;
                 switch (mouseMessage)
                 {
                     case MouseMessages.WM_XBUTTONDOWN:
@@ -33,6 +33,7 @@ namespace Glue
                     break;
 
                     case MouseMessages.WM_LBUTTONDOWN:
+                        LOGGER.Info(String.Format("Click at ({0},{1})", hookStruct.pt.x, hookStruct.pt.y));
                         keyCode = VirtualKeyCode.LBUTTON;
                     break;
 
@@ -42,17 +43,17 @@ namespace Glue
 
                     case MouseMessages.WM_XBUTTONUP:
                         keyCode=GetXButton(hookStruct);
-                        triggerMovement = ActionKey.Movement.RELEASE;
+                        triggerMovement = ActionKey.MoveType.RELEASE;
                     break;
 
                     case MouseMessages.WM_LBUTTONUP:
                         keyCode = VirtualKeyCode.LBUTTON;
-                        triggerMovement = ActionKey.Movement.RELEASE;
+                        triggerMovement = ActionKey.MoveType.RELEASE;
                     break;
 
                     case MouseMessages.WM_RBUTTONUP:
                         keyCode = VirtualKeyCode.RBUTTON;
-                        triggerMovement = ActionKey.Movement.RELEASE;
+                        triggerMovement = ActionKey.MoveType.RELEASE;
                     break;
                 }
 
