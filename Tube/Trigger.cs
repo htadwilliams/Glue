@@ -135,13 +135,14 @@ namespace Glue
 
             if (LOGGER.IsInfoEnabled)
             {
-                string message = "TRIGGER FIRED: macro = [" + macroName + "] triggerKey = [" + TriggerKey + "]";
+                string message = "TRIGGER FIRED: triggerKey = [" + TriggerKey + "]";
                 if (this.modKeys.Count > 0)
                 {
                     message += " modKeys = [";
                     message += FormatSeparatedList(this.modKeys, ", ");
                     message += "]";
                 }
+                message += " macro = [" + macroName + "]";
                 LOGGER.Info(message);
             }
 
