@@ -33,12 +33,12 @@ namespace Glue.Actions
 
         [JsonConstructor]
         public ActionMouse(
-            long timeTriggerMS, 
+            long timeDelayMS, 
             MoveType moveType, 
             CoordinateMode mode, 
             ActionButton button, 
             int moveX, 
-            int moveY) : base(timeTriggerMS)
+            int moveY) : base(timeDelayMS)
         {
             this.moveType = moveType;
             this.mode = mode;
@@ -86,19 +86,8 @@ namespace Glue.Actions
         {
             ActionMouse scheduledCopy = new ActionMouse(this)
             {
-                TimeScheduledMS = timeScheduleFrom + this.timeTriggerMS
+                ScheduledTick = timeScheduleFrom + this.delayMS
             };
-
-            if (LOGGER.IsDebugEnabled)
-            {
-                string message = String.Format("Scheduled at tick {0:n0} in {1}ms: {4} ({2},{3})",
-                    scheduledCopy.TimeScheduledMS,      // Absolute time scheduled to play
-                    this.timeTriggerMS,                 // Time relative to prevous action
-                    this.moveX,
-                    this.moveY,
-                    this.Type);
-                LOGGER.Debug(message);
-            }
 
             return new Action[] {scheduledCopy};
         }

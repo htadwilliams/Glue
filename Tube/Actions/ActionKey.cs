@@ -42,7 +42,7 @@ namespace Glue.Actions
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         [JsonConstructor]
-        public ActionKey(long timeTriggerMS, VirtualKeyCode key, MoveType movement) : base(timeTriggerMS)
+        public ActionKey(long timeDelayMS, VirtualKeyCode key, MoveType movement) : base(timeDelayMS)
         {
             this.key = key;
             this.Movement = movement;
@@ -50,7 +50,7 @@ namespace Glue.Actions
             this.Type = ActionType.KEY;
         }
 
-        internal ActionKey(long timeTriggerMS, INPUT input, MoveType movement) : base(timeTriggerMS)
+        internal ActionKey(long timeDelayMS, INPUT input, MoveType movement) : base(timeDelayMS)
         {
             this.input=input;
             this.key = null;
@@ -66,18 +66,18 @@ namespace Glue.Actions
                 long timeClickMS = 
                     this.timeClickMS > 0 
                         ? this.timeClickMS 
-                        : this.timeTriggerMS;
+                        : this.delayMS;
 
                 scheduledActions = new Action[]
                 {
-                    new ActionKey(this.TimeTriggerMS, (VirtualKeyCode) this.key, MoveType.PRESS)
+                    new ActionKey(this.DelayMS, (VirtualKeyCode) this.key, MoveType.PRESS)
                     {
-                        TimeScheduledMS = timeScheduleFrom + this.timeTriggerMS
+                        ScheduledTick = timeScheduleFrom + this.delayMS
                     },
-                    new ActionKey(this.timeTriggerMS, (VirtualKeyCode) this.key, MoveType.RELEASE)
+                    new ActionKey(this.delayMS, (VirtualKeyCode) this.key, MoveType.RELEASE)
                     {
 
-                        TimeScheduledMS = timeScheduleFrom + this.timeTriggerMS + timeClickMS
+                        ScheduledTick = timeScheduleFrom + this.delayMS + timeClickMS
                     }
                 };
             }
@@ -85,24 +85,11 @@ namespace Glue.Actions
             {
                 scheduledActions = new Action[]
                 {
-                    new ActionKey(this.TimeTriggerMS, (VirtualKeyCode) this.key, this.Movement)
+                    new ActionKey(this.DelayMS, (VirtualKeyCode) this.key, this.Movement)
                     {
-                        TimeScheduledMS = timeScheduleFrom + this.timeTriggerMS
+                        ScheduledTick = timeScheduleFrom + this.delayMS
                     }
                 };
-            }
-
-            if (LOGGER.IsDebugEnabled)
-            {
-                foreach(ActionKey action in scheduledActions)
-                {
-                    string message = String.Format("Scheduled at tick {0:n0} in {1:n0}ms: {2}-{3}",
-                        action.TimeScheduledMS,      // Absolute time scheduled to play
-                        action.TimeScheduledMS - timeScheduleFrom,        // Time relative to NOW
-                        action.Key,                   
-                        action.Movement);
-                    LOGGER.Debug(message);
-                }
             }
 
             return scheduledActions;
@@ -143,8 +130,8 @@ namespace Glue.Actions
             {
                 long now = TimeProvider.GetTickCount();
                 string message = String.Format("   Played at tick {0:n0} dt {1}ms: {2}-{3}",
-                    now,                            // Time actually played
-                    now - this.TimeScheduledMS,     // Time delta (how late were we?)
+                    now,                          // Time actually played
+                    now - this.ScheduledTick,     // Time delta (how late were we?)
                     this.key,                       
                     this.Movement);
                 LOGGER.Debug(message);

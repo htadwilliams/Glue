@@ -1,5 +1,4 @@
-﻿using System;
-using Glue.PropertyIO;
+﻿using Glue.PropertyIO;
 using Newtonsoft.Json;
 
 namespace Glue.Actions
@@ -9,8 +8,6 @@ namespace Glue.Actions
     {
         [JsonProperty]
         private string macroName;
-
-        private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private const string MACRO_NAME = "macroName";
 
         public ActionCancel(string macroName) : base (0)
@@ -21,25 +18,15 @@ namespace Glue.Actions
 
         public override void Play()
         {
-            ActionQueueThread.Cancel(this.macroName);
+            Macro.Scheduler.Cancel(this.macroName);
         }
 
-        public override Action[] Schedule(long timeScheduleFrom)
+        public override Action[] Schedule(long scheduleFromTick)
         {
             ActionCancel scheduledCopy = new ActionCancel(macroName)
             {
-                TimeScheduledMS = timeScheduleFrom + this.TimeTriggerMS
+                ScheduledTick = scheduleFromTick + this.DelayMS
             };
-
-            if (LOGGER.IsDebugEnabled)
-            {
-                String message = String.Format("Scheduled at tick {0:n0} in {1:n0}ms: canceling macro {2}",
-                    scheduledCopy.TimeScheduledMS,      // Absolute time scheduled to play
-                    this.TimeTriggerMS,                 // Time relative to trigger
-                    this.macroName);
-
-                LOGGER.Debug(message);
-            }
 
             return new Action[] {scheduledCopy};
         }

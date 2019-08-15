@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
-using Glue.Actions;
+﻿using System;
+using System.Collections.Generic;
 using Glue.Native;
 using Newtonsoft.Json;
+using Action = Glue.Actions.Action;
 
 namespace Glue
 {
@@ -12,9 +13,14 @@ namespace Glue
         public long DelayTimeMS => delayTimeMS;
         public List<Action> Actions => actions;
 
-        // private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        public static TimeProvider Time { get => s_timeProvider; set => s_timeProvider = value; }
+        public static IActionScheduler Scheduler { get => s_actionScheduler; set => s_actionScheduler = value; }
 
-[JsonProperty]
+        private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static TimeProvider s_timeProvider = new TimeProvider();
+        private static IActionScheduler s_actionScheduler = Tube.Scheduler;
+
+        [JsonProperty]
         private readonly string name;
 
         [JsonProperty]
@@ -36,28 +42,34 @@ namespace Glue
             return this;
         }
 
-        internal void Play()
+        public void Play()
         {
-            // Remember time macro was triggered 
-            long timeMacro = TimeProvider.GetTickCount();
+            long timeNow = Time.Now();
 
-            // Actions schedule themselves relative to this
-            // Updated with each action scheduled
-            long timeScheduleFrom = TimeProvider.GetTickCount();
+            // Start scheduling actions after macro delay time
+            long timeScheduleFrom = timeNow + this.DelayTimeMS;
 
-            // Schedule each action in the macro and add it to the output queue
+            // Schedule each action and add results to the output queue
             foreach (Action action in Actions)
             {
-                // TODO use object pooled actions for better GC
-                // BUGBUG Pass in delay time! action.Schedule(this.delayTimeMS);
                 Action[] scheduledActions = action.Schedule(timeScheduleFrom);
 
                 foreach (Action scheduledAction in scheduledActions)
                 {
-                    ActionQueueThread.Schedule(scheduledAction);
-                    timeScheduleFrom += scheduledAction.TimeScheduledMS - timeMacro;
+                    Scheduler.Schedule(scheduledAction);
 
-                    // LOGGER.Debug(string.Format("Play() schedule delta: {0:n0}ms", scheduledAction.TimeScheduledMS - timeMacro));
+                    if (LOGGER.IsDebugEnabled)
+                    {
+                        string message = String.Format("Scheduled at tick {0:n0} in {1:n0}ms: {2}",
+                            scheduledAction.ScheduledTick,
+                            scheduledAction.ScheduledTick - timeNow,
+                            scheduledAction.ToString()
+                            );
+                            LOGGER.Debug(message);
+                    }
+
+                    // Set time to schedule next action
+                    timeScheduleFrom += scheduledAction.DelayMS;
                 }
             }
         }

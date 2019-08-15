@@ -69,7 +69,7 @@ namespace Glue.Forms
             {
                 Actions.Action action = macroCurrent.Actions[e.ItemIndex];
                 listViewItem.Text = action.ToString();
-                listViewItemDelay.Text = FormatDuration.Format(action.TimeTriggerMS);
+                listViewItemDelay.Text = FormatDuration.Format(action.DelayMS);
             }
             else
             {

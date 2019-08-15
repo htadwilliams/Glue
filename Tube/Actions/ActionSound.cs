@@ -19,7 +19,7 @@ namespace Glue.Actions
             set => this.soundPath=value;
         }
 
-        public ActionSound(long timeTriggerMS, string soundPath) : base(timeTriggerMS)
+        public ActionSound(long timeDelayMS, string soundPath) : base(timeDelayMS)
         {
             this.soundPath = soundPath;
             this.Type = ActionType.SOUND;
@@ -42,19 +42,10 @@ namespace Glue.Actions
 
         public override Action[] Schedule(long timeScheduleFrom)
         {
-            ActionSound scheduledCopy = new ActionSound(this.TimeTriggerMS, this.soundPath)
+            ActionSound scheduledCopy = new ActionSound(this.DelayMS, this.soundPath)
             {
-                TimeScheduledMS = timeScheduleFrom + this.TimeTriggerMS
+                ScheduledTick = timeScheduleFrom + this.DelayMS
             };
-
-            if (LOGGER.IsDebugEnabled)
-            {
-                string message = String.Format("Scheduled at tick {0:n0} in {1:n0}ms: {2}",
-                    scheduledCopy.TimeScheduledMS,
-                    this.TimeTriggerMS,
-                    this.soundPath);
-                LOGGER.Debug(message);
-            }
 
             return new Action[] {scheduledCopy};
         }
