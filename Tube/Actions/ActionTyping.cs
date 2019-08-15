@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Glue.Native;
 using Newtonsoft.Json;
 using WindowsInput;
 using WindowsInput.Native;
@@ -37,7 +36,7 @@ namespace Glue.Actions
             INPUT[] inputs = new InputBuilder().AddCharacters(this.typedString).ToArray();
 
             int actionCount = 0;
-            long actionTimeMS = this.TimeScheduledMS + timeScheduleFrom;
+            long actionTimeMS = this.ScheduledTick + timeScheduleFrom;
 
             foreach (INPUT input in inputs)
             {

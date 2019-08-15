@@ -26,6 +26,7 @@ namespace Glue
         public static Dictionary<string, Macro> Macros { get => s_macros; set => s_macros = value; }
         public static ViewMain MainForm { get => s_mainForm; set => s_mainForm = value; }
         public static string FileName { get => s_fileName; set => s_fileName = value; }
+        public static IActionScheduler Scheduler { get => s_actionScheduler; }
 
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -49,7 +50,7 @@ namespace Glue
         private static List<VirtualKeyCode> s_keysDown = new List<VirtualKeyCode>();
         private static bool s_lastInsertWasSpace = false;
         private static TrayApplicationContext s_context;
-
+        private static ActionQueueScheduler s_actionScheduler = new ActionQueueScheduler();
 
         /// <summary>
         /// The main entry point for the application.
@@ -80,7 +81,7 @@ namespace Glue
 
                 // Starts thread for timed queue of actions such as pressing keys,
                 // activating game controller buttons, playing sounds, etc.
-                ActionQueueThread.Start();
+                s_actionScheduler.Start();
 
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
@@ -312,11 +313,11 @@ namespace Glue
             // Create macro with several actions bound to CTRL-Z
             //
             string macroName = "delayed-action";
-            Macro macro = new Macro(macroName, 0) // Fire 1s 1ms after triggered
-                .AddAction(new ActionKey(4000,  VirtualKeyCode.RETURN,  MoveType.PRESS))
-                .AddAction(new ActionKey(50,    VirtualKeyCode.RETURN,  MoveType.RELEASE))
-                .AddAction(new ActionKey(50,    VirtualKeyCode.VK_Q,    MoveType.PRESS))
-                .AddAction(new ActionKey(50,    VirtualKeyCode.VK_Q,    MoveType.RELEASE))
+            Macro macro = new Macro(macroName, 4000) 
+                .AddAction(new ActionKey(10,    VirtualKeyCode.RETURN,  MoveType.PRESS))
+                .AddAction(new ActionKey(10,    VirtualKeyCode.RETURN,  MoveType.RELEASE))
+                .AddAction(new ActionKey(30,    VirtualKeyCode.VK_Q,    MoveType.PRESS))
+                .AddAction(new ActionKey(10,    VirtualKeyCode.VK_Q,    MoveType.RELEASE))
                 ;
             Macros.Add(macroName, macro);
             // Setup trigger
@@ -333,7 +334,6 @@ namespace Glue
             macro.AddAction(
                 new ActionTyping(
                     // Thinking of Maud you forget everything else
-                    // Latin for Maud is actually Matillis but nobody would ever figure it out
                     "Lorem ipsum dollar sit amet, Cogito Maud obliviscaris aliorum.",
                     10,     // delay MS
                     10));   // dwell time MS
@@ -386,7 +386,7 @@ namespace Glue
             // Macro bound to mouse button X1 / X2
             //
             macroName = "F10";
-            macro = new Macro(macroName, 4);
+            macro = new Macro(macroName, 0);
             macro.AddAction(new ActionKey(50, VirtualKeyCode.F10, MoveType.CLICK));
             Macros.Add(macroName, macro);
 

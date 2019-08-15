@@ -20,15 +20,15 @@ namespace Glue.Actions
     [JsonObject(MemberSerialization.OptIn)]
     public abstract class Action
     {
-        public long TimeTriggerMS { get => this.timeTriggerMS; set => this.timeTriggerMS = value; }
+        public long DelayMS { get => this.delayMS; set => this.delayMS = value; }
 
-        public long TimeScheduledMS { get => this.timeScheduledMS; set => this.timeScheduledMS = value; }
+        public long ScheduledTick { get => this.scheduledTick; set => this.scheduledTick = value; }
         
         public string Name { get => this.name; set => this.name = value; }
 
         protected ActionType Type { get => type; set => type = value; }
 
-        private const string TIME_SCHEDULE_MS = "timeScheduleMS";
+        private const string DELAY_MS = "delayMS";
 
         [JsonProperty]
         [JsonConverter(typeof(StringEnumConverter))]
@@ -38,28 +38,28 @@ namespace Glue.Actions
         // This would allow times to be specified in the same format as form entry
         // e.g. 4s 32ms
         [JsonProperty]
-        // Used to schedule action relative to triggering event
-        protected long timeTriggerMS;
+        // Used to schedule action relative to previous event
+        protected long delayMS;
 
         // Name of scheduled instance - used to cancel actions in queue
         protected string name;
 
         // Time scheduled for this action instance 
-        protected long timeScheduledMS;
+        protected long scheduledTick;
 
         public abstract void Play();
 
         // Actions may schedule multiple instances - see ActionTyping
-        public abstract Action[] Schedule(long timeScheduled);
+        public abstract Action[] Schedule(long scheduleFromTick);
 
-        protected Action(long timeTriggerMS)
+        protected Action(long delayMS)
         {
-            this.timeTriggerMS = timeTriggerMS;
+            this.delayMS = delayMS;
         }
 
         protected Action(Action copyFrom)
         {
-            this.timeTriggerMS = copyFrom.timeTriggerMS;
+            this.delayMS = copyFrom.delayMS;
             this.type = copyFrom.type;
         }
 
@@ -72,9 +72,9 @@ namespace Glue.Actions
         {
             if (null != propertyBag && propertyBag.Count > 0)
             {
-                if (propertyBag.TryGetProperty(TIME_SCHEDULE_MS, out PropertyDuration propertyDuration))
+                if (propertyBag.TryGetProperty(DELAY_MS, out PropertyDuration propertyDuration))
                 {
-                    this.TimeScheduledMS = propertyDuration.Value;
+                    this.DelayMS = propertyDuration.Value;
                 }
             }
         }
@@ -86,7 +86,7 @@ namespace Glue.Actions
                 propertyBag = new PropertyBag();
             }
 
-            propertyBag.Add(TIME_SCHEDULE_MS, new PropertyDuration(timeScheduledMS));
+            propertyBag.Add(DELAY_MS, new PropertyDuration(this.delayMS));
 
             return propertyBag;
         }

@@ -14,7 +14,7 @@ namespace Glue
 
         internal void Enqueue(Action action)
         {
-            s_actions.Enqueue(action, action.TimeScheduledMS);
+            s_actions.Enqueue(action, action.ScheduledTick);
         }
 
         internal void Cancel(string name)
@@ -36,8 +36,9 @@ namespace Glue
         {
             if (s_actions.Count != 0)
             {
-                // BUGBUG assumes 1 tick == 1 MS which is not true on all systems
-                return (int) (s_actions.First.TimeScheduledMS - TimeProvider.GetTickCount());
+                // WARNING! assumes 1 tick == 1 MS which may not be true on all systems
+                // TODO Add code to verify and warn or adjust if 1 tick != 1 MS, or verify it isn't needed
+                return (int) (s_actions.First.ScheduledTick - TimeProvider.GetTickCount());
             }
 
             // to wait indefinitely

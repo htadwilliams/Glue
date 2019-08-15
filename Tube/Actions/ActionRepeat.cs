@@ -1,6 +1,4 @@
-﻿using System;
-using Glue.Native;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace Glue.Actions
 {
@@ -34,23 +32,13 @@ namespace Glue.Actions
         public override Action[] Schedule(long timeScheduleFrom)
         {
             ActionRepeat scheduledCopy = new ActionRepeat(
-                this.TimeTriggerMS,
+                this.DelayMS,
                 this.macroRepeater, 
                 this.macro)
             {
-                TimeScheduledMS = timeScheduleFrom + this.timeTriggerMS,
+                ScheduledTick = timeScheduleFrom + this.delayMS,
                 Name = macroRepeater
             };
-
-            if (LOGGER.IsDebugEnabled)
-            {
-                string message = String.Format("Scheduled at tick {0:n0} in {1:n0}ms: repeating macro {2}",
-                    scheduledCopy.TimeScheduledMS,
-                    this.TimeTriggerMS,
-                    this.macro);
-
-                LOGGER.Debug(message);
-            }
 
             return new Action[] {scheduledCopy};
         }

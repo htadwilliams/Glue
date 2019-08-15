@@ -3,16 +3,19 @@ using System.Runtime.InteropServices;
 
 namespace Glue.Native
 {
-    class TimeProvider
+    public class TimeProvider
     {
         public static long GetTickCount()
         {
-            // LOGGER.Debug("Now = " + GetTickCount64());
-
             // Commented out first attempt - may wish to play with it again
             // (long)(new TimeSpan(DateTime.Now.Ticks)).TotalMilliseconds;
 
             return (long) GetTickCount64();
+        }
+
+        public virtual long Now()
+        {
+            return TimeProvider.GetTickCount();
         }
 
         #region Win API Functions and Constants
