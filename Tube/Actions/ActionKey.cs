@@ -129,7 +129,7 @@ namespace Glue.Actions
             if (LOGGER.IsDebugEnabled)
             {
                 long now = TimeProvider.GetTickCount();
-                string message = String.Format("   Played at tick {0:n0} dt {1}ms: {2}-{3}",
+                string message = String.Format("Played at tick {0:n0} dt {1:n0}ms: {2}-{3}",
                     now,                          // Time actually played
                     now - this.ScheduledTick,     // Time delta (how late were we?)
                     this.key,                       
