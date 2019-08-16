@@ -33,7 +33,7 @@ namespace Glue
                     break;
 
                     case MouseMessages.WM_LBUTTONDOWN:
-                        LOGGER.Info(String.Format("Click at ({0},{1})", hookStruct.pt.x, hookStruct.pt.y));
+                        LOGGER.Info(String.Format("Click at ({0}, {1})", hookStruct.pt.x, hookStruct.pt.y));
                         keyCode = VirtualKeyCode.LBUTTON;
                     break;
 
