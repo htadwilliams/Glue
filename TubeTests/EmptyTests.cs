@@ -10,11 +10,6 @@ namespace Tests
     [TestClass]
     public class EmptyTests
     {
-        /// <summary>
-        /// 
-        /// 
-        /// 
-        /// </summary>
         [TestMethod]
         public void EmptyTest()
         {

@@ -10,6 +10,7 @@ using System.Configuration;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
+using WindowsInput;
 using WindowsInput.Native;
 using static Glue.Actions.ActionKey;
 using static Glue.Trigger;
@@ -416,19 +417,51 @@ namespace Glue
             // 
             // Create mouse movement
             //
-            macroName = "mouse-nudge";
+            macroName = "mouse-nudge-left";
             macro = new Macro(macroName, 20);
-            // macro.AddAction(new ActionMouse(ActionMouse.Movement.ABSOLUTE, 65535 / 2, 65535 / 2, 500));
             macro.AddAction(
                 new ActionMouse(
                     0, 
-                    ActionMouse.MoveType.MOVE, 
                     ActionMouse.CoordinateMode.RELATIVE,
-                    ActionMouse.ActionButton.LEFT,
-                    1, 1));
-
+                    -1, 0));
             Macros.Add(macroName, macro);
             trigger = new Trigger(Keys.Left, macroName);
+            trigger.AddModifier(Keys.LMenu);
+            Triggers.Add(trigger.TriggerKey, trigger);
+
+            macroName = "mouse-center";
+            macro = new Macro(macroName, 20);
+            macro.AddAction(
+                new ActionMouse(
+                    0, 
+                    ActionMouse.CoordinateMode.ABSOLUTE, 
+                    65535 / 2, 65535 / 2));
+            Macros.Add(macroName, macro);
+            trigger = new Trigger(Keys.Home, macroName);
+            trigger.AddModifier(Keys.LMenu);
+            Triggers.Add(trigger.TriggerKey, trigger);
+
+            macroName = "mouse-origin";
+            macro = new Macro(macroName, 20);
+            macro.AddAction(
+                new ActionMouse(
+                    0, 
+                    ActionMouse.CoordinateMode.PIXEL, 
+                    1, 1));
+            Macros.Add(macroName, macro);
+            trigger = new Trigger(Keys.End, macroName);
+            trigger.AddModifier(Keys.LMenu);
+            Triggers.Add(trigger.TriggerKey, trigger);
+
+            macroName = "mouse-click-nomove";
+            macro = new Macro(macroName, 20);
+            macro.AddAction(
+                new ActionMouse(
+                    0,
+                    ActionMouse.ClickType.CLICK,
+                    MouseButton.LeftButton));
+            Macros.Add(macroName, macro);
+            trigger = new Trigger(Keys.Delete, macroName);
             trigger.AddModifier(Keys.LMenu);
             Triggers.Add(trigger.TriggerKey, trigger);
 
