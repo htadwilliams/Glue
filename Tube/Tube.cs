@@ -34,6 +34,7 @@ namespace Glue
         // Core data structures
         private static Dictionary<Keys, Trigger> s_triggers;
         private static Dictionary<VirtualKeyCode, KeyboardRemapEntry> s_keyMap;
+
         private static Dictionary<string, Macro> s_macros;
 
         // For friendly display of keys in GUI
@@ -256,60 +257,64 @@ namespace Glue
 
             LOGGER.Info("Loading file [" + fileName + "]");
 
-            JsonSerializer serializer = new JsonSerializer
+            if (File.Exists(fileName))
             {
-                NullValueHandling = NullValueHandling.Ignore
-            };
-
-            try
-            {
-                using (StreamReader sr = new StreamReader(fileName))
+                JsonSerializer serializer = new JsonSerializer
                 {
-                    using (JsonReader reader = new JsonTextReader(sr))
+                    DefaultValueHandling = DefaultValueHandling.Populate
+                };
+
+                try
+                {
+                    using (StreamReader sr = new StreamReader(fileName))
                     {
-                        reader.SupportMultipleContent = true;
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            reader.SupportMultipleContent = true;
 
-                        reader.Read();
+                            reader.Read();
 
-                        JsonWrapper jsonWrapper = serializer.Deserialize<JsonWrapper>(reader);
+                            JsonWrapper jsonWrapper = serializer.Deserialize<JsonWrapper>(reader);
 
-                        Macros = jsonWrapper.GetMacroMap();
-                        Triggers = jsonWrapper.GetTriggerMap();
-                        KeyMap = jsonWrapper.GetKeyboardMap();
+                            Macros = jsonWrapper.GetMacroMap();
+                            Triggers = jsonWrapper.GetTriggerMap();
+                            KeyMap = jsonWrapper.GetKeyboardMap();
+                        }
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Failed to load file with exception: " + e);
+                catch (Exception e)
+                {
+                    // TODO User friendly error message
+                    MessageBox.Show(e.Message);
+                    LOGGER.Error("Failed to load file with exception: " + e);
+                    return;
+                }
 
+                if (null != Macros && Macros.Count != 0)
+                {
+                    LOGGER.Info(String.Format("    Loaded {0} macros", Macros.Count));
+                }
+                if (null != Triggers && Triggers.Count != 0)
+                {
+                    LOGGER.Info(String.Format("    Loaded {0} triggers", Triggers.Count));
+                }
+                if (null != KeyMap && KeyMap.Count != 0)
+                {
+                    LOGGER.Info(String.Format("    Loaded {0} remapped keys", KeyMap.Count));
+                }
+
+                FileName = fileName;
+            }
+            else
+            {
+                LOGGER.Info("File not found - creating example content");
                 CreateDefaultContent();
-                SaveFile(s_fileName);
-                return;
+                SaveFile(fileName);
             }
-
-            if (null != Macros && Macros.Count != 0)
-            {
-                LOGGER.Info(String.Format("    Loaded {0} macros", Macros.Count));
-            }
-            if (null != Triggers && Triggers.Count != 0)
-            {
-                LOGGER.Info(String.Format("    Loaded {0} triggers", Triggers.Count));
-            }
-            if (null != KeyMap && KeyMap.Count != 0)
-            {
-                LOGGER.Info(String.Format("    Loaded {0} remapped keys", KeyMap.Count));
-            }
-
-            FileName = fileName;
-            s_writeOnExit = false;
-            return;
         }
 
         private static void CreateDefaultContent()
         {
-            LOGGER.Info("File not found or load failed - creating example content");
-
             //
             // Create macro with several actions bound to CTRL-Z
             //
@@ -574,6 +579,16 @@ namespace Glue
                     MainForm.AppendText("-" + (VirtualKeyCode)vkCode + " ");
                 }
             }
+        }
+
+        internal static void OnMouseMove(int xPos, int yPos)
+        {
+            MainForm.OnMouseMove(xPos, yPos);
+        }
+
+        internal static void OnMouseClick(MouseButton button, int xPos, int yPos)
+        {
+            MainForm.OnMouseClick(xPos, yPos);
         }
 
         private static string FormatKeyString(int vkCode)
