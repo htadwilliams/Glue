@@ -3,6 +3,7 @@ using Glue.PropertyIO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using System.ComponentModel;
 
 namespace Glue.Actions
 {
@@ -29,6 +30,7 @@ namespace Glue.Actions
         protected ActionType Type { get => type; set => type = value; }
 
         private const string DELAY_MS = "delayMS";
+        private const long DELAY_DEFAULT_MS = 30;
 
         [JsonProperty]
         [JsonConverter(typeof(StringEnumConverter))]
@@ -38,8 +40,9 @@ namespace Glue.Actions
         // This would allow times to be specified in the same format as form entry
         // e.g. 4s 32ms
         [JsonProperty]
+        [DefaultValue(DELAY_DEFAULT_MS)]
         // Used to schedule action relative to previous event
-        protected long delayMS;
+        protected long delayMS = DELAY_DEFAULT_MS;
 
         // Name of scheduled instance - used to cancel actions in queue
         protected string name;
@@ -52,6 +55,7 @@ namespace Glue.Actions
         // Actions may schedule multiple instances - see ActionTyping
         public abstract Action[] Schedule(long scheduleFromTick);
 
+        [JsonConstructor]
         protected Action(long delayMS)
         {
             this.delayMS = delayMS;
