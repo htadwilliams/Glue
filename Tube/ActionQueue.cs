@@ -7,38 +7,48 @@ namespace Glue
     class ActionQueue
     {
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private static readonly SimplePriorityQueue<Action, long> s_actions = new SimplePriorityQueue<Action, long>();
+        private readonly SimplePriorityQueue<Action, long> actions = new SimplePriorityQueue<Action, long>();
 
-        public int Count { get => s_actions.Count; }
-        public Action First { get => s_actions.First; }
+        public int Count { get => actions.Count; }
+        public Action First { get => actions.First; }
 
         internal void Enqueue(Action action)
         {
-            s_actions.Enqueue(action, action.ScheduledTick);
+            actions.Enqueue(action, action.ScheduledTick);
         }
 
         internal void Cancel(string name)
         {
-            short cancelCount = 0;
-            foreach (Action action in s_actions)
+            int cancelCount = 0;
+
+            // TODO Cancel by name should support regex or partial name matching
+            if (name.Equals("*"))
             {
-                if (null != action.Name && action.Name.Equals(name))
+                cancelCount = actions.Count;
+                actions.Clear();
+            }
+            else
+            {
+                foreach (Action action in actions)
                 {
-                    cancelCount++;
-                    s_actions.Remove(action);
+                    if (null != action.Name && action.Name.Equals(name))
+                    {
+                        cancelCount++;
+                        actions.Remove(action);
+                    }
                 }
             }
 
-            LOGGER.Info(System.String.Format("Canceled {0} instances of Action with name = [" + name + "]", cancelCount));
+            LOGGER.Info(System.String.Format("Canceled {0} Action(s) with name = [" + name + "]", cancelCount));
         }
 
         internal int GetMSUntilNextAction()
         {
-            if (s_actions.Count != 0)
+            if (actions.Count != 0)
             {
                 // WARNING! assumes 1 tick == 1 MS which may not be true on all systems
                 // TODO Add code to verify and warn or adjust if 1 tick != 1 MS, or verify it isn't needed
-                return (int) (s_actions.First.ScheduledTick - TimeProvider.GetTickCount());
+                return (int) (actions.First.ScheduledTick - TimeProvider.GetTickCount());
             }
 
             // to wait indefinitely
@@ -47,7 +57,7 @@ namespace Glue
 
         internal void Dequeue()
         {
-            s_actions.Dequeue();
+            actions.Dequeue();
         }
     }
 }
