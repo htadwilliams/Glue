@@ -52,7 +52,7 @@ namespace Glue
 
        private void Threadproc()
         {
-            LOGGER.Debug("Thread starting...");
+            LOGGER.Debug("Thread: [" + this.thread.Name + "] starting...");
 
             while (true)
             {
