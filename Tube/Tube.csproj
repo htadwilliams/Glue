@@ -123,6 +123,7 @@
     <Compile Include="Forms\ViewButtons.Designer.cs">
       <DependentUpon>ViewButtons.cs</DependentUpon>
     </Compile>
+    <Compile Include="Native\InterceptorThread.cs" />
     <Compile Include="JsonWrapper.cs" />
     <Compile Include="Native\WindowHandleUtils.cs" />
     <Compile Include="Native\TimeProvider.cs" />
