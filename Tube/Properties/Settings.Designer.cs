@@ -58,5 +58,17 @@ namespace Glue.Properties {
                 this["ViewButtons"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool NormalizeMouseCoords {
+            get {
+                return ((bool)(this["NormalizeMouseCoords"]));
+            }
+            set {
+                this["NormalizeMouseCoords"] = value;
+            }
+        }
     }
 }
