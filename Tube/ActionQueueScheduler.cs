@@ -57,16 +57,18 @@ namespace Glue
             while (true)
             {
                 Action action;
+
                 while 
                     (
                         (actions.Count > 0) && 
                         ((action = actions.First).ScheduledTick <= TimeProvider.GetTickCount())
                     )
                 {
+                    actions.Dequeue(); 
+
                     // Actions should play quickly ~1MS for now (see following TODO)
                     // TODO Asynchronous action support: Submit action.Play to worker thread pool
                     action.Play();
-                    actions.Dequeue();
                 }
 
                 // Wait until next event is ready to fire 
