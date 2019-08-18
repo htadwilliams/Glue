@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using Glue.Native;
 using Glue.PropertyIO;
 using Newtonsoft.Json;
@@ -32,8 +33,9 @@ namespace Glue.Actions
         private Nullable<VirtualKeyCode> key;
 
         [JsonProperty]
+        [DefaultValue (50)]
         // Options - if specified will be used to schedule if MoveType is CLICK
-        protected long timeClickMS = -1;
+        protected long timeClickMS = 50;
 
         // Generated only if scheduled by ActionTyping with a string
         private Nullable<INPUT> input;          
@@ -74,9 +76,8 @@ namespace Glue.Actions
                     {
                         ScheduledTick = timeScheduleFrom + this.delayMS
                     },
-                    new ActionKey(this.delayMS, (VirtualKeyCode) this.key, MoveType.RELEASE)
+                    new ActionKey(timeClickMS, (VirtualKeyCode) this.key, MoveType.RELEASE)
                     {
-
                         ScheduledTick = timeScheduleFrom + this.delayMS + timeClickMS
                     }
                 };
