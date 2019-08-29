@@ -1,8 +1,10 @@
-Keyboard remapping and macroing tool for Windows written in C#.
+# Keyboard remapping and macroing tool for Windows written in C#.
 
 WARNING: This globally hooks keyboard/mouse input and logs to file if DEBUG mode is enabled. Don't run in DEBUG mode if you don't want your keys logged!
 
 Originally written in C++ and used to play EverQuest for over 10 years, this a rewrite in C# including low-level keyboard and mouse hooks (with lots of native windows API calls).
+
+# DEFAULT CONTENT
 
 The application by default attempts to read MACROS.GLUE from its working directory. The file name / path may be optionally specified as a command-line parameter.  If this file isn't found one will be created with example macros, triggers, and remapping entries.
 
@@ -20,7 +22,7 @@ DEFAULT FILE REMAPS:
 * WASD and typical rotation keys Q/E are remapped to ESDF W/R (R/F slide to left over Q/A to make room) for "fallout4.exe". Change to your .exe name to use. WASD is EVIL! 
 * Swap V and B if typing into notepad.exe.
 
-DEPENDENCIES:
+# DEPENDENCIES
 
 NuGet managed dependencies:
 
@@ -32,13 +34,10 @@ Other dependencies:
 * Priority queue implementation is courtesy of BlueRaja.admin@gmail.com (https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp). The application creates a thread that monitors a queue of scheduled macro action events to fire (See EventQueue class).
 * Windows Input simulator to wrap Windows API SendInput https://archive.codeplex.com/?p=inputsimulator and provide all the native constants needed. See https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-sendinput.
 
-Feature / TODO list:
+# Feature / TODO list
 
 * Add queue display window for fun and debugging (shows keyboard state, and representation of events queued for future work).
 * Game device button triggers, macro events, and button remapping.
 * Remote control - trigger events via network client (most likely REST interface).
-
-BONUS: 
 * GUI for recording / editing macros.
 * GUI for remapping keys / buttons.
-* Keyboard / button map diagram output showing remapped items.
