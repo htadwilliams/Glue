@@ -45,7 +45,7 @@ namespace Glue
                     }
                 }
 
-                Tube.OnKeyDown(vkCode);
+                Tube.LogKeyDown(vkCode);
             }
 
             if (wParam == (IntPtr) KeyInterceptor.WM_KEYUP || wParam == (IntPtr) KeyInterceptor.WM_SYSKEYUP)
@@ -67,7 +67,7 @@ namespace Glue
                     }
                 }
 
-                Tube.OnKeyUp(vkCode);
+                Tube.LogKeyUp(vkCode);
             }
 
             return new IntPtr(0);

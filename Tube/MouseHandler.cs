@@ -35,7 +35,7 @@ namespace Glue
 
                     case MouseMessages.WM_LBUTTONDOWN:
                         LOGGER.Info(String.Format("Click at ({0}, {1})", hookStruct.pt.x, hookStruct.pt.y));
-                        Tube.OnMouseClick(MouseButton.LeftButton, hookStruct.pt.x, hookStruct.pt.y);
+                        Tube.LogMouseClick(MouseButton.LeftButton, hookStruct.pt.x, hookStruct.pt.y);
                         keyCode = VirtualKeyCode.LBUTTON;
                     break;
 
@@ -63,7 +63,7 @@ namespace Glue
                         // TODO Spaghetti control! Add pub / sub for mouse and keyboard handlers
                         // This already exists for the hook interceptors, but the pattern should be
                         // extended for app level handlers too.
-                        Tube.OnMouseMove(hookStruct.pt.x, hookStruct.pt.y);
+                        Tube.LogMouseMove(hookStruct.pt.x, hookStruct.pt.y);
                     break;
 
                 }
