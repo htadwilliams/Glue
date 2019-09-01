@@ -12,6 +12,12 @@ namespace Glue.Native
     //
     // Added additional delegate passed to Initialize() making this class cleaner to re-use
     //
+    // Note that this could be initialized on a separate thread in a forms application, but that
+    // thread would need to run a PeekMessage() loop or the hooks don't get called.  To do that
+    // in .NET, the thread proc can use the built-in message loop easily by calling 
+    // System.Windows.Forms.Application.DoEvents(); in the thread loop.
+    //
+
     class KeyInterceptor
     {
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

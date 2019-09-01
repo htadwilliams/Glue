@@ -50,7 +50,7 @@ namespace Glue
         private static string s_fileName = FILENAME_DEFAULT;
 
         private static List<VirtualKeyCode> s_keysDown = new List<VirtualKeyCode>();
-        private static bool s_lastInsertWasSpace = false;
+        private static bool s_lastLoggedOutputWasSpace = false;
         private static TrayApplicationContext s_context;
         private static ActionQueueScheduler s_actionScheduler = new ActionQueueScheduler();
 
@@ -555,7 +555,12 @@ namespace Glue
                 }
                 else
                 {
-                    output = FormatKeyString(vkCode);
+                    output = FormatKeyString(vkCode, s_lastLoggedOutputWasSpace);
+
+                    // Set flag for next time this method is called
+                    s_lastLoggedOutputWasSpace
+                        = (output.EndsWith(" ") ||
+                           output.EndsWith("\r\n"));
                 }
 
                 MainForm.AppendText(output);
@@ -591,7 +596,7 @@ namespace Glue
             MainForm.OnMouseClick(xPos, yPos);
         }
 
-        private static string FormatKeyString(int vkCode)
+        private static string FormatKeyString(int vkCode, bool padLeft)
         {
             string output;
             if (keyMap.TryGetValue((Keys)vkCode, out string text))
@@ -626,17 +631,12 @@ namespace Glue
             // Pad Key names (e.g. LMenu, not single typed characters like "A")
             if ((output.Length > 1) && (output != "\r\n"))
             {
-                if (!s_lastInsertWasSpace)
+                if (!padLeft)
                 {
                     output = output.Insert(0, " ");
                 }
                 output += " ";
             }
-
-            // Set flag for next time this method is called
-            s_lastInsertWasSpace
-                = (output.EndsWith(" ") ||
-                   output.EndsWith("\r\n"));
 
             return output;
         }
