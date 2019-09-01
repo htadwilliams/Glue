@@ -313,6 +313,144 @@ namespace Glue
             }
         }
 
+        public static bool CheckAndFireTriggers(int vkCode, MoveType movement)
+        {
+            bool eatInput = false;
+
+            // Triggers fire macros 
+            if (Tube.Triggers != null && 
+                Tube.Triggers.TryGetValue((Keys) vkCode, out Trigger trigger))
+            {
+                switch (trigger.Type)
+                {
+                    case TriggerType.Both:
+                        eatInput = trigger.Fire();
+                    break;
+
+                    case TriggerType.Down:
+                    if (MoveType.PRESS == movement)
+                    {
+                        eatInput = trigger.Fire();
+                    }
+                    break;
+
+                    case TriggerType.Up:
+                    if (MoveType.RELEASE == movement)
+                    {
+                        eatInput = trigger.Fire();
+                    }
+                    break;
+                }
+            }
+
+            return eatInput;
+        }
+
+        public static void LogKeyDown(int vkCode)
+        {
+            if (!s_keysDown.Contains((VirtualKeyCode) vkCode))
+            {
+                s_keysDown.Add((VirtualKeyCode)vkCode);
+                MainForm.UpdateKeys(s_keysDown);
+            }
+
+            if (MainForm.LogInput)
+            {
+                LOGGER.Debug("+" + (VirtualKeyCode)vkCode);
+
+                string output;
+                if (MainForm.RawKeyNames)
+                {
+                    output = "+" + (VirtualKeyCode)vkCode + " ";
+                }
+                else
+                {
+                    output = FormatKeyString(vkCode, s_lastLoggedOutputWasSpace);
+
+                    // Set flag for next time this method is called
+                    s_lastLoggedOutputWasSpace
+                        = (output.EndsWith(" ") ||
+                           output.EndsWith("\r\n"));
+                }
+
+                MainForm.AppendText(output);
+            }
+        }
+
+        public static void LogKeyUp(int vkCode)
+        {
+            while (s_keysDown.Contains((VirtualKeyCode) vkCode))
+            {
+                s_keysDown.Remove((VirtualKeyCode) vkCode);
+            }
+            MainForm.UpdateKeys(s_keysDown);
+
+            if (MainForm.LogInput)
+            {
+                LOGGER.Debug("-" + (VirtualKeyCode)vkCode);
+
+                if (MainForm.RawKeyNames)
+                {
+                    MainForm.AppendText("-" + (VirtualKeyCode)vkCode + " ");
+                }
+            }
+        }
+
+        internal static void LogMouseMove(int xPos, int yPos)
+        {
+            MainForm.LogMouseMove(xPos, yPos);
+        }
+
+        internal static void LogMouseClick(MouseButton button, int xPos, int yPos)
+        {
+            MainForm.LogMouseClick(xPos, yPos);
+        }
+
+        private static string FormatKeyString(int vkCode, bool padLeft)
+        {
+            string output;
+            if (keyMap.TryGetValue((Keys)vkCode, out string text))
+            {
+                output = text;
+            }
+            else
+            {
+                output = ((Keys)vkCode).ToString();
+
+                // Only printed characters are a single character long 
+                if (output.Length == 1)
+                {
+                    // Could be simplified but this is super clear to read
+                    if (Keyboard.IsKeyToggled(Keys.CapsLock))
+                    {
+                        if (Keyboard.IsKeyDown(Keys.LShiftKey) || Keyboard.IsKeyDown(Keys.RShiftKey))
+                        {
+                            output = output.ToLower();
+                        }
+                    }
+                    else
+                    {
+                        if (!Keyboard.IsKeyDown(Keys.LShiftKey) && !Keyboard.IsKeyDown(Keys.RShiftKey))
+                        {
+                            output = output.ToLower();
+                        }
+                    }
+                }
+            }
+
+            // Pad Key names (e.g. LMenu, not single typed characters like "A")
+            if ((output.Length > 1) && (output != "\r\n"))
+            {
+                if (!padLeft)
+                {
+                    output = output.Insert(0, " ");
+                }
+                output += " ";
+            }
+
+            return output;
+        }
+
         private static void CreateDefaultContent()
         {
             //
@@ -501,144 +639,6 @@ namespace Glue
             AddRemap(VirtualKeyCode.VK_S, VirtualKeyCode.VK_A, PROCESS_NAME_WASD);
             AddRemap(VirtualKeyCode.VK_D, VirtualKeyCode.VK_S, PROCESS_NAME_WASD);
             AddRemap(VirtualKeyCode.VK_F, VirtualKeyCode.VK_D, PROCESS_NAME_WASD);
-        }
-
-        public static bool CheckAndFireTriggers(int vkCode, MoveType movement)
-        {
-            bool eatInput = false;
-
-            // Triggers fire macros 
-            if (Tube.Triggers != null && 
-                Tube.Triggers.TryGetValue((Keys) vkCode, out Trigger trigger))
-            {
-                switch (trigger.Type)
-                {
-                    case TriggerType.Both:
-                        eatInput = trigger.Fire();
-                    break;
-
-                    case TriggerType.Down:
-                    if (MoveType.PRESS == movement)
-                    {
-                        eatInput = trigger.Fire();
-                    }
-                    break;
-
-                    case TriggerType.Up:
-                    if (MoveType.RELEASE == movement)
-                    {
-                        eatInput = trigger.Fire();
-                    }
-                    break;
-                }
-            }
-
-            return eatInput;
-        }
-
-        public static void OnKeyDown(int vkCode)
-        {
-            if (!s_keysDown.Contains((VirtualKeyCode) vkCode))
-            {
-                s_keysDown.Add((VirtualKeyCode)vkCode);
-                MainForm.UpdateKeys(s_keysDown);
-            }
-
-            if (MainForm.LogInput)
-            {
-                LOGGER.Debug("+" + (VirtualKeyCode)vkCode);
-
-                string output;
-                if (MainForm.RawKeyNames)
-                {
-                    output = "+" + (VirtualKeyCode)vkCode + " ";
-                }
-                else
-                {
-                    output = FormatKeyString(vkCode, s_lastLoggedOutputWasSpace);
-
-                    // Set flag for next time this method is called
-                    s_lastLoggedOutputWasSpace
-                        = (output.EndsWith(" ") ||
-                           output.EndsWith("\r\n"));
-                }
-
-                MainForm.AppendText(output);
-            }
-        }
-
-        public static void OnKeyUp(int vkCode)
-        {
-            while (s_keysDown.Contains((VirtualKeyCode) vkCode))
-            {
-                s_keysDown.Remove((VirtualKeyCode) vkCode);
-            }
-            MainForm.UpdateKeys(s_keysDown);
-
-            if (MainForm.LogInput)
-            {
-                LOGGER.Debug("-" + (VirtualKeyCode)vkCode);
-
-                if (MainForm.RawKeyNames)
-                {
-                    MainForm.AppendText("-" + (VirtualKeyCode)vkCode + " ");
-                }
-            }
-        }
-
-        internal static void OnMouseMove(int xPos, int yPos)
-        {
-            MainForm.OnMouseMove(xPos, yPos);
-        }
-
-        internal static void OnMouseClick(MouseButton button, int xPos, int yPos)
-        {
-            MainForm.OnMouseClick(xPos, yPos);
-        }
-
-        private static string FormatKeyString(int vkCode, bool padLeft)
-        {
-            string output;
-            if (keyMap.TryGetValue((Keys)vkCode, out string text))
-            {
-                output = text;
-            }
-            else
-            {
-                output = ((Keys)vkCode).ToString();
-
-                // Only printed characters are a single character long 
-                if (output.Length == 1)
-                {
-                    // Could be simplified but this is super clear to read
-                    if (Keyboard.IsKeyToggled(Keys.CapsLock))
-                    {
-                        if (Keyboard.IsKeyDown(Keys.LShiftKey) || Keyboard.IsKeyDown(Keys.RShiftKey))
-                        {
-                            output = output.ToLower();
-                        }
-                    }
-                    else
-                    {
-                        if (!Keyboard.IsKeyDown(Keys.LShiftKey) && !Keyboard.IsKeyDown(Keys.RShiftKey))
-                        {
-                            output = output.ToLower();
-                        }
-                    }
-                }
-            }
-
-            // Pad Key names (e.g. LMenu, not single typed characters like "A")
-            if ((output.Length > 1) && (output != "\r\n"))
-            {
-                if (!padLeft)
-                {
-                    output = output.Insert(0, " ");
-                }
-                output += " ";
-            }
-
-            return output;
         }
     }
 }

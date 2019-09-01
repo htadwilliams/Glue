@@ -185,7 +185,7 @@ namespace Glue.Forms
         {
         }
 
-        internal void OnMouseMove(int xPos, int yPos)
+        internal void LogMouseMove(int xPos, int yPos)
         {
             int xOut = xPos;
             int yOut = yPos;
@@ -197,7 +197,7 @@ namespace Glue.Forms
             this.toolStripMousePos.Text = String.Format("Mouse: ({0:n0}, {1:n0})", xOut, yOut);
         }
 
-        internal void OnMouseClick(int xPos, int yPos)
+        internal void LogMouseClick(int xPos, int yPos)
         {
             int xOut = xPos;
             int yOut = yPos;
@@ -209,7 +209,7 @@ namespace Glue.Forms
 
             if (this.LogInput && this.RawKeyNames)
             {
-                this.AppendText(String.Format("CLICK({0},{1}) ", xOut, yOut));
+                this.AppendText(String.Format("CLICK({0}, {1}) ", xOut, yOut));
             }
             this.toolStripMousePosLastClick.Text = String.Format("Last click: ({0:n0}, {1:n0})", xOut, yOut);
         }
