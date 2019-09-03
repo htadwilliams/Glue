@@ -3,6 +3,7 @@ using Glue.PropertyIO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using System;
 
 namespace Glue.Actions
 {
@@ -18,7 +19,7 @@ namespace Glue.Actions
 
     [JsonConverter(typeof(ActionConverter))]
     [JsonObject(MemberSerialization.OptIn)]
-    public abstract class Action
+    public abstract class Action : IComparable
     {
         public long DelayMS { get => this.delayMS; set => this.delayMS = value; }
 
@@ -89,6 +90,20 @@ namespace Glue.Actions
             propertyBag.Add(DELAY_MS, new PropertyDuration(this.delayMS));
 
             return propertyBag;
+        }
+
+        public int CompareTo(Object compareTo)
+        {
+            Action compareToAsAction = compareTo as Action;
+
+            if (null == compareToAsAction) 
+                return 1;
+            else if (this.ScheduledTick > compareToAsAction.ScheduledTick)
+                return 1;
+            else if (this.ScheduledTick == compareToAsAction.ScheduledTick) 
+                return 0;
+            else // if (this.ScheduledTick < compareTo.ScheduledTick) 
+                return -1;
         }
     }
 }

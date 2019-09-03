@@ -27,7 +27,7 @@ namespace Glue
         public static Dictionary<string, Macro> Macros { get => s_macros; set => s_macros = value; }
         public static ViewMain MainForm { get => s_mainForm; set => s_mainForm = value; }
         public static string FileName { get => s_fileName; set => s_fileName = value; }
-        public static IActionScheduler Scheduler { get => s_actionScheduler; }
+        public static ActionQueueScheduler Scheduler { get => s_actionScheduler; }
 
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -306,6 +306,133 @@ namespace Glue
             return;
         }
 
+        public static bool CheckAndFireTriggers(int vkCode, MoveType movement)
+        {
+            bool eatInput = false;
+
+            // Triggers fire macros 
+            if (Tube.Triggers != null && 
+                Tube.Triggers.TryGetValue((Keys) vkCode, out Trigger trigger))
+            {
+                switch (trigger.Type)
+                {
+                    case TriggerType.Both:
+                        eatInput = trigger.Fire();
+                    break;
+
+                    case TriggerType.Down:
+                    if (MoveType.PRESS == movement)
+                    {
+                        eatInput = trigger.Fire();
+                    }
+                    break;
+
+                    case TriggerType.Up:
+                    if (MoveType.RELEASE == movement)
+                    {
+                        eatInput = trigger.Fire();
+                    }
+                    break;
+                }
+            }
+
+            return eatInput;
+        }
+
+        public static void OnKeyDown(int vkCode)
+        {
+            if (!s_keysDown.Contains((VirtualKeyCode) vkCode))
+            {
+                s_keysDown.Add((VirtualKeyCode)vkCode);
+                MainForm.UpdateKeys(s_keysDown);
+            }
+
+            if (MainForm.LogInput)
+            {
+                LOGGER.Debug("+" + (VirtualKeyCode)vkCode);
+
+                string output;
+                if (MainForm.RawKeyNames)
+                {
+                    output = "+" + (VirtualKeyCode)vkCode + " ";
+                }
+                else
+                {
+                    output = FormatKeyString(vkCode);
+                }
+
+                MainForm.AppendText(output);
+            }
+        }
+
+        public static void OnKeyUp(int vkCode)
+        {
+            while (s_keysDown.Contains((VirtualKeyCode) vkCode))
+            {
+                s_keysDown.Remove((VirtualKeyCode) vkCode);
+            }
+            MainForm.UpdateKeys(s_keysDown);
+
+            if (MainForm.LogInput)
+            {
+                LOGGER.Debug("-" + (VirtualKeyCode)vkCode);
+
+                if (MainForm.RawKeyNames)
+                {
+                    MainForm.AppendText("-" + (VirtualKeyCode)vkCode + " ");
+                }
+            }
+        }
+
+        private static string FormatKeyString(int vkCode)
+        {
+            string output;
+            if (keyMap.TryGetValue((Keys)vkCode, out string text))
+            {
+                output = text;
+            }
+            else
+            {
+                output = ((Keys)vkCode).ToString();
+
+                // Only printed characters are a single character long 
+                if (output.Length == 1)
+                {
+                    // Could be simplified but this is super clear to read
+                    if (Keyboard.IsKeyToggled(Keys.CapsLock))
+                    {
+                        if (Keyboard.IsKeyDown(Keys.LShiftKey) || Keyboard.IsKeyDown(Keys.RShiftKey))
+                        {
+                            output = output.ToLower();
+                        }
+                    }
+                    else
+                    {
+                        if (!Keyboard.IsKeyDown(Keys.LShiftKey) && !Keyboard.IsKeyDown(Keys.RShiftKey))
+                        {
+                            output = output.ToLower();
+                        }
+                    }
+                }
+            }
+
+            // Pad Key names (e.g. LMenu, not single typed characters like "A")
+            if ((output.Length > 1) && (output != "\r\n"))
+            {
+                if (!s_lastInsertWasSpace)
+                {
+                    output = output.Insert(0, " ");
+                }
+                output += " ";
+            }
+
+            // Set flag for next time this method is called
+            s_lastInsertWasSpace
+                = (output.EndsWith(" ") ||
+                   output.EndsWith("\r\n"));
+
+            return output;
+        }
         private static void CreateDefaultContent()
         {
             LOGGER.Info("File not found or load failed - creating example content");
@@ -315,10 +442,9 @@ namespace Glue
             //
             string macroName = "delayed-action";
             Macro macro = new Macro(macroName, 4000) 
+                .AddAction(new ActionSound(10, "sound_tab_retreat.wav"))
                 .AddAction(new ActionKey(10,    VirtualKeyCode.RETURN,  MoveType.PRESS))
                 .AddAction(new ActionKey(10,    VirtualKeyCode.RETURN,  MoveType.RELEASE))
-                .AddAction(new ActionKey(30,    VirtualKeyCode.VK_Q,    MoveType.PRESS))
-                .AddAction(new ActionKey(10,    VirtualKeyCode.VK_Q,    MoveType.RELEASE))
                 ;
             Macros.Add(macroName, macro);
             // Setup trigger
@@ -365,9 +491,14 @@ namespace Glue
             //
 
             // TODO Repeated sound should play when trigger fires (currently only plays after first delay interval)
+            macroName = "sound-tock";
+            macro = new Macro(macroName, 0);
+            macro.AddAction(new ActionSound(0, "sound_click_tock.wav"));
+            Macros.Add(macroName, macro);
+
             macroName = "repeat-sound";
             macro = new Macro(macroName, 0);
-            macro.AddAction(new ActionRepeat(3000, macroName, "sound-servomotor" ));
+            macro.AddAction(new ActionRepeat(3000, macroName, "sound-tock" ));
             Macros.Add(macroName, macro);
 
             trigger = new Trigger(Keys.Oemcomma, "repeat-sound");
@@ -496,134 +627,6 @@ namespace Glue
             AddRemap(VirtualKeyCode.VK_S, VirtualKeyCode.VK_A, PROCESS_NAME_WASD);
             AddRemap(VirtualKeyCode.VK_D, VirtualKeyCode.VK_S, PROCESS_NAME_WASD);
             AddRemap(VirtualKeyCode.VK_F, VirtualKeyCode.VK_D, PROCESS_NAME_WASD);
-        }
-
-        public static bool CheckAndFireTriggers(int vkCode, MoveType movement)
-        {
-            bool eatInput = false;
-
-            // Triggers fire macros 
-            if (Tube.Triggers != null && 
-                Tube.Triggers.TryGetValue((Keys) vkCode, out Trigger trigger))
-            {
-                switch (trigger.Type)
-                {
-                    case TriggerType.Both:
-                        eatInput = trigger.Fire();
-                    break;
-
-                    case TriggerType.Down:
-                    if (MoveType.PRESS == movement)
-                    {
-                        eatInput = trigger.Fire();
-                    }
-                    break;
-
-                    case TriggerType.Up:
-                    if (MoveType.RELEASE == movement)
-                    {
-                        eatInput = trigger.Fire();
-                    }
-                    break;
-                }
-            }
-
-            return eatInput;
-        }
-
-        public static void OnKeyDown(int vkCode)
-        {
-            if (!s_keysDown.Contains((VirtualKeyCode) vkCode))
-            {
-                s_keysDown.Add((VirtualKeyCode)vkCode);
-                MainForm.UpdateKeys(s_keysDown);
-            }
-
-            if (MainForm.LogInput)
-            {
-                LOGGER.Debug("+" + (VirtualKeyCode)vkCode);
-
-                string output;
-                if (MainForm.RawKeyNames)
-                {
-                    output = "+" + (VirtualKeyCode)vkCode + " ";
-                }
-                else
-                {
-                    output = FormatKeyString(vkCode);
-                }
-
-                MainForm.AppendText(output);
-            }
-        }
-
-        public static void OnKeyUp(int vkCode)
-        {
-            while (s_keysDown.Contains((VirtualKeyCode) vkCode))
-            {
-                s_keysDown.Remove((VirtualKeyCode) vkCode);
-            }
-            MainForm.UpdateKeys(s_keysDown);
-
-            if (MainForm.LogInput)
-            {
-                LOGGER.Debug("-" + (VirtualKeyCode)vkCode);
-
-                if (MainForm.RawKeyNames)
-                {
-                    MainForm.AppendText("-" + (VirtualKeyCode)vkCode + " ");
-                }
-            }
-        }
-
-        private static string FormatKeyString(int vkCode)
-        {
-            string output;
-            if (keyMap.TryGetValue((Keys)vkCode, out string text))
-            {
-                output = text;
-            }
-            else
-            {
-                output = ((Keys)vkCode).ToString();
-
-                // Only printed characters are a single character long 
-                if (output.Length == 1)
-                {
-                    // Could be simplified but this is super clear to read
-                    if (Keyboard.IsKeyToggled(Keys.CapsLock))
-                    {
-                        if (Keyboard.IsKeyDown(Keys.LShiftKey) || Keyboard.IsKeyDown(Keys.RShiftKey))
-                        {
-                            output = output.ToLower();
-                        }
-                    }
-                    else
-                    {
-                        if (!Keyboard.IsKeyDown(Keys.LShiftKey) && !Keyboard.IsKeyDown(Keys.RShiftKey))
-                        {
-                            output = output.ToLower();
-                        }
-                    }
-                }
-            }
-
-            // Pad Key names (e.g. LMenu, not single typed characters like "A")
-            if ((output.Length > 1) && (output != "\r\n"))
-            {
-                if (!s_lastInsertWasSpace)
-                {
-                    output = output.Insert(0, " ");
-                }
-                output += " ";
-            }
-
-            // Set flag for next time this method is called
-            s_lastInsertWasSpace
-                = (output.EndsWith(" ") ||
-                   output.EndsWith("\r\n"));
-
-            return output;
         }
     }
 }

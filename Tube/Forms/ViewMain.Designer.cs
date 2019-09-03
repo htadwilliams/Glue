@@ -51,6 +51,7 @@
             this.remapKeysToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemViewButtons = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemViewQueue = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemHelpAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStripMain.SuspendLayout();
@@ -189,8 +190,10 @@
             // 
             // viewToolStripMenuItem
             // 
+            this.viewToolStripMenuItem.CheckOnClick = true;
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuItemViewButtons});
+            this.menuItemViewButtons,
+            this.menuItemViewQueue});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(86, 38);
             this.viewToolStripMenuItem.Text = "&View";
@@ -200,9 +203,17 @@
             this.menuItemViewButtons.CheckOnClick = true;
             this.menuItemViewButtons.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.menuItemViewButtons.Name = "menuItemViewButtons";
-            this.menuItemViewButtons.Size = new System.Drawing.Size(291, 44);
+            this.menuItemViewButtons.Size = new System.Drawing.Size(359, 44);
             this.menuItemViewButtons.Text = "&Button States";
             this.menuItemViewButtons.Click += new System.EventHandler(this.MenuItemViewButtons_Click);
+            // 
+            // menuItemViewQueue
+            // 
+            this.menuItemViewQueue.CheckOnClick = true;
+            this.menuItemViewQueue.Name = "menuItemViewQueue";
+            this.menuItemViewQueue.Size = new System.Drawing.Size(359, 44);
+            this.menuItemViewQueue.Text = "&Queued Actions";
+            this.menuItemViewQueue.Click += new System.EventHandler(this.MenuItemViewQueue_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -219,7 +230,7 @@
             this.menuItemHelpAbout.Text = "&About Glue";
             this.menuItemHelpAbout.Click += new System.EventHandler(this.MenuItemHelpAbout_Click);
             // 
-            // Main
+            // ViewMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -233,7 +244,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStripMain;
             this.Margin = new System.Windows.Forms.Padding(4);
-            this.Name = "Main";
+            this.Name = "ViewMain";
             this.Text = "Glue";
             this.menuStripMain.ResumeLayout(false);
             this.menuStripMain.PerformLayout();
@@ -261,6 +272,7 @@
         private System.Windows.Forms.ToolStripMenuItem remapKeysToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem menuItemViewButtons;
+        private System.Windows.Forms.ToolStripMenuItem menuItemViewQueue;
     }
 }
 

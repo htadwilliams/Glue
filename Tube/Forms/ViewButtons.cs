@@ -12,20 +12,15 @@ namespace Glue.Forms
 
         public ViewButtons()
         {
-
             InitializeComponent();
-
             labelHeadingFormat = labelHeading.Text;
-
             SetHeadingText(0);
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             e.Cancel = true;
-
             Hide();
-
             base.OnFormClosing(e);
         }
 

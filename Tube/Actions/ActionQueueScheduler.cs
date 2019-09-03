@@ -1,18 +1,26 @@
-﻿using System.Threading;
-using Glue.Actions;
+﻿using System.Linq;
+using System.Threading;
 using Glue.Native;
+using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
-namespace Glue
+namespace Glue.Actions
 {
+    public delegate void OnQueueChange(ReadOnlyCollection<Action> queue);
+
     public interface IActionScheduler
     {
         void Schedule(Action action);
 
         void Cancel(string name);
+
+        // event OnQueueChange;
     }
 
     class ActionQueueScheduler : IActionScheduler
     {
+        public event OnQueueChange QueueChangeEvent;
+
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         // Using https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp copied directly into the project 
@@ -41,13 +49,26 @@ namespace Glue
         {
             actions.Enqueue(action);
 
+            NotifySubscribers();
+
             // wake up the thread
             eventWaitNextAction.Set();
+        }
+
+        private void NotifySubscribers()
+        {
+            if (null != this.QueueChangeEvent)
+            {
+                List<Action> actions = this.actions.GetActions().ToList<Action>();
+                actions.Sort();
+                QueueChangeEvent(actions.AsReadOnly());
+            }
         }
 
         public void Cancel(string name)
         {
             actions.Cancel(name);
+            NotifySubscribers();
         }
 
        private void Threadproc()
@@ -67,6 +88,7 @@ namespace Glue
                     // TODO Asynchronous action support: Submit action.Play to worker thread pool
                     action.Play();
                     actions.Dequeue();
+                    NotifySubscribers();
                 }
 
                 // Wait until next event is ready to fire 
