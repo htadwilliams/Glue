@@ -241,7 +241,7 @@
             this.toolStripMousePos.Name = "toolStripMousePos";
             this.toolStripMousePos.Size = new System.Drawing.Size(1190, 32);
             this.toolStripMousePos.Spring = true;
-            this.toolStripMousePos.Text = "ERROR";
+            this.toolStripMousePos.Text = "No mouse movement detected";
             this.toolStripMousePos.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // toolStripMousePosLastClick
