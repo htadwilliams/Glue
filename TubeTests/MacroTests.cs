@@ -45,6 +45,10 @@ namespace Tests
 
         public class TestScheduler : IActionScheduler
         {
+            public TestScheduler()
+            {
+            }
+
             public List<Action> ScheduledList { get; set; } = new List<Action>();
 
             public void Cancel(string name)
@@ -55,6 +59,16 @@ namespace Tests
             public void Schedule(Action action)
             {
                 ScheduledList.Add(action);
+            }
+
+            public void SubscribeQueueChange(OnQueueChange changeHandler)
+            {
+                throw new System.NotImplementedException();
+            }
+
+            public void UnsubscribeScheduleChange(OnQueueChange changeHandler)
+            {
+                throw new System.NotImplementedException();
             }
         }
 

@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Forms;
-using WindowsInput;
 using WindowsInput.Native;
 
 namespace Glue.Forms
@@ -24,6 +23,7 @@ namespace Glue.Forms
         private bool normalizeMouseCoords;
         private string baseCaptionText = "";
         private ViewButtons viewButtons = null;
+        private ViewQueue viewQueue = null;
         private readonly ApplicationContext context;
 
         public ViewMain(ApplicationContext context)
@@ -48,20 +48,21 @@ namespace Glue.Forms
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            // Close application if either control key is held, otherwise hide 
-            // window and remain on system notification tray
-            if (!Keyboard.IsKeyDown(Keys.LControlKey) && !Keyboard.IsKeyDown(Keys.RControlKey))
+            // Really close application if either control key is held
+            if (Keyboard.IsKeyDown(Keys.LControlKey) || Keyboard.IsKeyDown(Keys.RControlKey))
+            {
+                base.OnFormClosing(e);
+            }
+            // Don't actually close the form - app is still on system tray
+            else
             {
                 e.Cancel = true;
 
                 Hide();
-                ShowViewButtons(false);
+                this.viewButtons = ShowView(this.viewButtons, false);
+                this.viewQueue = ShowView(this.viewQueue, false);
+
                 base.OnFormClosing(e);
-            }
-            
-            else
-            {
-                context.ExitThread();
             }
         }
 
@@ -82,7 +83,10 @@ namespace Glue.Forms
         protected override void OnShown(EventArgs e)
         {
             this.menuItemViewButtons.Checked = Properties.Settings.Default.ViewButtons;
-            ShowViewButtons(Properties.Settings.Default.ViewButtons);
+            this.viewButtons = ShowView(this.viewButtons, Properties.Settings.Default.ViewButtons);
+
+            this.menuItemViewQueue.Checked = Properties.Settings.Default.ViewQueue;
+            this.viewQueue = ShowView(this.viewQueue, Properties.Settings.Default.ViewQueue);
         }
 
         private void ButtonClear_Click(object sender, EventArgs e)
@@ -122,36 +126,38 @@ namespace Glue.Forms
 
         private void MenuItemHelpAbout_Click(object sender, EventArgs e)
         {
-            DialogHelpAbout helpAbout = new DialogHelpAbout();
-            helpAbout.ShowDialog();
+            new DialogHelpAbout().ShowDialog();
         }
 
-        public void ShowViewButtons(bool showView = true)
+        private T ShowView<T>(T view, bool showView = true) where T : Form, new()
         {
+            T shownView = view;
             if (showView)
             {
-                if (null == viewButtons || viewButtons.IsDisposed)
+                if (null == shownView || shownView.IsDisposed)
                 {
-                    // Register for close event only - not Hide()
-                    this.viewButtons = new ViewButtons();
+                    shownView = new T();
                 }
-
-                this.menuItemViewButtons.Checked = true;
-
-                if (!this.viewButtons.Visible)
-                { 
-                    this.viewButtons.Show(this);
+                if (!shownView.Visible)
+                {
+                    shownView.Show(this);
                 }
             }
-            else if (null != viewButtons && !viewButtons.IsDisposed)
+            else if (null != shownView && !shownView.IsDisposed)
             {
-                this.viewButtons.Hide();
+                shownView.Hide();
             }
+            return shownView;
         }
 
         protected override void OnActivated(EventArgs e)
         {
-            ShowViewButtons(Properties.Settings.Default.ViewButtons);
+            this.menuItemViewButtons.Checked = Properties.Settings.Default.ViewButtons;
+            this.viewButtons = ShowView(this.viewButtons, Properties.Settings.Default.ViewButtons);
+
+            this.menuItemViewQueue.Checked = Properties.Settings.Default.ViewQueue;
+            this.viewQueue = ShowView(this.viewQueue, Properties.Settings.Default.ViewQueue);
+
             WindowHandleUtils.HideCaret(this.textBoxInputStream.Handle);
 
             base.OnActivated(e);
@@ -159,8 +165,18 @@ namespace Glue.Forms
 
         private void MenuItemViewButtons_Click(object sender, EventArgs e)
         {
-            ShowViewButtons(this.menuItemViewButtons.Checked);
-            Properties.Settings.Default.ViewButtons = this.menuItemViewButtons.Checked;
+            Properties.Settings.Default.ViewButtons = !Properties.Settings.Default.ViewButtons;
+
+            this.viewButtons = ShowView(this.viewButtons, Properties.Settings.Default.ViewButtons);
+            this.menuItemViewButtons.Checked = Properties.Settings.Default.ViewButtons;
+        }
+
+        private void MenuItemViewQueue_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.ViewQueue = !Properties.Settings.Default.ViewQueue;
+
+            this.viewQueue = ShowView(this.viewQueue, Properties.Settings.Default.ViewQueue);
+            this.menuItemViewQueue.Checked = Properties.Settings.Default.ViewQueue;
         }
 
         internal void UpdateKeys(List<VirtualKeyCode> keys)

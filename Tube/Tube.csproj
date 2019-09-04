@@ -83,7 +83,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ActionQueue.cs" />
+    <Compile Include="Actions\ActionQueue.cs" />
     <Compile Include="Actions\JsonContract\ActionContractResolver.cs" />
     <Compile Include="Actions\JsonContract\ActionConverter.cs" />
     <Compile Include="Forms\DialogEditMacros.cs">
@@ -123,6 +123,12 @@
     <Compile Include="Forms\ViewButtons.Designer.cs">
       <DependentUpon>ViewButtons.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\ViewQueue.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ViewQueue.Designer.cs">
+      <DependentUpon>ViewQueue.cs</DependentUpon>
+    </Compile>
     <Compile Include="JsonWrapper.cs" />
     <Compile Include="Native\WindowHandleUtils.cs" />
     <Compile Include="Native\TimeProvider.cs" />
@@ -147,7 +153,7 @@
     <Compile Include="WindowsInput\MouseButton.cs" />
     <Compile Include="MouseHandler.cs" />
     <Compile Include="Native\MouseInterceptor.cs" />
-    <Compile Include="ActionQueueScheduler.cs" />
+    <Compile Include="Actions\ActionQueueScheduler.cs" />
     <Compile Include="WindowsInput\Native\HARDWAREINPUT.cs" />
     <Compile Include="WindowsInput\Native\INPUT.cs" />
     <Compile Include="WindowsInput\Native\InputType.cs" />
@@ -186,6 +192,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ViewButtons.resx">
       <DependentUpon>ViewButtons.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ViewQueue.resx">
+      <DependentUpon>ViewQueue.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -238,6 +247,6 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(ProjectDir)\Log.$(ConfigurationName).config $(TargetDir)\Log.config
-copy $(ProjectDir)\*.wav $(TargetDir)</PostBuildEvent>
+copy $(ProjectDir)\sounds\*.wav $(TargetDir)</PostBuildEvent>
   </PropertyGroup>
 </Project>

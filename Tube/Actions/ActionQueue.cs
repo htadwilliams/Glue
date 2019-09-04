@@ -1,8 +1,8 @@
 ﻿using Glue.Native;
-using Glue.Actions;
 using Priority_Queue;
+using System.Collections.Generic;
 
-namespace Glue
+namespace Glue.Actions
 {
     class ActionQueue
     {
@@ -53,6 +53,11 @@ namespace Glue
 
             // to wait indefinitely
             return -1;
+        }
+
+        internal IReadOnlyCollection<Action> GetActions()
+        {
+            return new List<Action>(actions);
         }
 
         internal void Dequeue()

@@ -27,7 +27,7 @@ namespace Glue
         public static Dictionary<string, Macro> Macros { get => s_macros; set => s_macros = value; }
         public static ViewMain MainForm { get => s_mainForm; set => s_mainForm = value; }
         public static string FileName { get => s_fileName; set => s_fileName = value; }
-        public static IActionScheduler Scheduler { get => s_actionScheduler; }
+        public static ActionQueueScheduler Scheduler { get => s_actionScheduler; }
 
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -451,17 +451,110 @@ namespace Glue
             return output;
         }
 
+        public static void OnKeyDown(int vkCode)
+        {
+            if (!s_keysDown.Contains((VirtualKeyCode) vkCode))
+            {
+                s_keysDown.Add((VirtualKeyCode)vkCode);
+                MainForm.UpdateKeys(s_keysDown);
+            }
+
+            if (MainForm.LogInput)
+            {
+                LOGGER.Debug("+" + (VirtualKeyCode)vkCode);
+
+                string output;
+                if (MainForm.RawKeyNames)
+                {
+                    output = "+" + (VirtualKeyCode)vkCode + " ";
+                }
+                else
+                {
+                    output = FormatKeyString(vkCode);
+                }
+
+                MainForm.AppendText(output);
+            }
+        }
+
+        public static void OnKeyUp(int vkCode)
+        {
+            while (s_keysDown.Contains((VirtualKeyCode) vkCode))
+            {
+                s_keysDown.Remove((VirtualKeyCode) vkCode);
+            }
+            MainForm.UpdateKeys(s_keysDown);
+
+            if (MainForm.LogInput)
+            {
+                LOGGER.Debug("-" + (VirtualKeyCode)vkCode);
+
+                if (MainForm.RawKeyNames)
+                {
+                    MainForm.AppendText("-" + (VirtualKeyCode)vkCode + " ");
+                }
+            }
+        }
+
+        private static string FormatKeyString(int vkCode)
+        {
+            string output;
+            if (keyMap.TryGetValue((Keys)vkCode, out string text))
+            {
+                output = text;
+            }
+            else
+            {
+                output = ((Keys)vkCode).ToString();
+
+                // Only printed characters are a single character long 
+                if (output.Length == 1)
+                {
+                    // Could be simplified but this is super clear to read
+                    if (Keyboard.IsKeyToggled(Keys.CapsLock))
+                    {
+                        if (Keyboard.IsKeyDown(Keys.LShiftKey) || Keyboard.IsKeyDown(Keys.RShiftKey))
+                        {
+                            output = output.ToLower();
+                        }
+                    }
+                    else
+                    {
+                        if (!Keyboard.IsKeyDown(Keys.LShiftKey) && !Keyboard.IsKeyDown(Keys.RShiftKey))
+                        {
+                            output = output.ToLower();
+                        }
+                    }
+                }
+            }
+
+            // Pad Key names (e.g. LMenu, not single typed characters like "A")
+            if ((output.Length > 1) && (output != "\r\n"))
+            {
+                if (!s_lastLoggedOutputWasSpace )
+                {
+                    output = output.Insert(0, " ");
+                }
+                output += " ";
+            }
+
+            // Set flag for next time this method is called
+            s_lastLoggedOutputWasSpace 
+                = (output.EndsWith(" ") ||
+                   output.EndsWith("\r\n"));
+
+            return output;
+        }
         private static void CreateDefaultContent()
         {
             //
             // Create macro with several actions bound to CTRL-Z
             //
             string macroName = "delayed-action";
-            Macro macro = new Macro(macroName, 4000) 
+            Macro macro = new Macro(macroName, 8000) 
+                .AddAction(new ActionSound(10, "ahha.wav"))
                 .AddAction(new ActionKey(10,    VirtualKeyCode.RETURN,  MoveType.PRESS))
                 .AddAction(new ActionKey(10,    VirtualKeyCode.RETURN,  MoveType.RELEASE))
-                .AddAction(new ActionKey(30,    VirtualKeyCode.VK_Q,    MoveType.PRESS))
-                .AddAction(new ActionKey(10,    VirtualKeyCode.VK_Q,    MoveType.RELEASE))
                 ;
             Macros.Add(macroName, macro);
             // Setup trigger
@@ -491,12 +584,12 @@ namespace Glue
             //
             macroName = "sound-servomotor";
             macro = new Macro(macroName, 0);
-            macro.AddAction(new ActionSound(0, "sound_servomotor.wav"));
+            macro.AddAction(new ActionSound(100, "sound_servomotor.wav"));
             Macros.Add(macroName, macro);
 
             macroName = "sound-ahha";
             macro = new Macro(macroName, 0);
-            macro.AddAction(new ActionSound(0, "ahha.wav"));
+            macro.AddAction(new ActionSound(100, "ahha.wav"));
             Macros.Add(macroName, macro);
 
             trigger = new Trigger(Keys.S, new List<string> { "sound-servomotor", "sound-ahha" });
@@ -508,21 +601,42 @@ namespace Glue
             //
 
             // TODO Repeated sound should play when trigger fires (currently only plays after first delay interval)
-            macroName = "repeat-sound";
-            macro = new Macro(macroName, 0);
-            macro.AddAction(new ActionRepeat(3000, macroName, "sound-servomotor" ));
+            macroName = "sound-dice";
+            macro = new Macro(macroName, 100);
+            macro.AddAction(new ActionSound(0, "dice_roll.wav"));
             Macros.Add(macroName, macro);
 
-            trigger = new Trigger(Keys.Oemcomma, "repeat-sound");
+            macroName = "sound-tock";
+            macro = new Macro(macroName, 100);
+            macro.AddAction(new ActionSound(0, "sound_click_tock.wav"));
+            Macros.Add(macroName, macro);
+
+            macroName = "repeat-sound-dice";
+            macro = new Macro(macroName, 100);
+            macro.AddAction(new ActionRepeat(5000, macroName, "sound-dice" ));
+            Macros.Add(macroName, macro);
+
+            trigger = new Trigger(Keys.Oemcomma, macroName);
+            trigger.AddModifier(Keys.LMenu);
+            Triggers.Add(trigger.TriggerKey, trigger);
+
+            macroName = "repeat-sound-tock";
+            macro = new Macro(macroName, 100);
+            macro.AddAction(new ActionRepeat(5000, macroName, "sound-tock" ));
+            Macros.Add(macroName, macro);
+
+            trigger = new Trigger(Keys.OemPeriod, macroName);
             trigger.AddModifier(Keys.LMenu);
             Triggers.Add(trigger.TriggerKey, trigger);
 
             macroName = "repeat-sound-cancel";
-            macro = new Macro(macroName, 0);
-            macro.AddAction(new ActionCancel("repeat-sound"));
+            macro = new Macro(macroName, 100);
+            macro
+                .AddAction(new ActionCancel("repeat-sound-tock"))
+                .AddAction(new ActionCancel("repeat-sound-dice"));
             Macros.Add(macroName, macro);
 
-            trigger = new Trigger(Keys.OemPeriod, "repeat-sound-cancel");
+            trigger = new Trigger(Keys.OemQuestion, "repeat-sound-cancel");
             trigger.AddModifier(Keys.LMenu);
             Triggers.Add(trigger.TriggerKey, trigger);
 

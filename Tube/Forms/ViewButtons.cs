@@ -12,19 +12,18 @@ namespace Glue.Forms
 
         public ViewButtons()
         {
-
             InitializeComponent();
-
             labelHeadingFormat = labelHeading.Text;
-
             SetHeadingText(0);
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            e.Cancel = true;
-
-            Hide();
+            // Still want to re-open when parent is activated unless user closes 
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                Properties.Settings.Default.ViewButtons = false;
+            }
 
             base.OnFormClosing(e);
         }
