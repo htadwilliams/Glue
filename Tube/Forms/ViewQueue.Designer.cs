@@ -31,8 +31,8 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ViewQueue));
             this.labelHeading = new System.Windows.Forms.Label();
             this.listViewActions = new System.Windows.Forms.ListView();
-            this.columnHeaderAction = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeaderTimeScheduled = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeaderAction = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
             // labelHeading
@@ -60,28 +60,28 @@
             this.listViewActions.MultiSelect = false;
             this.listViewActions.Name = "listViewActions";
             this.listViewActions.ShowGroups = false;
-            this.listViewActions.Size = new System.Drawing.Size(1214, 991);
+            this.listViewActions.Size = new System.Drawing.Size(482, 957);
             this.listViewActions.TabIndex = 6;
             this.listViewActions.UseCompatibleStateImageBehavior = false;
             this.listViewActions.View = System.Windows.Forms.View.Details;
             this.listViewActions.VirtualMode = true;
             this.listViewActions.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.ListViewActions_RetrieveVirtualItem);
             // 
+            // columnHeaderTimeScheduled
+            // 
+            this.columnHeaderTimeScheduled.Text = "Time";
+            this.columnHeaderTimeScheduled.Width = 64;
+            // 
             // columnHeaderAction
             // 
             this.columnHeaderAction.Text = "Action";
-            this.columnHeaderAction.Width = 400;
-            // 
-            // columnHeaderTimeScheduled
-            // 
-            this.columnHeaderTimeScheduled.Text = "Time Scheduled";
-            this.columnHeaderTimeScheduled.Width = 206;
+            this.columnHeaderAction.Width = 164;
             // 
             // ViewQueue
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1238, 1068);
+            this.ClientSize = new System.Drawing.Size(506, 1068);
             this.Controls.Add(this.listViewActions);
             this.Controls.Add(this.labelHeading);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

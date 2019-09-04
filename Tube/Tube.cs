@@ -451,39 +451,6 @@ namespace Glue
             return output;
         }
 
-        public static bool CheckAndFireTriggers(int vkCode, MoveType movement)
-        {
-            bool eatInput = false;
-
-            // Triggers fire macros 
-            if (Tube.Triggers != null && 
-                Tube.Triggers.TryGetValue((Keys) vkCode, out Trigger trigger))
-            {
-                switch (trigger.Type)
-                {
-                    case TriggerType.Both:
-                        eatInput = trigger.Fire();
-                    break;
-
-                    case TriggerType.Down:
-                    if (MoveType.PRESS == movement)
-                    {
-                        eatInput = trigger.Fire();
-                    }
-                    break;
-
-                    case TriggerType.Up:
-                    if (MoveType.RELEASE == movement)
-                    {
-                        eatInput = trigger.Fire();
-                    }
-                    break;
-                }
-            }
-
-            return eatInput;
-        }
-
         public static void OnKeyDown(int vkCode)
         {
             if (!s_keysDown.Contains((VirtualKeyCode) vkCode))
@@ -564,7 +531,7 @@ namespace Glue
             // Pad Key names (e.g. LMenu, not single typed characters like "A")
             if ((output.Length > 1) && (output != "\r\n"))
             {
-                if (!s_lastInsertWasSpace)
+                if (!s_lastLoggedOutputWasSpace )
                 {
                     output = output.Insert(0, " ");
                 }
@@ -572,7 +539,7 @@ namespace Glue
             }
 
             // Set flag for next time this method is called
-            s_lastInsertWasSpace
+            s_lastLoggedOutputWasSpace 
                 = (output.EndsWith(" ") ||
                    output.EndsWith("\r\n"));
 
@@ -584,8 +551,8 @@ namespace Glue
             // Create macro with several actions bound to CTRL-Z
             //
             string macroName = "delayed-action";
-            Macro macro = new Macro(macroName, 4000) 
-                .AddAction(new ActionSound(10, "sound_tab_retreat.wav"))
+            Macro macro = new Macro(macroName, 8000) 
+                .AddAction(new ActionSound(10, "ahha.wav"))
                 .AddAction(new ActionKey(10,    VirtualKeyCode.RETURN,  MoveType.PRESS))
                 .AddAction(new ActionKey(10,    VirtualKeyCode.RETURN,  MoveType.RELEASE))
                 ;
@@ -617,12 +584,12 @@ namespace Glue
             //
             macroName = "sound-servomotor";
             macro = new Macro(macroName, 0);
-            macro.AddAction(new ActionSound(0, "sound_servomotor.wav"));
+            macro.AddAction(new ActionSound(100, "sound_servomotor.wav"));
             Macros.Add(macroName, macro);
 
             macroName = "sound-ahha";
             macro = new Macro(macroName, 0);
-            macro.AddAction(new ActionSound(0, "ahha.wav"));
+            macro.AddAction(new ActionSound(100, "ahha.wav"));
             Macros.Add(macroName, macro);
 
             trigger = new Trigger(Keys.S, new List<string> { "sound-servomotor", "sound-ahha" });
@@ -634,26 +601,42 @@ namespace Glue
             //
 
             // TODO Repeated sound should play when trigger fires (currently only plays after first delay interval)
+            macroName = "sound-dice";
+            macro = new Macro(macroName, 100);
+            macro.AddAction(new ActionSound(0, "dice_roll.wav"));
+            Macros.Add(macroName, macro);
+
             macroName = "sound-tock";
-            macro = new Macro(macroName, 0);
+            macro = new Macro(macroName, 100);
             macro.AddAction(new ActionSound(0, "sound_click_tock.wav"));
             Macros.Add(macroName, macro);
 
-            macroName = "repeat-sound";
-            macro = new Macro(macroName, 0);
-            macro.AddAction(new ActionRepeat(3000, macroName, "sound-tock" ));
+            macroName = "repeat-sound-dice";
+            macro = new Macro(macroName, 100);
+            macro.AddAction(new ActionRepeat(5000, macroName, "sound-dice" ));
             Macros.Add(macroName, macro);
 
-            trigger = new Trigger(Keys.Oemcomma, "repeat-sound");
+            trigger = new Trigger(Keys.Oemcomma, macroName);
+            trigger.AddModifier(Keys.LMenu);
+            Triggers.Add(trigger.TriggerKey, trigger);
+
+            macroName = "repeat-sound-tock";
+            macro = new Macro(macroName, 100);
+            macro.AddAction(new ActionRepeat(5000, macroName, "sound-tock" ));
+            Macros.Add(macroName, macro);
+
+            trigger = new Trigger(Keys.OemPeriod, macroName);
             trigger.AddModifier(Keys.LMenu);
             Triggers.Add(trigger.TriggerKey, trigger);
 
             macroName = "repeat-sound-cancel";
-            macro = new Macro(macroName, 0);
-            macro.AddAction(new ActionCancel("repeat-sound"));
+            macro = new Macro(macroName, 100);
+            macro
+                .AddAction(new ActionCancel("repeat-sound-tock"))
+                .AddAction(new ActionCancel("repeat-sound-dice"));
             Macros.Add(macroName, macro);
 
-            trigger = new Trigger(Keys.OemPeriod, "repeat-sound-cancel");
+            trigger = new Trigger(Keys.OemQuestion, "repeat-sound-cancel");
             trigger.AddModifier(Keys.LMenu);
             Triggers.Add(trigger.TriggerKey, trigger);
 

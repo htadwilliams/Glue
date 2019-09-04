@@ -320,6 +320,7 @@
         private System.Windows.Forms.ToolStripMenuItem remapKeysToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem menuItemViewButtons;
+        private System.Windows.Forms.ToolStripMenuItem menuItemViewQueue;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripMousePos;
         private System.Windows.Forms.ToolStripStatusLabel toolStripMousePosLastClick;

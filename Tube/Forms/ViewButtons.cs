@@ -19,8 +19,12 @@ namespace Glue.Forms
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            e.Cancel = true;
-            Hide();
+            // Still want to re-open when parent is activated unless user closes 
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                Properties.Settings.Default.ViewButtons = false;
+            }
+
             base.OnFormClosing(e);
         }
 

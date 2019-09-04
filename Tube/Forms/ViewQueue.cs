@@ -26,8 +26,6 @@ namespace Glue.Forms
             InitializeComponent();
             labelHeadingFormat = labelHeading.Text;
 
-            Tube.Scheduler.QueueChangeEvent += OnQueueChange;
-
             SetHeadingText(0);
             this.listViewActions.VirtualListSize = 0;
         }
@@ -39,13 +37,22 @@ namespace Glue.Forms
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            e.Cancel = true;
-            Hide();
+            // Still want to re-open when parent is activated unless user closes 
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                Properties.Settings.Default.ViewQueue = false;
+            }
+
+            Tube.Scheduler.QueueChangeEvent -= OnQueueChange;
+            // e.Cancel = true;
+            // Hide();
             base.OnFormClosing(e);
         }
 
         protected override void OnActivated(EventArgs e)
         {
+            Tube.Scheduler.QueueChangeEvent += OnQueueChange;
+
             base.OnActivated(e);
         }
 
@@ -67,21 +74,21 @@ namespace Glue.Forms
 
         private void ListViewActions_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
-            ListViewItem listViewItem = new ListViewItem();
-            ListViewSubItem listViewItemTime = new ListViewSubItem();
+            ListViewItem listViewItemScheduled = new ListViewItem();
+            ListViewSubItem listViewItemAction = new ListViewSubItem();
 
             if (null != this.actions && this.actions.Count > e.ItemIndex)
             {
                 Action action = actions[e.ItemIndex];
 
-                listViewItem.Text = action.ToString();
-
                 long scheduledTime = action.ScheduledTick - TimeProvider.GetTickCount();
-                listViewItemTime.Text = FormatDuration.Format(scheduledTime);
+                listViewItemScheduled.Text = FormatDuration.Format(scheduledTime);
+
+                listViewItemAction.Text = action.ToString();
             }
 
-            listViewItem.SubItems.Add(listViewItemTime);
-            e.Item = listViewItem;
+            listViewItemScheduled.SubItems.Add(listViewItemAction);
+            e.Item = listViewItemScheduled;
         }
     }
 }

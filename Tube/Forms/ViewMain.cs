@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Forms;
-using WindowsInput;
 using WindowsInput.Native;
 
 namespace Glue.Forms
@@ -49,20 +48,16 @@ namespace Glue.Forms
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            // Close application if either control key is held, otherwise hide 
-            // window and remain on system notification tray
-            //
-
+            // Really close application if either control key is held
             if (Keyboard.IsKeyDown(Keys.LControlKey) || Keyboard.IsKeyDown(Keys.RControlKey))
             {
-                context.ExitThread();
+                base.OnFormClosing(e);
             }
+            // Don't actually close the form - app is still on system tray
             else
             {
-                // Don't actually close the form - we're just hiding
                 e.Cancel = true;
 
-                // Hide self and floating views
                 Hide();
                 this.viewButtons = ShowView(this.viewButtons, false);
                 this.viewQueue = ShowView(this.viewQueue, false);
@@ -170,14 +165,18 @@ namespace Glue.Forms
 
         private void MenuItemViewButtons_Click(object sender, EventArgs e)
         {
-            this.viewButtons = ShowView(this.viewButtons, this.menuItemViewButtons.Checked);
-            Properties.Settings.Default.ViewButtons = this.menuItemViewButtons.Checked;
+            Properties.Settings.Default.ViewButtons = !Properties.Settings.Default.ViewButtons;
+
+            this.viewButtons = ShowView(this.viewButtons, Properties.Settings.Default.ViewButtons);
+            this.menuItemViewButtons.Checked = Properties.Settings.Default.ViewButtons;
         }
 
         private void MenuItemViewQueue_Click(object sender, EventArgs e)
         {
-            this.viewQueue = ShowView(this.viewQueue, this.menuItemViewQueue.Checked);
-            Properties.Settings.Default.ViewQueue = this.menuItemViewQueue.Checked;
+            Properties.Settings.Default.ViewQueue = !Properties.Settings.Default.ViewQueue;
+
+            this.viewQueue = ShowView(this.viewQueue, Properties.Settings.Default.ViewQueue);
+            this.menuItemViewQueue.Checked = Properties.Settings.Default.ViewQueue;
         }
 
         internal void UpdateKeys(List<VirtualKeyCode> keys)
