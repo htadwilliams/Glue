@@ -4,23 +4,32 @@ WARNING: This globally hooks keyboard/mouse input and logs to file if DEBUG mode
 
 Originally written in C++ and used to play EverQuest for over 10 years, this a rewrite in C# including low-level keyboard and mouse hooks (with lots of native windows API calls).
 
-# DEFAULT CONTENT
+Better than placing a stack of nickels on keys, or using an oscillating desk fan to hit a button repeatedly!
 
-The application by default attempts to read MACROS.GLUE from its working directory. The file name / path may be optionally specified as a command-line parameter.  If this file isn't found one will be created with example macros, triggers, and remapping entries.
+# Usage
 
-DEFAULT FILE MACROS AND TRIGGERS:
-* Ctrl-C (making sure input focus is not set to console window or application will exit) will type a string of characters immediately with short delay between presses and releases.
-* Ctrl-Z will immediately type an R followed by a Q and ENTER after a delay of 4 seconds. This is useful for demonstrating asynchronous scheduling of output events.
-* Ctrl-S plays a sound asynchronously. If the sound is already playing it will be restarted. 
-* Alt-Space toggles the space bar so it's held down with every other press. This won't have much effect in Windows apps such as notepad because the held key won't trigger Windows key repeats, but works in many apps and games.
+Glue.exe [macros.glue]
+
+If optionalally specified file does not exist, one will be created with examples of Glue's features.
+Default file name if not specified is "macros.glue".
+
+# EXAMPLE CONTENT
+
+The application by default attempts to read MACROS.GLUE from its working directory. The file name / path may be optionally specified as a command-line parameter. If this file isn't found one will be created with example macros, triggers, and remapping entries.
+
+EXAMPLE MACROS AND TRIGGERS:
+* Ctrl-C cancels all queued actions, loops, etc.
+* Ctrl-Z will play a sound after a delay.
+* Ctrl-S "ripple fire" example that alternates between playing two sounds. If the sound is already playing it will be restarted.
+* Ctrl-Space toggles the space bar so it's held with every other press. Doesn't cause windows key repeat messages while held down.
 * MBX1 / MBX2 (mouse side buttons) trigger a press of F10.
-* Alt-, begins repeating a sound every 3 seconds.
-* Alt-. cancels all repeating instances started with Alt-, (there may be more than one).
+* Alt-, Alt-. Alt-/ begin looping different sounds every N seconds.
+* Ctrl-, Ctrl-. Ctrl-/ cancel individual sound loops. 
 
-DEFAULT FILE REMAPS:
-* LEFT SHIFT types an A if input window process name contains "skies.exe" so it can be mapped in Sunless Skies (and easily change for other unity games where SHIFT can't be remapped).
-* WASD and typical rotation keys Q/E are remapped to ESDF W/R (R/F slide to left over Q/A to make room) for "fallout4.exe". Change to your .exe name to use. WASD is EVIL! 
-* Swap V and B if typing into notepad.exe.
+EXAMPLE KEY REMAPPING:
+* V and B are swapped if typing into notepad. Note that this is applied to any .exe with "notepad" in the name, so this includes things like Notepad++. Insert evil laugh here.
+* LEFT SHIFT types an A if input window process name contains "skies.exe" so it can be mapped in Sunless Skies (and easily change for other games where SHIFT can't be remapped).
+* WASD is EVIL! WASD and typical rotation keys Q/E are remapped to ESDF W/R (R/F slide to left over Q/A to make room) for "fallout4.exe". Change to your .exe name to use.
 
 # DEPENDENCIES
 
@@ -34,10 +43,45 @@ Other dependencies:
 * Priority queue implementation is courtesy of BlueRaja.admin@gmail.com (https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp). The application creates a thread that monitors a queue of scheduled macro action events to fire (See EventQueue class).
 * Windows Input simulator to wrap Windows API SendInput https://archive.codeplex.com/?p=inputsimulator and provide all the native constants needed. See https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-sendinput.
 
-# Feature / TODO list
+# Completed features
 
-* Add queue display window for fun and debugging (shows keyboard state, and representation of events queued for future work).
+Core macroing:
+
+* Macros may be triggered by multiple key and key chording combinations.
+* Macros may be looped or canceled.
+* Keys may be remapped, with optional filtering by process (running .exe) name.
+* Keys and buttons may be toggled - held until released.
+* Multiple macros may be "ripple fired" from a single trigger.
+* Mouse movement and clicking supports multiple coordinate modes (relative, absolute, and normalized 0-65,535).
+* Macro actions include:
+  - keyboard keys
+  - mouse buttons (clicking with or without movement)
+  - mouse movement (with or without clicking buttons)
+  - typing long strings
+  - playing sounds
+  - repeating other macros
+  - cancelling actions by name (or all actions)
+
+GUI:
+
+* Logging of keys and macro events (useful for creating new macros).
+* View -> Button States shows queued actions, updated as they are scheduled or canceled.
+* View -> Queued Actions displays set of currently pressed keys.
+* Closes to system tray for unobtrusive operation. See https://github.com/htadwilliams/TrayTemplate for re-usable code.
+* Status bar display of mouse coordinates and click logging, in native or normalized coordinates (useful for building resolution-independant mouse control macros).
+* Edit -> Macros partially implemented and can be used to view actions and macros.
+* Ctrl-Click on main form close box exits application instead of minimizing to system tray.
+
+# Feature TODO list
+
 * Game device button triggers, macro events, and button remapping.
+* Queue view should update every second if nothing else is happening.
 * Remote control - trigger events via network client (most likely REST interface).
+* Triggers and actions may be filtered by target process name the same way key remapping works.
+
+* GUI shows current set of keyboard remap entries.
+* GUI shows current set of triggers.
 * GUI for recording / editing macros.
 * GUI for remapping keys / buttons.
+* GUI allows binding of macros to triggers and selecting trigger keys.
+* GUI Add mouse button state to buttons view.
