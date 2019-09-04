@@ -22,7 +22,8 @@ namespace Glue
 {
     internal static class Tube
     {
-        internal static Dictionary<Keys, Trigger> Triggers { get => s_triggers; set => s_triggers = value; }
+         internal static TriggerMap Triggers { get => s_triggers; set => s_triggers = value; }
+
         internal static Dictionary<VirtualKeyCode, KeyboardRemapEntry> KeyMap { get => s_keyMap; set => s_keyMap = value; }
         public static Dictionary<string, Macro> Macros { get => s_macros; set => s_macros = value; }
         public static ViewMain MainForm { get => s_mainForm; set => s_mainForm = value; }
@@ -32,7 +33,8 @@ namespace Glue
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         // Core data structures
-        private static Dictionary<Keys, Trigger> s_triggers;
+        // TODO Consinstently use either Keys or VirtualKeyCode in all places!
+        private static TriggerMap s_triggers;
         private static Dictionary<VirtualKeyCode, KeyboardRemapEntry> s_keyMap;
 
         private static Dictionary<string, Macro> s_macros;
@@ -40,13 +42,20 @@ namespace Glue
         // For friendly display of keys in GUI
         private static readonly Dictionary<Keys, string> keyMap = new Dictionary<Keys, string>();
 
+        // TODO Move example content generation to its own class
         // used to generate example content 
         private const string FILENAME_DEFAULT               = "macros.glue";
         private const string PROCESS_NAME_NOTEPAD           = "notepad";      // also matches Notepad++
-        private const string PROCESS_NAME_WASD              = "fallout4.exe"; 
+        private const string PROCESS_NAME_WASD              = "fallout4.exe";
+
+        // example content tweakables
+        private const int TIME_REPEAT_SOUND_MS              = 5 * 1000;       // For several sound delay loops 
+        private const int TIME_DELAY_GLOBAL_MS              = 100;            // Delay fudge everywhere - can crank up for debugging
+        private const int TIME_DWELL_GLOBAL_MS              = 250;            // Pressed keys are held this long
+        private const int TIME_DELAY_ACTION                 = 8 * 1000;       // Bound to trigger for single delayed action
 
         private static ViewMain s_mainForm;
-        private static bool s_writeOnExit = false;      // Set if loading fails, or if GUI changes contents 
+        private static bool s_writeOnExit = false;                            // Set if example content created, or if GUI changes content
         private static string s_fileName = FILENAME_DEFAULT;
 
         private static List<VirtualKeyCode> s_keysDown = new List<VirtualKeyCode>();
@@ -246,7 +255,7 @@ namespace Glue
 
         private static void InitData()
         {
-            Triggers = new Dictionary<Keys, Trigger>();
+            Triggers = new TriggerMap();
             KeyMap = new Dictionary<VirtualKeyCode, KeyboardRemapEntry>();
             Macros = new Dictionary<string, Macro>();
         }
@@ -319,28 +328,32 @@ namespace Glue
 
             // Triggers fire macros 
             if (Tube.Triggers != null && 
-                Tube.Triggers.TryGetValue((Keys) vkCode, out Trigger trigger))
+                Tube.Triggers.TryGetValue((Keys) vkCode, out List<Trigger> triggers))
             {
-                switch (trigger.Type)
+                foreach (Trigger trigger in triggers)
                 {
-                    case TriggerType.Both:
-                        eatInput = trigger.Fire();
-                    break;
-
-                    case TriggerType.Down:
-                    if (MoveType.PRESS == movement)
+                    switch (trigger.Type)
                     {
-                        eatInput = trigger.Fire();
-                    }
-                    break;
+                        case TriggerType.Both:
+                            eatInput |= trigger.CheckAndFire();
+                        break;
 
-                    case TriggerType.Up:
-                    if (MoveType.RELEASE == movement)
-                    {
-                        eatInput = trigger.Fire();
+                        case TriggerType.Down:
+                        if (MoveType.PRESS == movement)
+                        {
+                            eatInput |= trigger.CheckAndFire();
+                        }
+                        break;
+
+                        case TriggerType.Up:
+                        if (MoveType.RELEASE == movement)
+                        {
+                            eatInput |= trigger.CheckAndFire();
+                        }
+                        break;
                     }
-                    break;
                 }
+
             }
 
             return eatInput;
@@ -547,26 +560,25 @@ namespace Glue
         }
         private static void CreateDefaultContent()
         {
+            string macroName;
             //
             // Create macro with several actions bound to CTRL-Z
             //
-            string macroName = "delayed-action";
-            Macro macro = new Macro(macroName, 8000) 
-                .AddAction(new ActionSound(10, "ahha.wav"))
-                .AddAction(new ActionKey(10,    VirtualKeyCode.RETURN,  MoveType.PRESS))
-                .AddAction(new ActionKey(10,    VirtualKeyCode.RETURN,  MoveType.RELEASE))
+            Macro macro = new Macro(macroName = "delayed-action", TIME_DELAY_ACTION) 
+                .AddAction(new ActionSound(TIME_DELAY_GLOBAL_MS,  "ahha.wav"))
+                .AddAction(new ActionKey(TIME_DELAY_GLOBAL_MS,    VirtualKeyCode.RETURN,  MoveType.PRESS))
+                .AddAction(new ActionKey(TIME_DWELL_GLOBAL_MS,    VirtualKeyCode.RETURN,  MoveType.RELEASE))
                 ;
             Macros.Add(macroName, macro);
             // Setup trigger
             Trigger trigger = new Trigger(Keys.Z, macroName);
             trigger.AddModifier(Keys.LControlKey);
-            Triggers.Add(trigger.TriggerKey, trigger);
+            Triggers.Add(trigger);
 
             //
             // Create and bind a typing macro (string of text) bound to CTRL-C
             // 
-            macroName = "typing-stuff";
-            macro = new Macro(macroName, 2000);
+            macro = new Macro(macroName = "typing-stuff", 2000);
             
             macro.AddAction(
                 new ActionTyping(
@@ -577,105 +589,93 @@ namespace Glue
             Macros.Add(macroName, macro);
             trigger = new Trigger(Keys.C, macroName);
             trigger.AddModifier(Keys.LControlKey);
-            Triggers.Add(trigger.TriggerKey, trigger);
+            trigger.AddModifier(Keys.LMenu);
+            Triggers.Add(trigger);
 
             //
-            // Create a trigger that alternates between macros that play sound events
+            // Create a trigger that alternates between macros - ripple fire example
             //
-            macroName = "sound-servomotor";
-            macro = new Macro(macroName, 0);
-            macro.AddAction(new ActionSound(100, "sound_servomotor.wav"));
+            macro = new Macro(macroName = "sound-servomotor", 0);
+            macro.AddAction(new ActionSound(TIME_DELAY_GLOBAL_MS, "sound_servomotor.wav"));
             Macros.Add(macroName, macro);
 
-            macroName = "sound-ahha";
-            macro = new Macro(macroName, 0);
-            macro.AddAction(new ActionSound(100, "ahha.wav"));
+            macro = new Macro(macroName = "sound-ahha", 0);
+            macro.AddAction(new ActionSound(TIME_DELAY_GLOBAL_MS, "ahha.wav"));
             Macros.Add(macroName, macro);
 
             trigger = new Trigger(Keys.S, new List<string> { "sound-servomotor", "sound-ahha" });
             trigger.AddModifier(Keys.LControlKey);
-            Triggers.Add(trigger.TriggerKey, trigger);
+            Triggers.Add(trigger);
 
             //
-            // Schedule repeating sound every N MS
+            // Drumkit!
+            // Schedule repeating sound every N MS 
             //
 
-            // TODO Repeated sound should play when trigger fires (currently only plays after first delay interval)
-            macroName = "sound-dice";
-            macro = new Macro(macroName, 100);
-            macro.AddAction(new ActionSound(0, "dice_roll.wav"));
-            Macros.Add(macroName, macro);
+            // TODO BUGBUG Repeated sound should play when trigger fires (currently only plays after first delay interval)
+            (string soundMacroName, string soundFile, string repeatMacroName, string stopMacroName, Keys triggerKey)[] macroTable =
+            {
+                ("sound-dice",  "dice_roll.wav",        "repeat-sound-dice",    "stop-sound-dice",  Keys.Oemcomma),
+                ("sound-tock",  "sound_click_tock.wav", "repeat-sound-tock",    "stop-sound-tock",  Keys.OemPeriod),
+                ("sound-estop", "elev_stop.wav",        "repeat-sound-estop",   "stop-sound-estop", Keys.OemQuestion),
+            };
 
-            macroName = "sound-tock";
-            macro = new Macro(macroName, 100);
-            macro.AddAction(new ActionSound(0, "sound_click_tock.wav"));
-            Macros.Add(macroName, macro);
+            foreach((string soundMacroName, string soundFile, string repeatMacroName, string stopMacroName, Keys triggerKey) in macroTable)
+            {
+                // Sound macro
+                macro = new Macro(macroName = soundMacroName, TIME_DELAY_GLOBAL_MS);
+                macro.AddAction(new ActionSound(0, soundFile));
+                Macros.Add(macroName, macro);
 
-            macroName = "repeat-sound-dice";
-            macro = new Macro(macroName, 100);
-            macro.AddAction(new ActionRepeat(5000, macroName, "sound-dice" ));
-            Macros.Add(macroName, macro);
+                // Repeater macro and trigger
+                macro = new Macro(macroName = repeatMacroName, TIME_DELAY_GLOBAL_MS);
+                macro.AddAction(new ActionRepeat(TIME_REPEAT_SOUND_MS, macroName, soundMacroName ));
+                Macros.Add(macroName, macro);
+                trigger = new Trigger(triggerKey, repeatMacroName);
+                trigger.AddModifier(Keys.LMenu);
+                Triggers.Add(trigger);
 
-            trigger = new Trigger(Keys.Oemcomma, macroName);
-            trigger.AddModifier(Keys.LMenu);
-            Triggers.Add(trigger.TriggerKey, trigger);
-
-            macroName = "repeat-sound-tock";
-            macro = new Macro(macroName, 100);
-            macro.AddAction(new ActionRepeat(5000, macroName, "sound-tock" ));
-            Macros.Add(macroName, macro);
-
-            trigger = new Trigger(Keys.OemPeriod, macroName);
-            trigger.AddModifier(Keys.LMenu);
-            Triggers.Add(trigger.TriggerKey, trigger);
-
-            macroName = "repeat-sound-cancel";
-            macro = new Macro(macroName, 100);
-            macro
-                .AddAction(new ActionCancel("repeat-sound-tock"))
-                .AddAction(new ActionCancel("repeat-sound-dice"));
-            Macros.Add(macroName, macro);
-
-            trigger = new Trigger(Keys.OemQuestion, "repeat-sound-cancel");
-            trigger.AddModifier(Keys.LMenu);
-            Triggers.Add(trigger.TriggerKey, trigger);
+                // Stopper macro and trigger
+                macro = new Macro(macroName = stopMacroName, TIME_DELAY_GLOBAL_MS);
+                macro.AddAction(new ActionCancel(repeatMacroName));
+                Macros.Add(macroName, macro);
+                trigger = new Trigger(triggerKey, macroName);
+                trigger.AddModifier(Keys.LControlKey);
+                Triggers.Add(trigger);
+            }
 
             //
             // Macro bound to mouse button X1 / X2
             //
-            macroName = "F10";
-            macro = new Macro(macroName, 0);
+            macro = new Macro(macroName = "F10", 0);
             macro.AddAction(new ActionKey(50, VirtualKeyCode.F10, MoveType.CLICK));
             Macros.Add(macroName, macro);
 
             // Same macro bound to two triggers            
             trigger = new Trigger(Keys.XButton1, macroName);
-            Triggers.Add(trigger.TriggerKey, trigger);
+            Triggers.Add(trigger);
             trigger = new Trigger(Keys.XButton2, macroName);
-            Triggers.Add(trigger.TriggerKey, trigger);
+            Triggers.Add(trigger);
 
             // 
             // Toggle - hold SPACE key every other time it is pressed 
             //
-            macroName = "toggle-down";
-            macro = new Macro(macroName, 0);
+            macro = new Macro(macroName = "toggle-down", TIME_DELAY_GLOBAL_MS);
             macro.AddAction(new ActionKey(0, VirtualKeyCode.SPACE, MoveType.PRESS));
             Macros.Add(macroName, macro);
 
-            macroName = "toggle-up";
-            macro = new Macro(macroName, 0);
+            macro = new Macro(macroName = "toggle-up", TIME_DELAY_GLOBAL_MS);
             macro.AddAction(new ActionKey(0, VirtualKeyCode.SPACE, MoveType.RELEASE));
             Macros.Add(macroName, macro);
 
             trigger = new Trigger(Keys.Space, new List<string> {"toggle-down", null, "toggle-up", null}, TriggerType.Both, true);
             trigger.AddModifier(Keys.LControlKey);
-            Triggers.Add(trigger.TriggerKey, trigger);
+            Triggers.Add(trigger);
 
             // 
             // Create mouse movement
             //
-            macroName = "mouse-nudge-left";
-            macro = new Macro(macroName, 20);
+            macro = new Macro(macroName = "mouse-nudge-left", TIME_DELAY_GLOBAL_MS);
             macro.AddAction(
                 new ActionMouse(
                     0, 
@@ -684,10 +684,9 @@ namespace Glue
             Macros.Add(macroName, macro);
             trigger = new Trigger(Keys.Left, macroName);
             trigger.AddModifier(Keys.LMenu);
-            Triggers.Add(trigger.TriggerKey, trigger);
+            Triggers.Add(trigger);
 
-            macroName = "mouse-center";
-            macro = new Macro(macroName, 20);
+            macro = new Macro(macroName = "mouse-center", TIME_DELAY_GLOBAL_MS);
             macro.AddAction(
                 new ActionMouse(
                     0, 
@@ -696,10 +695,9 @@ namespace Glue
             Macros.Add(macroName, macro);
             trigger = new Trigger(Keys.Home, macroName);
             trigger.AddModifier(Keys.LMenu);
-            Triggers.Add(trigger.TriggerKey, trigger);
+            Triggers.Add(trigger);
 
-            macroName = "mouse-origin";
-            macro = new Macro(macroName, 20);
+            macro = new Macro(macroName = "mouse-origin", TIME_DELAY_GLOBAL_MS);
             macro.AddAction(
                 new ActionMouse(
                     0, 
@@ -708,10 +706,9 @@ namespace Glue
             Macros.Add(macroName, macro);
             trigger = new Trigger(Keys.End, macroName);
             trigger.AddModifier(Keys.LMenu);
-            Triggers.Add(trigger.TriggerKey, trigger);
+            Triggers.Add(trigger);
 
-            macroName = "mouse-click-nomove";
-            macro = new Macro(macroName, 20);
+            macro = new Macro(macroName = "mouse-click-nomove", TIME_DELAY_GLOBAL_MS);
             macro.AddAction(
                 new ActionMouse(
                     0,
@@ -720,11 +717,23 @@ namespace Glue
             Macros.Add(macroName, macro);
             trigger = new Trigger(Keys.Delete, macroName);
             trigger.AddModifier(Keys.LMenu);
-            Triggers.Add(trigger.TriggerKey, trigger);
+            Triggers.Add(trigger);
 
-            // Sunless skies (and other Unity games) won't allow binding to shift key
+            macro = new Macro(macroName = "cancel-all", TIME_DELAY_GLOBAL_MS);
+            macro.AddAction(new ActionCancel("*"));
+            Macros.Add(macroName, macro);
+
+            // TODO Trigger mod keys should allow logical combinations e.g. (LControlKey | RControlKey) && C
+            trigger = new Trigger(Keys.C, macroName);
+            trigger.AddModifier(Keys.LControlKey);
+            Triggers.Add(trigger);
+            trigger = new Trigger(Keys.C, macroName);
+            trigger.AddModifier(Keys.RControlKey);
+            Triggers.Add(trigger);
+
+            // Sunless skies (and other games) won't allow binding to shift key
             // Mapping A to Shift allows binding game functions to that instead.
-            // AddRemap(new KeyRemap(VirtualKeyCode.LSHIFT, VirtualKeyCode.VK_A, "skies.exe"));
+            AddRemap(VirtualKeyCode.LSHIFT, VirtualKeyCode.VK_A, "skies.exe");
 
             // Evil evil swap for people typing into notepad!  Easy for quick functional test.
             AddRemap(VirtualKeyCode.VK_B, VirtualKeyCode.VK_V, PROCESS_NAME_NOTEPAD);

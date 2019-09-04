@@ -31,11 +31,18 @@ namespace Glue
         /// <param name="keyMap"></param>
         /// <param name="macros"></param>
         public JsonWrapper(
-            Dictionary<Keys, Trigger> triggers,
+            TriggerMap triggers,
             Dictionary<VirtualKeyCode, KeyboardRemapEntry> keyMap,
             Dictionary<string, Macro> macros)
         {
-            this.Triggers = new List<Trigger>(triggers.Values);
+            this.Triggers = new List<Trigger>();
+
+            // Flatten trigger map into easily serializable list
+            foreach (List<Trigger> triggerList in triggers.Values)
+            {
+                this.Triggers.AddRange(triggerList);
+            }
+
             this.RemapKeys = new List<KeyboardRemapEntry>(keyMap.Values);
             this.Macros = new List<Macro>(macros.Values);
         }
@@ -47,13 +54,13 @@ namespace Glue
         {
         }
 
-        public Dictionary<Keys, Trigger> GetTriggerMap()
+        public TriggerMap GetTriggerMap()
         {
-            Dictionary<Keys, Trigger> triggerMap = new Dictionary<Keys, Trigger>(Triggers.Count);
+            TriggerMap triggerMap = new TriggerMap(this.Triggers.Count);
 
             foreach (Trigger trigger in Triggers)
             {
-                triggerMap.Add(trigger.TriggerKey, trigger);
+                triggerMap.Add(trigger);
             }
 
             return triggerMap;

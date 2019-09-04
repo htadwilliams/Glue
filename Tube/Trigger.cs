@@ -119,7 +119,7 @@ namespace Glue
             return formattedList;
         }
 
-        internal bool Fire()
+        internal bool CheckAndFire()
         {
             if (!AreModKeysActive())
             {
