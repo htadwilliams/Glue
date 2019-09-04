@@ -10,7 +10,7 @@ Better than placing a stack of nickels on keys, or using an oscillating desk fan
 
 Glue.exe [macros.glue]
 
-If optionalally specified file does not exist, one will be created with examples of Glue's features.
+If optionally specified file does not exist, one will be created with examples of Glue's features.
 Default file name if not specified is "macros.glue".
 
 # EXAMPLE CONTENT
