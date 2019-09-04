@@ -73,11 +73,12 @@ namespace Glue.Actions
 
        private void Threadproc()
         {
-            LOGGER.Debug("Thread starting...");
+            LOGGER.Debug("Thread: [" + this.thread.Name + "] starting...");
 
             while (true)
             {
                 Action action;
+
                 while 
                     (
                         (actions.Count > 0) && 

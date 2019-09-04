@@ -1,8 +1,10 @@
-﻿using Glue.Native;
+﻿using Glue.Actions;
+using Glue.Native;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Forms;
+using WindowsInput;
 using WindowsInput.Native;
 
 namespace Glue.Forms
@@ -11,6 +13,7 @@ namespace Glue.Forms
     {
         public bool LogInput { get => logInput; set { logInput = value; checkBoxRawKeyNames.Enabled = value; } }
         public bool RawKeyNames { get => rawKeyNames; set => rawKeyNames = value; }
+        public bool NormalizeMouseCoords { get => normalizeMouseCoords; set => normalizeMouseCoords = value; }
 
         private string BaseCaptionText { get => this.baseCaptionText; set => this.baseCaptionText = value; }
 
@@ -18,6 +21,7 @@ namespace Glue.Forms
 
         private bool logInput = true;
         private bool rawKeyNames = false;
+        private bool normalizeMouseCoords;
         private string baseCaptionText = "";
         private ViewButtons viewButtons = null;
         private ViewQueue viewQueue = null;
@@ -31,9 +35,11 @@ namespace Glue.Forms
 
             this.logInput = Properties.Settings.Default.LogInput;
             this.rawKeyNames = Properties.Settings.Default.RawKeyNames;
+            this.normalizeMouseCoords = Properties.Settings.Default.NormalizeMouseCoords;
 
             this.checkBoxLogDisplay.DataBindings.Add("Checked", this, "logInput", true, DataSourceUpdateMode.OnPropertyChanged);
             this.checkBoxRawKeyNames.DataBindings.Add("Checked", this, "rawKeyNames", true, DataSourceUpdateMode.OnPropertyChanged);
+            this.checkBoxNormalizeMouseCoords.DataBindings.Add("Checked", this, "normalizeMouseCoords", true, DataSourceUpdateMode.OnPropertyChanged);
 
             BaseCaptionText = this.Text;
             SetCaption(Tube.FileName);
@@ -99,6 +105,7 @@ namespace Glue.Forms
             Properties.Settings.Default.LogInput = this.logInput;
             Properties.Settings.Default.RawKeyNames = this.RawKeyNames;
             Properties.Settings.Default.ViewButtons = this.menuItemViewButtons.Checked;
+            Properties.Settings.Default.NormalizeMouseCoords = this.NormalizeMouseCoords;
 
             LOGGER.Info("Saving settings (Properties.Settings.Default.Save())");
             Properties.Settings.Default.Save();
@@ -193,6 +200,35 @@ namespace Glue.Forms
 
         private void MenuItemEditRemaps_Click(object sender, EventArgs e)
         {
+        }
+
+        internal void LogMouseMove(int xPos, int yPos)
+        {
+            int xOut = xPos;
+            int yOut = yPos;
+            if (this.NormalizeMouseCoords)
+            {
+                xOut = ActionMouse.NormalizeX(xPos);
+                yOut = ActionMouse.NormalizeY(yPos);
+            }
+            this.toolStripMousePos.Text = String.Format("Mouse: ({0:n0}, {1:n0})", xOut, yOut);
+        }
+
+        internal void LogMouseClick(int xPos, int yPos)
+        {
+            int xOut = xPos;
+            int yOut = yPos;
+            if (this.NormalizeMouseCoords)
+            {
+                xOut = ActionMouse.NormalizeX(xPos);
+                yOut = ActionMouse.NormalizeY(yPos);
+            }
+
+            if (this.LogInput && this.RawKeyNames)
+            {
+                this.AppendText(String.Format("CLICK({0}, {1}) ", xOut, yOut));
+            }
+            this.toolStripMousePosLastClick.Text = String.Format("Last click: ({0:n0}, {1:n0})", xOut, yOut);
         }
     }
 }

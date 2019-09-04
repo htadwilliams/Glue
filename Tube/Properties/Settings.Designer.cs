@@ -62,6 +62,18 @@ namespace Glue.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool NormalizeMouseCoords {
+            get {
+                return ((bool)(this["NormalizeMouseCoords"]));
+            }
+            set {
+                this["NormalizeMouseCoords"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool ViewQueue {
             get {
                 return ((bool)(this["ViewQueue"]));

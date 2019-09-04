@@ -34,6 +34,7 @@ namespace Glue
         // Core data structures
         private static Dictionary<Keys, Trigger> s_triggers;
         private static Dictionary<VirtualKeyCode, KeyboardRemapEntry> s_keyMap;
+
         private static Dictionary<string, Macro> s_macros;
 
         // For friendly display of keys in GUI
@@ -49,7 +50,7 @@ namespace Glue
         private static string s_fileName = FILENAME_DEFAULT;
 
         private static List<VirtualKeyCode> s_keysDown = new List<VirtualKeyCode>();
-        private static bool s_lastInsertWasSpace = false;
+        private static bool s_lastLoggedOutputWasSpace = false;
         private static TrayApplicationContext s_context;
         private static ActionQueueScheduler s_actionScheduler = new ActionQueueScheduler();
 
@@ -256,54 +257,198 @@ namespace Glue
 
             LOGGER.Info("Loading file [" + fileName + "]");
 
-            JsonSerializer serializer = new JsonSerializer
+            if (File.Exists(fileName))
             {
-                NullValueHandling = NullValueHandling.Ignore
-            };
-
-            try
-            {
-                using (StreamReader sr = new StreamReader(fileName))
+                JsonSerializer serializer = new JsonSerializer
                 {
-                    using (JsonReader reader = new JsonTextReader(sr))
+                    DefaultValueHandling = DefaultValueHandling.Populate
+                };
+
+                try
+                {
+                    using (StreamReader sr = new StreamReader(fileName))
                     {
-                        reader.SupportMultipleContent = true;
+                        using (JsonReader reader = new JsonTextReader(sr))
+                        {
+                            reader.SupportMultipleContent = true;
 
-                        reader.Read();
+                            reader.Read();
 
-                        JsonWrapper jsonWrapper = serializer.Deserialize<JsonWrapper>(reader);
+                            JsonWrapper jsonWrapper = serializer.Deserialize<JsonWrapper>(reader);
 
-                        Macros = jsonWrapper.GetMacroMap();
-                        Triggers = jsonWrapper.GetTriggerMap();
-                        KeyMap = jsonWrapper.GetKeyboardMap();
+                            Macros = jsonWrapper.GetMacroMap();
+                            Triggers = jsonWrapper.GetTriggerMap();
+                            KeyMap = jsonWrapper.GetKeyboardMap();
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    // TODO User friendly error message
+                    MessageBox.Show(e.Message);
+                    LOGGER.Error("Failed to load file with exception: " + e);
+                    return;
+                }
+
+                if (null != Macros && Macros.Count != 0)
+                {
+                    LOGGER.Info(String.Format("    Loaded {0} macros", Macros.Count));
+                }
+                if (null != Triggers && Triggers.Count != 0)
+                {
+                    LOGGER.Info(String.Format("    Loaded {0} triggers", Triggers.Count));
+                }
+                if (null != KeyMap && KeyMap.Count != 0)
+                {
+                    LOGGER.Info(String.Format("    Loaded {0} remapped keys", KeyMap.Count));
+                }
+
+                FileName = fileName;
+            }
+            else
+            {
+                LOGGER.Info("File not found - creating example content");
+                CreateDefaultContent();
+                SaveFile(fileName);
+            }
+        }
+
+        public static bool CheckAndFireTriggers(int vkCode, MoveType movement)
+        {
+            bool eatInput = false;
+
+            // Triggers fire macros 
+            if (Tube.Triggers != null && 
+                Tube.Triggers.TryGetValue((Keys) vkCode, out Trigger trigger))
+            {
+                switch (trigger.Type)
+                {
+                    case TriggerType.Both:
+                        eatInput = trigger.Fire();
+                    break;
+
+                    case TriggerType.Down:
+                    if (MoveType.PRESS == movement)
+                    {
+                        eatInput = trigger.Fire();
+                    }
+                    break;
+
+                    case TriggerType.Up:
+                    if (MoveType.RELEASE == movement)
+                    {
+                        eatInput = trigger.Fire();
+                    }
+                    break;
+                }
+            }
+
+            return eatInput;
+        }
+
+        public static void LogKeyDown(int vkCode)
+        {
+            if (!s_keysDown.Contains((VirtualKeyCode) vkCode))
+            {
+                s_keysDown.Add((VirtualKeyCode)vkCode);
+                MainForm.UpdateKeys(s_keysDown);
+            }
+
+            if (MainForm.LogInput)
+            {
+                LOGGER.Debug("+" + (VirtualKeyCode)vkCode);
+
+                string output;
+                if (MainForm.RawKeyNames)
+                {
+                    output = "+" + (VirtualKeyCode)vkCode + " ";
+                }
+                else
+                {
+                    output = FormatKeyString(vkCode, s_lastLoggedOutputWasSpace);
+
+                    // Set flag for next time this method is called
+                    s_lastLoggedOutputWasSpace
+                        = (output.EndsWith(" ") ||
+                           output.EndsWith("\r\n"));
+                }
+
+                MainForm.AppendText(output);
+            }
+        }
+
+        public static void LogKeyUp(int vkCode)
+        {
+            while (s_keysDown.Contains((VirtualKeyCode) vkCode))
+            {
+                s_keysDown.Remove((VirtualKeyCode) vkCode);
+            }
+            MainForm.UpdateKeys(s_keysDown);
+
+            if (MainForm.LogInput)
+            {
+                LOGGER.Debug("-" + (VirtualKeyCode)vkCode);
+
+                if (MainForm.RawKeyNames)
+                {
+                    MainForm.AppendText("-" + (VirtualKeyCode)vkCode + " ");
+                }
+            }
+        }
+
+        internal static void LogMouseMove(int xPos, int yPos)
+        {
+            MainForm.LogMouseMove(xPos, yPos);
+        }
+
+        internal static void LogMouseClick(MouseButton button, int xPos, int yPos)
+        {
+            MainForm.LogMouseClick(xPos, yPos);
+        }
+
+        private static string FormatKeyString(int vkCode, bool padLeft)
+        {
+            string output;
+            if (keyMap.TryGetValue((Keys)vkCode, out string text))
+            {
+                output = text;
+            }
+            else
+            {
+                output = ((Keys)vkCode).ToString();
+
+                // Only printed characters are a single character long 
+                if (output.Length == 1)
+                {
+                    // Could be simplified but this is super clear to read
+                    if (Keyboard.IsKeyToggled(Keys.CapsLock))
+                    {
+                        if (Keyboard.IsKeyDown(Keys.LShiftKey) || Keyboard.IsKeyDown(Keys.RShiftKey))
+                        {
+                            output = output.ToLower();
+                        }
+                    }
+                    else
+                    {
+                        if (!Keyboard.IsKeyDown(Keys.LShiftKey) && !Keyboard.IsKeyDown(Keys.RShiftKey))
+                        {
+                            output = output.ToLower();
+                        }
                     }
                 }
             }
-            catch (Exception e)
-            {
-                LOGGER.Error("Failed to load file with exception: " + e);
 
-                CreateDefaultContent();
-                SaveFile(s_fileName);
-                return;
-            }
-
-            if (null != Macros && Macros.Count != 0)
+            // Pad Key names (e.g. LMenu, not single typed characters like "A")
+            if ((output.Length > 1) && (output != "\r\n"))
             {
-                LOGGER.Info(String.Format("    Loaded {0} macros", Macros.Count));
-            }
-            if (null != Triggers && Triggers.Count != 0)
-            {
-                LOGGER.Info(String.Format("    Loaded {0} triggers", Triggers.Count));
-            }
-            if (null != KeyMap && KeyMap.Count != 0)
-            {
-                LOGGER.Info(String.Format("    Loaded {0} remapped keys", KeyMap.Count));
+                if (!padLeft)
+                {
+                    output = output.Insert(0, " ");
+                }
+                output += " ";
             }
 
-            FileName = fileName;
-            s_writeOnExit = false;
-            return;
+            return output;
         }
 
         public static bool CheckAndFireTriggers(int vkCode, MoveType movement)
@@ -435,8 +580,6 @@ namespace Glue
         }
         private static void CreateDefaultContent()
         {
-            LOGGER.Info("File not found or load failed - creating example content");
-
             //
             // Create macro with several actions bound to CTRL-Z
             //

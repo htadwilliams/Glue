@@ -5,7 +5,6 @@ using Glue.Native;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using WindowsInput;
-using WindowsInput.Native;
 
 namespace Glue.Actions
 {
@@ -113,12 +112,12 @@ namespace Glue.Actions
         private readonly MouseButton button;
 
         [JsonProperty]
-        [DefaultValue(-1)]
-        private readonly int xMove = -1;
+        [DefaultValue(0)]
+        private readonly int xMove = 0;
         
         [JsonProperty]
-        [DefaultValue(-1)]
-        private readonly int yMove = -1;
+        [DefaultValue(0)]
+        private readonly int yMove = 0;
 
         [JsonProperty]
         [DefaultValue(-1)]
@@ -161,7 +160,7 @@ namespace Glue.Actions
 
         public override void Play()
         {
-            InputBuilder inputBuilder = new InputBuilder();
+            InputBuilder inputBuilder = new InputBuilder(); 
 
             CoordinateMode modeActual = this.mode;
             int xActual = this.xMove;

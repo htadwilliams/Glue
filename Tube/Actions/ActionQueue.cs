@@ -20,17 +20,27 @@ namespace Glue.Actions
 
         internal void Cancel(string name)
         {
-            short cancelCount = 0;
-            foreach (Action action in actions)
+            int cancelCount = 0;
+
+            // TODO Cancel by name should support regex or partial name matching
+            if (name.Equals("*"))
             {
-                if (null != action.Name && action.Name.Equals(name))
+                cancelCount = actions.Count;
+                actions.Clear();
+            }
+            else
+            {
+                foreach (Action action in actions)
                 {
-                    cancelCount++;
-                    actions.Remove(action);
+                    if (null != action.Name && action.Name.Equals(name))
+                    {
+                        cancelCount++;
+                        actions.Remove(action);
+                    }
                 }
             }
 
-            LOGGER.Info(System.String.Format("Canceled {0} instances of Action with name = [" + name + "]", cancelCount));
+            LOGGER.Info(System.String.Format("Canceled {0} Action(s) with name = [" + name + "]", cancelCount));
         }
 
         internal int GetMSUntilNextAction()
