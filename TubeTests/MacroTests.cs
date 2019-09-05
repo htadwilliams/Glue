@@ -89,7 +89,7 @@ namespace Tests
                 .AddAction(new ActionTest(100))
                 ;
 
-            macro.Play();
+            macro.ScheduleActions();
 
             Assert.AreEqual(2, scheduler.ScheduledList.Count);
             Assert.AreEqual(1100, scheduler.ScheduledList[0].ScheduledTick);
