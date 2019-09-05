@@ -43,7 +43,7 @@ namespace Glue
             return this;
         }
 
-        public void Play()
+        public void ScheduleActions()
         {
             long timeNow = Time.Now();
 
@@ -51,6 +51,8 @@ namespace Glue
             long timeScheduleFrom = timeNow + this.DelayTimeMS;
 
             // Schedule each action and add results to the output queue
+            // Scheduling an action may result in multiple actions to be queued
+            // One example is ActionTyping, but others include ActionKey and ActionMouse
             foreach (Action action in Actions)
             {
                 Action[] scheduledActions = action.Schedule(timeScheduleFrom);
