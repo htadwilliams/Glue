@@ -62,6 +62,7 @@
     <Compile Include="FormatDurationFormatTests.cs" />
     <Compile Include="FormatDurationParseTests.cs" />
     <Compile Include="EmptyTests.cs" />
+    <Compile Include="Prototypes\SurfaceFlipper.cs" />
     <Compile Include="Prototypes\JsonPrototype.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
