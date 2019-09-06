@@ -60,9 +60,6 @@ namespace Glue
 
                     case MouseMessages.WM_MOUSEMOVE:
                     default:
-                        // TODO Spaghetti control! Add pub / sub for mouse and keyboard handlers
-                        // This already exists for the hook interceptors, but the pattern should be
-                        // extended for app level handlers too.
                         Tube.LogMouseMove(hookStruct.pt.x, hookStruct.pt.y);
                     break;
 
