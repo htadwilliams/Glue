@@ -22,15 +22,17 @@ namespace Glue.Actions
 
         public override void Play()
         {
-            // play macro to be repeated
-            Tube.PlayMacro(macro);
-
-            // schedule another instance to be played later
+            // play macro that initiated the repeater
+            // it'll schedules another instance of ActionRepeater (this)
             Tube.PlayMacro(macroRepeater);
         }
 
         public override Action[] Schedule(long timeScheduleFrom)
         {
+            // play macro to be repeated 
+            Tube.PlayMacro(macro);
+
+            // schedule the repeat
             ActionRepeat scheduledCopy = new ActionRepeat(
                 this.DelayMS,
                 this.macroRepeater, 

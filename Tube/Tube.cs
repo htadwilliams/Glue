@@ -608,11 +608,9 @@ namespace Glue
             Triggers.Add(trigger);
 
             //
-            // Drumkit!
+            // Drum kit!
             // Schedule repeating sound every N MS 
             //
-
-            // TODO BUGBUG Repeated sound should play when trigger fires (currently only plays after first delay interval)
             (string soundMacroName, string soundFile, string repeatMacroName, string stopMacroName, Keys triggerKey)[] macroTable =
             {
                 ("sound-dice",  "dice_roll.wav",        "repeat-sound-dice",    "stop-sound-dice",  Keys.Oemcomma),
