@@ -159,7 +159,7 @@ namespace Glue
             if (Macros.TryGetValue(macroName, out Macro macro))
             {
                 LOGGER.Debug("Playing macro [" + macroName + "]");
-                macro.Play();
+                macro.ScheduleActions();
             }
             else
             {
