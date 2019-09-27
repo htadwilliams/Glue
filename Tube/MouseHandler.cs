@@ -68,7 +68,7 @@ namespace Glue
                 // Fire trigger the same way keyboard input does
                 if (Tube.CheckAndFireTriggers((int) keyCode, triggerMovement))
                 {
-                    // Eat keystroke if trigger tells us to do so
+                    // Eat mouse message if trigger tells us to do so
                     return new IntPtr(1);
                 }
             }
