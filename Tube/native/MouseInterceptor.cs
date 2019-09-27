@@ -11,7 +11,6 @@ namespace Glue.Native
         private static LowLevelMouseProc s_proc = HookCallback;
         private static LowLevelMouseProc s_handler = HookCallback;
         private static IntPtr s_hookID = IntPtr.Zero;
-        private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public static void Initialize(LowLevelMouseProc lowLevelMouseProc)
         {
