@@ -341,7 +341,7 @@ namespace Glue
                 }
                 else
                 {
-                    output = " " + FormatKeyString(vkCode, false);
+                    output = " " + FormatKeyString(vkCode);
                 }
 
                 MainForm.AppendText(output);
@@ -377,7 +377,7 @@ namespace Glue
             MainForm.LogMouseClick(xPos, yPos);
         }
 
-        private static string FormatKeyString(int vkCode, bool padLeft)
+        private static string FormatKeyString(int vkCode)
         {
             string output = "";
             
