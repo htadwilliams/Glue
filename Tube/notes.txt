@@ -1,0 +1,8 @@
+Random developer notes
+
+Code snippets
+
+* Get iterator on an enum:
+
+  VirtualKeyCode.GetValues(typeof(VirtualKeyCode)))
+  

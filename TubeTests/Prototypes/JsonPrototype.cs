@@ -15,7 +15,7 @@ using Newtonsoft.Json.Serialization;
 /// They also serve as a work area if Newtonsoft.Json version updates are breaking changes.
 /// 
 /// </summary>
-namespace Prototypes
+namespace Glue.Prototypes
 {
     public enum AnimalType
     {
