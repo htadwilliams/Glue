@@ -75,10 +75,13 @@ The application by default attempts to read MACROS.GLUE from its working directo
 # Feature TODO list
 
 ## Core TODO
- - [ ] Game device button triggers, macro events, and button remapping.
+ - [ ] Game controller button triggers.
+ - [ ] Game controller actions.
+ - [ ] Game controller button remapping.
  - [x] Queue view should update every second if nothing else is happening.
  - [ ] Remote control - trigger events via network client (most likely REST interface).
  - [ ] Triggers and actions may be filtered by target process name the same way key remapping works. 
+ - [ ] Game controller axis remapping.
 
 ## GUI TODO
  - [ ] Add mouse button state to buttons view.
