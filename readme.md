@@ -17,7 +17,7 @@ Default file name if not specified is "macros.glue".
 
 The application by default attempts to read MACROS.GLUE from its working directory. The file name / path may be optionally specified as a command-line parameter. If this file isn't found one will be created with example macros, triggers, and remapping entries.
 
-EXAMPLE MACROS AND TRIGGERS:
+## EXAMPLE MACROS AND TRIGGERS:
 * Ctrl-C cancels all queued actions, loops, etc.
 * Ctrl-Z will play a sound after a delay.
 * Ctrl-S "ripple fire" example that alternates between playing two sounds. If the sound is already playing it will be restarted.
@@ -26,26 +26,26 @@ EXAMPLE MACROS AND TRIGGERS:
 * Alt-, Alt-. Alt-/ begin looping different sounds every N seconds.
 * Ctrl-, Ctrl-. Ctrl-/ cancel individual sound loops. 
 
-EXAMPLE KEY REMAPPING:
+## EXAMPLE KEY REMAPPING:
 * V and B are swapped if typing into notepad. Note that this is applied to any .exe with "notepad" in the name, so this includes things like Notepad++. Insert evil laugh here.
 * LEFT SHIFT types an A if input window process name contains "skies.exe" so it can be mapped in Sunless Skies (and easily change for other games where SHIFT can't be remapped).
 * WASD is EVIL! WASD and typical rotation keys Q/E are remapped to ESDF W/R (R/F slide to left over Q/A to make room) for "fallout4.exe". Change to your .exe name to use.
 
 # DEPENDENCIES
 
-NuGet managed dependencies:
+## NuGet managed dependencies:
 
 * SharpDX and SharpDX.DirectInput used for DirectX manipulation of gaming input devices: http://sharpdx.org/ 
 * NewtonSoft.Json for serialization of macros, triggers, etc (except user preferences).
 
-Other dependencies:
+## Other dependencies:
 
 * Priority queue implementation is courtesy of BlueRaja.admin@gmail.com (https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp). The application creates a thread that monitors a queue of scheduled macro action events to fire (See EventQueue class).
 * Windows Input simulator to wrap Windows API SendInput https://archive.codeplex.com/?p=inputsimulator and provide all the native constants needed. See https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-sendinput.
 
 # Completed features
 
-Core macroing:
+## Core macroing:
 
 * Macros may be triggered by multiple key and key chording combinations.
 * Macros may be looped or canceled.
@@ -62,7 +62,7 @@ Core macroing:
   - repeating other macros
   - cancelling actions by name (or all actions)
 
-GUI:
+## GUI:
 
 * Logging of keys and macro events (useful for creating new macros).
 * View -> Button States shows queued actions, updated as they are scheduled or canceled.
@@ -74,11 +74,13 @@ GUI:
 
 # Feature TODO list
 
+## Core TODO
 * Game device button triggers, macro events, and button remapping.
 * Queue view should update every second if nothing else is happening.
 * Remote control - trigger events via network client (most likely REST interface).
 * Triggers and actions may be filtered by target process name the same way key remapping works.
 
+## GUI TODO
 * GUI shows current set of keyboard remap entries.
 * GUI shows current set of triggers.
 * GUI for recording / editing macros.
