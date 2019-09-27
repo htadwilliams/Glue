@@ -141,7 +141,41 @@ namespace Glue.Actions
 
         public override string ToString()
         {
-            return base.ToString() + (Movement == MoveType.PRESS ? " +" : " -") + this.key;
+            string toString = base.ToString();
+
+            Key key = Keyboard.GetKey((int) this.key);
+
+            if (null != key)
+            {
+                toString += " " + MoveTypeToString(this.Movement) + key.ToString();
+            }
+
+            return toString;
+        }
+
+        public static string MoveTypeToString(MoveType moveType)
+        {
+            string toString = "";
+
+            switch (moveType)
+            {
+                case MoveType.CLICK:
+                    toString = "*";
+                    break;
+
+                case MoveType.PRESS:
+                    toString = "+";
+                    break;
+
+                case MoveType.RELEASE:
+                    toString = "-";
+                    break;
+
+                default:
+                    break;
+            }
+
+            return toString;
         }
 
         public override void FromProperties(PropertyBag propertyBag)
