@@ -55,6 +55,10 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MacroTests.cs" />
@@ -62,7 +66,9 @@
     <Compile Include="FormatDurationFormatTests.cs" />
     <Compile Include="FormatDurationParseTests.cs" />
     <Compile Include="EmptyTests.cs" />
-    <Compile Include="Prototypes\SurfaceFlipper.cs" />
+    <Compile Include="Prototypes\SurfaceFlipper.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Prototypes\JsonPrototype.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
