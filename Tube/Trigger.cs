@@ -158,7 +158,7 @@ namespace Glue
                 Tube.MainForm.RawKeyNames && 
                 null != macroName)
             {
-                Tube.MainForm.AppendText("[" + macroName + "] ");
+                Tube.MainForm.AppendText(" [" + macroName + "]");
             }
 
             return this.eatInput;
