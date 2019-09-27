@@ -65,8 +65,8 @@ The application by default attempts to read MACROS.GLUE from its working directo
 ## GUI:
 
 * Logging of keys and macro events (useful for creating new macros).
-* View -> Button States shows queued actions, updated as they are scheduled or canceled.
-* View -> Queued Actions displays set of currently pressed keys.
+* View -> Button States displays set of currently pressed keys.
+* View -> Queued Actions shows queued actions, updated as they are scheduled or canceled. 
 * Closes to system tray for unobtrusive operation. See https://github.com/htadwilliams/TrayTemplate for re-usable code.
 * Status bar display of mouse coordinates and click logging, in native or normalized coordinates (useful for building resolution-independent mouse control macros).
 * Edit -> Macros partially implemented and can be used to view actions and macros.
