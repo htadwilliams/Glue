@@ -10,8 +10,11 @@ namespace Glue.Forms
 {
     public partial class ViewQueue : Form
     {
+        private static readonly int TIME_UPDATE_FORM_MS = 1000;
+
         private delegate void UpdateViewDelegate();
         private ReadOnlyCollection<Action> actions;
+        private readonly Timer updateTimer;
 
         protected readonly string labelHeadingFormat;
 
@@ -28,6 +31,19 @@ namespace Glue.Forms
 
             SetHeadingText(0);
             this.listViewActions.VirtualListSize = 0;
+
+            updateTimer = new Timer
+            {
+                Interval = TIME_UPDATE_FORM_MS,
+            };
+            updateTimer.Tick += this.OnTimer;
+            updateTimer.Start();
+        }
+
+        private void OnTimer(object sender, EventArgs e)
+        {
+            this.actions = Tube.Scheduler.GetActions();
+            UpdateView();
         }
 
         private void SetHeadingText(int countItems)
@@ -69,6 +85,7 @@ namespace Glue.Forms
             {
                 this.SetHeadingText(actions.Count);
                 this.listViewActions.VirtualListSize = actions.Count;
+                this.listViewActions.Invalidate();
             }
         }
 

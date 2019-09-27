@@ -55,13 +55,18 @@ namespace Glue.Actions
             eventWaitNextAction.Set();
         }
 
+        public ReadOnlyCollection<Action> GetActions()
+        {
+            List<Action> actions = this.actions.GetActions().ToList<Action>();
+            actions.Sort();
+            return actions.AsReadOnly();
+        }
+
         private void NotifySubscribers()
         {
             if (null != this.QueueChangeEvent)
             {
-                List<Action> actions = this.actions.GetActions().ToList<Action>();
-                actions.Sort();
-                QueueChangeEvent(actions.AsReadOnly());
+                QueueChangeEvent(GetActions());
             }
         }
 
