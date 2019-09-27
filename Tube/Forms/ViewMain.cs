@@ -225,7 +225,7 @@ namespace Glue.Forms
 
             if (this.LogInput && this.RawKeyNames)
             {
-                this.AppendText(String.Format("CLICK({0}, {1}) ", xOut, yOut));
+                this.AppendText(String.Format(" CLICK({0}, {1})", xOut, yOut));
             }
             this.toolStripMousePosLastClick.Text = String.Format("Last click: ({0:n0}, {1:n0})", xOut, yOut);
         }

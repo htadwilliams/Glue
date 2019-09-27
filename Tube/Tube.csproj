@@ -130,6 +130,8 @@
       <DependentUpon>ViewQueue.cs</DependentUpon>
     </Compile>
     <Compile Include="JsonWrapper.cs" />
+    <Compile Include="Key.cs" />
+    <Compile Include="Keyboard.cs" />
     <Compile Include="Native\WindowHandleUtils.cs" />
     <Compile Include="Native\TimeProvider.cs" />
     <Compile Include="Priority_Queue\GenericPriorityQueue.cs" />
