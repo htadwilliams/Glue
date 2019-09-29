@@ -1,20 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 
 namespace Glue.Forms
 {
     public partial class DialogEditKeyMap : Form
     {
+        private readonly FormSettingsHandler formSettingsHandler;
+
         public DialogEditKeyMap()
         {
             InitializeComponent();
+
+            // Attach for form settings persistence
+            formSettingsHandler = new FormSettingsHandler(this);
         }
     }
 }

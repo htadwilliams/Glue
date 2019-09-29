@@ -6,9 +6,15 @@ namespace Glue.Forms
 {
     partial class DialogHelpAbout : Form
     {
+        private readonly FormSettingsHandler formSettingsHandler;
+
         public DialogHelpAbout()
         {
             InitializeComponent();
+
+            // Attach for form settings persistence
+            formSettingsHandler = new FormSettingsHandler(this);
+            
             this.Text = String.Format("About {0}", AssemblyTitle);
             this.labelProductName.Text = AssemblyProduct;
             this.labelVersion.Text = String.Format("Version {0}", AssemblyVersion);

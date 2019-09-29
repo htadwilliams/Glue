@@ -9,10 +9,15 @@ namespace Glue.Forms
     public partial class ViewButtons : Form
     {
         protected readonly string labelHeadingFormat;
+        private FormSettingsHandler formSettingsHandler;
 
         public ViewButtons()
         {
             InitializeComponent();
+
+            // Attach for form settings persistence
+            formSettingsHandler = new FormSettingsHandler(this);
+            
             labelHeadingFormat = labelHeading.Text;
             SetHeadingText(0);
         }
@@ -26,7 +31,7 @@ namespace Glue.Forms
             }
 
             base.OnFormClosing(e);
-        }
+        }   
 
         protected override void OnActivated(EventArgs e)
         {
@@ -51,6 +56,11 @@ namespace Glue.Forms
             }
 
             WindowHandleUtils.HideCaret(this.textBoxButtonStates.Handle);
+        }
+
+        private void ViewButtons_Load(object sender, EventArgs e)
+        {
+            formSettingsHandler.OnFormLoad(sender, e);
         }
     }
 }

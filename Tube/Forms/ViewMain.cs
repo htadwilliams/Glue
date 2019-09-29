@@ -25,12 +25,16 @@ namespace Glue.Forms
         private ViewButtons viewButtons = null;
         private ViewQueue viewQueue = null;
         private readonly ApplicationContext context;
+        private readonly FormSettingsHandler formSettingsHandler;
 
         public ViewMain(ApplicationContext context)
         {
             this.context = context;
 
             InitializeComponent();
+
+            // Attach for form settings persistence
+            formSettingsHandler = new FormSettingsHandler(this);
 
             this.logInput = Properties.Settings.Default.LogInput;
             this.rawKeyNames = Properties.Settings.Default.RawKeyNames;

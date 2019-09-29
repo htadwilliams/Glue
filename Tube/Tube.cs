@@ -55,7 +55,6 @@ namespace Glue
         private static string s_fileName = FILENAME_DEFAULT;
 
         private static List<VirtualKeyCode> s_keysDown = new List<VirtualKeyCode>();
-        private static bool s_lastLoggedOutputWasSpace = false;
         private static TrayApplicationContext s_context;
         private static ActionQueueScheduler s_actionScheduler = new ActionQueueScheduler();
 
@@ -377,6 +376,7 @@ namespace Glue
             MainForm.LogMouseClick(xPos, yPos);
         }
 
+        // TODO FormatKeyString should be in its own wrapper around Keyboard Key
         private static string FormatKeyString(int vkCode)
         {
             string output = "";

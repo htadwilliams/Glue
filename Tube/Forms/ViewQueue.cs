@@ -17,16 +17,15 @@ namespace Glue.Forms
         private readonly Timer updateTimer;
 
         protected readonly string labelHeadingFormat;
-
-        public void OnQueueChange(ReadOnlyCollection<Action> actions)
-        {
-            this.actions = actions;
-            UpdateView();
-        }
+        private readonly FormSettingsHandler formSettingsHandler;
 
         public ViewQueue()
         {
             InitializeComponent();
+
+            // Attach for form settings persistence
+            formSettingsHandler = new FormSettingsHandler(this);
+            
             labelHeadingFormat = labelHeading.Text;
 
             SetHeadingText(0);
@@ -38,6 +37,12 @@ namespace Glue.Forms
             };
             updateTimer.Tick += this.OnTimer;
             updateTimer.Start();
+        }
+
+        public void OnQueueChange(ReadOnlyCollection<Action> actions)
+        {
+            this.actions = actions;
+            UpdateView();
         }
 
         private void OnTimer(object sender, EventArgs e)
@@ -60,8 +65,6 @@ namespace Glue.Forms
             }
 
             Tube.Scheduler.QueueChangeEvent -= OnQueueChange;
-            // e.Cancel = true;
-            // Hide();
             base.OnFormClosing(e);
         }
 
