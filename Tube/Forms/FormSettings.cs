@@ -33,8 +33,6 @@ namespace Glue.Forms
         {
             List<FormSettings> settingsList;
 
-            LOGGER.Info("Reading form settings from [" + SETTINGS_FILE_NAME + "]");
-
             if (File.Exists(SETTINGS_FILE_NAME))
             {
                 JsonSerializer serializer = new JsonSerializer
@@ -71,8 +69,6 @@ namespace Glue.Forms
         {
             if (s_collectedSettings?.Count > 0)
             {
-                LOGGER.Info("Saving form settings to [" + SETTINGS_FILE_NAME + "]");
-
                 JsonSerializer serializer = new JsonSerializer
                 {
                     TypeNameHandling = TypeNameHandling.None,
