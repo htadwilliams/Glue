@@ -10,10 +10,11 @@ namespace Glue.Forms
 {
     public partial class DialogEditMacros : Form
     {
-        private List<Macro> macros;
+        private readonly List<Macro> macros;
         private Macro macroCurrent = null;
         private Action actionCurrent = null;
-        private PropertyBag propertiesCurrent = null;
+        private readonly PropertyBag propertiesCurrent = null;
+        private readonly FormSettingsHandler formSettingsHandler;
 
         public DialogEditMacros(ReadOnlyDictionary<string, Macro> macros)
         {
@@ -30,6 +31,9 @@ namespace Glue.Forms
             }
 
             InitializeComponent();
+
+            // Attach for form settings persistence
+            formSettingsHandler = new FormSettingsHandler(this);
         }
 
         private void ListViewMacros_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
