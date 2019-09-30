@@ -10,17 +10,19 @@ namespace Glue.Forms
     {
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         
-        private static readonly string SETTINGS_FILE_NAME = "Glue.FormSettings.Json";
+        private static readonly string SETTINGS_FILE_NAME_DEFAULT = "form-settings.json";
 
         private string name;
         private Rectangle position;
         private bool isMaximized;
+        private static string s_settingsFileName = SETTINGS_FILE_NAME_DEFAULT;
 
         private static readonly Dictionary<string, FormSettings> s_collectedSettings = new Dictionary<string, FormSettings>();
 
         public string Name { get => name; set => name = value; }
         public Rectangle Position { get => position; set => position = value; }
         public bool IsMaximized { get => isMaximized; set => isMaximized = value; }
+        public static string FileName { get => s_settingsFileName; set => s_settingsFileName = value; }
 
         public FormSettings(string name, Rectangle position, bool isMaximized)
         {
@@ -33,9 +35,7 @@ namespace Glue.Forms
         {
             List<FormSettings> settingsList;
 
-            LOGGER.Info("Reading form settings from [" + SETTINGS_FILE_NAME + "]");
-
-            if (File.Exists(SETTINGS_FILE_NAME))
+            if (File.Exists(FileName))
             {
                 JsonSerializer serializer = new JsonSerializer
                 {
@@ -44,7 +44,7 @@ namespace Glue.Forms
 
                 try
                 {
-                    using (StreamReader sr = new StreamReader(SETTINGS_FILE_NAME))
+                    using (StreamReader sr = new StreamReader(FileName))
                     {
                         using (JsonReader reader = new JsonTextReader(sr))
                         {
@@ -71,15 +71,13 @@ namespace Glue.Forms
         {
             if (s_collectedSettings?.Count > 0)
             {
-                LOGGER.Info("Saving form settings to [" + SETTINGS_FILE_NAME + "]");
-
                 JsonSerializer serializer = new JsonSerializer
                 {
                     TypeNameHandling = TypeNameHandling.None,
                     NullValueHandling = NullValueHandling.Ignore,
                 };
 
-                using (StreamWriter sw = new StreamWriter(SETTINGS_FILE_NAME))
+                using (StreamWriter sw = new StreamWriter(FileName))
                 using (JsonWriter writer = new JsonTextWriter(sw))
                 {
                     writer.Formatting = Formatting.Indented;

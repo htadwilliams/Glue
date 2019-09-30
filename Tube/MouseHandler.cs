@@ -73,10 +73,12 @@ namespace Glue
                 }
             }
 
-            // TODO implement mouse lock "safety" feature 
-            // Freeze the mouse 
-            // return new IntPtr(1);
-
+            // Freeze the mouse if mouse safety is toggled
+            if (Tube.MouseLocked)
+            {
+                return new IntPtr(1);
+            }
+            
             return new IntPtr(0);
         }
 

@@ -114,12 +114,13 @@ namespace Glue.Forms
 
         private void MenuItemFileOpen_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-
-            if(openFileDialog.ShowDialog() == DialogResult.OK)
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
-                Tube.LoadFile(openFileDialog.FileName);
-                SetCaption(Tube.FileName);
+                if(openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    Tube.LoadFile(openFileDialog.FileName);
+                    SetCaption(Tube.FileName);
+                }
             }
         }
 
@@ -130,7 +131,10 @@ namespace Glue.Forms
 
         private void MenuItemHelpAbout_Click(object sender, EventArgs e)
         {
-            new DialogHelpAbout().ShowDialog();
+            using (DialogHelpAbout helpAbout = new DialogHelpAbout())
+            {
+                helpAbout.ShowDialog();
+            }
         }
 
         private T ShowView<T>(T view, bool showView = true) where T : Form, new()
@@ -193,8 +197,10 @@ namespace Glue.Forms
 
         private void MenuItemEditMacros_Click(object sender, EventArgs e)
         {
-            Form macros = new DialogEditMacros(new ReadOnlyDictionary<string, Macro>(Tube.Macros));
-            macros.ShowDialog();
+            using (Form macros = new DialogEditMacros(new ReadOnlyDictionary<string, Macro>(Tube.Macros)))
+            {
+                macros.ShowDialog();
+            }
         }
 
         private void MenuItemEditTriggers_Click(object sender, EventArgs e)

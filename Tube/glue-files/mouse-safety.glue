@@ -1,0 +1,56 @@
+/*
+
+Glue macro tool file
+
+Json containing the following elements
+
+    macros     Actions to be performed such as pressing a key or playing a sound.
+    triggers   Bind keys or key combinations to macros.
+    keyMap     Each entry remaps a key on the keyboard.
+
+*/
+{
+  "triggers": [
+    {
+      "triggerKey": "L",
+      "type": "Down",
+      "macroNames": [
+        "lock-mouse"
+      ],
+      "modKeys": [
+        "LControlKey"
+      ],
+      "eatInput": false
+    },
+    {
+      "triggerKey": "L",
+      "type": "Down",
+      "macroNames": [
+        "lock-mouse"
+      ],
+      "modKeys": [
+        "RControlKey"
+      ],
+      "eatInput": false
+    }
+  ],
+  "remapKeys": [
+  ],
+  "macros": [
+    {
+      "name": "lock-mouse",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "delayMS": 0,
+          "type": "MOUSE_LOCK"
+        },
+        {
+          "delayMS": 100,
+          "type": "SOUND",
+          "SoundPath": "sound_click_latch.wav"
+        }
+      ]
+    }
+  ]
+}

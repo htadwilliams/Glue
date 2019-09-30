@@ -28,6 +28,7 @@ namespace Glue
         public static ViewMain MainForm { get => s_mainForm; set => s_mainForm = value; }
         public static string FileName { get => s_fileName; set => s_fileName = value; }
         public static ActionQueueScheduler Scheduler { get => s_actionScheduler; }
+        public static bool MouseLocked { get => s_lockMouse; set => s_lockMouse = value; }
 
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -50,6 +51,9 @@ namespace Glue
         private const int TIME_DWELL_GLOBAL_MS              = 250;            // Pressed keys are held this long
         private const int TIME_DELAY_ACTION                 = 8 * 1000;       // Bound to trigger for single delayed action
 
+        // Override file used for form persistence
+        private const string FORM_SETTINGS_FILENAME         = "Glue.form-settings.json";
+
         private static ViewMain s_mainForm;
         private static bool s_writeOnExit = false;                            // Set if example content created, or if GUI changes content
         private static string s_fileName = FILENAME_DEFAULT;
@@ -57,6 +61,7 @@ namespace Glue
         private static List<VirtualKeyCode> s_keysDown = new List<VirtualKeyCode>();
         private static TrayApplicationContext s_context;
         private static ActionQueueScheduler s_actionScheduler = new ActionQueueScheduler();
+        private static bool s_lockMouse = false;
 
         /// <summary>
         /// The main entry point for the application.
@@ -93,6 +98,8 @@ namespace Glue
 
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
+
+                FormSettings.FileName = FORM_SETTINGS_FILENAME;
 
                 s_context = new TrayApplicationContext();
                 MainForm = (ViewMain) s_context.MainForm;
@@ -416,6 +423,12 @@ namespace Glue
             return output;
         }
 
+        internal static void ToggleMouseLock()
+        {
+            MouseLocked = !MouseLocked;
+            LOGGER.Info("Toggled Mouse lock: " + MouseLocked);
+        }
+        
         private static void CreateDefaultContent()
         {
             string macroName;
@@ -434,7 +447,7 @@ namespace Glue
             Triggers.Add(trigger);
 
             //
-            // Create and bind a typing macro (string of text) bound to CTRL-C
+            // Create and bind a typing macro (string of text) 
             // 
             macro = new Macro(macroName = "typing-stuff", 2000);
             
@@ -579,11 +592,24 @@ namespace Glue
             macro.AddAction(new ActionCancel("*"));
             Macros.Add(macroName, macro);
 
-            // TODO Trigger mod keys should allow logical combinations e.g. (LControlKey | RControlKey) && C
+            // TODO Trigger mod keys should allow logical combinations e.g. (LControlKey | RControlKey) 
             trigger = new Trigger(Keys.C, macroName);
             trigger.AddModifier(Keys.LControlKey);
             Triggers.Add(trigger);
             trigger = new Trigger(Keys.C, macroName);
+            trigger.AddModifier(Keys.RControlKey);
+            Triggers.Add(trigger);
+
+            // Toggle mouse-lock or "Mouse SAFETY"
+            macro = new Macro(macroName = "lock-mouse", 0);
+            macro.AddAction(new ActionMouseLock());
+            macro.AddAction(new ActionSound(TIME_DELAY_GLOBAL_MS, "sound_click_latch.wav"));
+
+            Macros.Add(macroName, macro);
+            trigger = new Trigger(Keys.L, macroName);
+            trigger.AddModifier(Keys.LControlKey);
+            Triggers.Add(trigger);
+            trigger = new Trigger(Keys.L, macroName);
             trigger.AddModifier(Keys.RControlKey);
             Triggers.Add(trigger);
 
