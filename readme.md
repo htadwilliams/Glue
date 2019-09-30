@@ -25,6 +25,7 @@ The application by default attempts to read MACROS.GLUE from its working directo
 * MBX1 / MBX2 (mouse side buttons) trigger a press of F10.
 * Alt-, Alt-. Alt-/ begin looping different sounds every N seconds.
 * Ctrl-, Ctrl-. Ctrl-/ cancel individual sound loops. 
+* Ctrl-L toggles mouse pointer lock. 
 
 ## EXAMPLE KEY REMAPPING:
 * V and B are swapped if typing into notepad. Note that this is applied to any .exe with "notepad" in the name, so this includes things like Notepad++. Insert evil laugh here.
@@ -54,13 +55,13 @@ The application by default attempts to read MACROS.GLUE from its working directo
 * Multiple macros may be "ripple fired" from a single trigger.
 * Mouse movement and clicking supports multiple coordinate modes (relative, absolute, and normalized 0-65,535).
 * Macro actions include:
-  - keyboard keys
+  - keyboarding
   - mouse buttons (clicking with or without movement)
   - mouse movement (with or without clicking buttons)
-  - typing long strings
   - playing sounds
   - repeating other macros
-  - cancelling actions by name (or all actions)
+  - cancelling queued actions by name (or all actions)
+  - toggle mouse input lock
 
 ## GUI:
 
@@ -82,10 +83,11 @@ The application by default attempts to read MACROS.GLUE from its working directo
  - [ ] Remote control - trigger events via network client (most likely REST interface).
  - [ ] Triggers and actions may be filtered by target process name the same way key remapping works. 
  - [ ] Game controller axis remapping.
+ - [x] Mouse "safety" - freeze mouse cursor position (but not buttons)
 
 ## GUI TODO
  - [ ] Add mouse button state to buttons view.
  - [ ] View / edit keyboard remapping.
  - [ ] View / edit triggers.
  - [ ] View / editing macros.
- - [ ] Recording macros.
+ - [ ] Macro recording.
