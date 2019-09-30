@@ -19,8 +19,8 @@ The application by default attempts to read MACROS.GLUE from its working directo
 
 ## EXAMPLE MACROS AND TRIGGERS:
 * Ctrl-C cancels all queued actions, loops, etc.
-* Ctrl-Z will play a sound after a delay.
-* Ctrl-S "ripple fire" example that alternates between playing two sounds. If the sound is already playing it will be restarted.
+* Ctrl-Z will play a sound and type a key after a delay.
+* Ctrl-S "ripple fire" example that alternates between playing two sounds. If a sound is already playing it will be stopped and the next one played / restarted.
 * Ctrl-Space toggles the space bar so it's held with every other press. Doesn't cause windows key repeat messages while held down.
 * MBX1 / MBX2 (mouse side buttons) trigger a press of F10.
 * Alt-, Alt-. Alt-/ begin looping different sounds every N seconds.
