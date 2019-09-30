@@ -1,0 +1,549 @@
+/*
+
+Glue macro tool file
+
+Json containing the following elements
+
+    macros     Actions to be performed such as pressing a key or playing a sound.
+    triggers   Bind keys or key combinations to macros.
+    keyMap     Each entry remaps a key on the keyboard.
+
+*/
+{
+  "triggers": [
+    {
+      "triggerKey": "Z",
+      "type": "Down",
+      "macroNames": [
+        "delayed-action"
+      ],
+      "modKeys": [
+        "LControlKey"
+      ],
+      "eatInput": false
+    },
+    {
+      "triggerKey": "C",
+      "type": "Down",
+      "macroNames": [
+        "typing-stuff"
+      ],
+      "modKeys": [
+        "LControlKey",
+        "LMenu"
+      ],
+      "eatInput": false
+    },
+    {
+      "triggerKey": "C",
+      "type": "Down",
+      "macroNames": [
+        "cancel-all"
+      ],
+      "modKeys": [
+        "LControlKey"
+      ],
+      "eatInput": false
+    },
+    {
+      "triggerKey": "C",
+      "type": "Down",
+      "macroNames": [
+        "cancel-all"
+      ],
+      "modKeys": [
+        "RControlKey"
+      ],
+      "eatInput": false
+    },
+    {
+      "triggerKey": "S",
+      "type": "Down",
+      "macroNames": [
+        "sound-servomotor",
+        "sound-ahha"
+      ],
+      "modKeys": [
+        "LControlKey"
+      ],
+      "eatInput": false
+    },
+    {
+      "triggerKey": "Oemcomma",
+      "type": "Down",
+      "macroNames": [
+        "repeat-sound-dice"
+      ],
+      "modKeys": [
+        "LMenu"
+      ],
+      "eatInput": false
+    },
+    {
+      "triggerKey": "Oemcomma",
+      "type": "Down",
+      "macroNames": [
+        "stop-sound-dice"
+      ],
+      "modKeys": [
+        "LControlKey"
+      ],
+      "eatInput": false
+    },
+    {
+      "triggerKey": "OemPeriod",
+      "type": "Down",
+      "macroNames": [
+        "repeat-sound-tock"
+      ],
+      "modKeys": [
+        "LMenu"
+      ],
+      "eatInput": false
+    },
+    {
+      "triggerKey": "OemPeriod",
+      "type": "Down",
+      "macroNames": [
+        "stop-sound-tock"
+      ],
+      "modKeys": [
+        "LControlKey"
+      ],
+      "eatInput": false
+    },
+    {
+      "triggerKey": "OemQuestion",
+      "type": "Down",
+      "macroNames": [
+        "repeat-sound-estop"
+      ],
+      "modKeys": [
+        "LMenu"
+      ],
+      "eatInput": false
+    },
+    {
+      "triggerKey": "OemQuestion",
+      "type": "Down",
+      "macroNames": [
+        "stop-sound-estop"
+      ],
+      "modKeys": [
+        "LControlKey"
+      ],
+      "eatInput": false
+    },
+    {
+      "triggerKey": "XButton1",
+      "type": "Down",
+      "macroNames": [
+        "F10"
+      ],
+      "modKeys": [],
+      "eatInput": false
+    },
+    {
+      "triggerKey": "XButton2",
+      "type": "Down",
+      "macroNames": [
+        "F10"
+      ],
+      "modKeys": [],
+      "eatInput": false
+    },
+    {
+      "triggerKey": "Space",
+      "type": "Both",
+      "macroNames": [
+        "toggle-down",
+        null,
+        "toggle-up",
+        null
+      ],
+      "modKeys": [
+        "LControlKey"
+      ],
+      "eatInput": true
+    },
+    {
+      "triggerKey": "Left",
+      "type": "Down",
+      "macroNames": [
+        "mouse-nudge-left"
+      ],
+      "modKeys": [
+        "LMenu"
+      ],
+      "eatInput": false
+    },
+    {
+      "triggerKey": "Home",
+      "type": "Down",
+      "macroNames": [
+        "mouse-center"
+      ],
+      "modKeys": [
+        "LMenu"
+      ],
+      "eatInput": false
+    },
+    {
+      "triggerKey": "End",
+      "type": "Down",
+      "macroNames": [
+        "mouse-origin"
+      ],
+      "modKeys": [
+        "LMenu"
+      ],
+      "eatInput": false
+    },
+    {
+      "triggerKey": "Delete",
+      "type": "Down",
+      "macroNames": [
+        "mouse-click-nomove"
+      ],
+      "modKeys": [
+        "LMenu"
+      ],
+      "eatInput": false
+    }
+  ],
+  "remapKeys": [
+    {
+      "keyOld": "LSHIFT",
+      "keyNew": "VK_A",
+      "processName": "skies.exe"
+    },
+    {
+      "keyOld": "VK_B",
+      "keyNew": "VK_V",
+      "processName": "notepad"
+    },
+    {
+      "keyOld": "VK_V",
+      "keyNew": "VK_B",
+      "processName": "notepad"
+    },
+    {
+      "keyOld": "VK_Q",
+      "keyNew": "VK_R",
+      "processName": "fallout4.exe"
+    },
+    {
+      "keyOld": "VK_A",
+      "keyNew": "VK_F",
+      "processName": "fallout4.exe"
+    },
+    {
+      "keyOld": "VK_W",
+      "keyNew": "VK_Q",
+      "processName": "fallout4.exe"
+    },
+    {
+      "keyOld": "VK_E",
+      "keyNew": "VK_W",
+      "processName": "fallout4.exe"
+    },
+    {
+      "keyOld": "VK_R",
+      "keyNew": "VK_E",
+      "processName": "fallout4.exe"
+    },
+    {
+      "keyOld": "VK_S",
+      "keyNew": "VK_A",
+      "processName": "fallout4.exe"
+    },
+    {
+      "keyOld": "VK_D",
+      "keyNew": "VK_S",
+      "processName": "fallout4.exe"
+    },
+    {
+      "keyOld": "VK_F",
+      "keyNew": "VK_D",
+      "processName": "fallout4.exe"
+    }
+  ],
+  "macros": [
+    {
+      "name": "delayed-action",
+      "delayTimeMS": 8000,
+      "actions": [
+        {
+          "delayMS": 100,
+          "type": "SOUND",
+          "SoundPath": "ahha.wav"
+        },
+        {
+          "movement": "PRESS",
+          "key": "RETURN",
+          "timeClickMS": 50,
+          "delayMS": 100,
+          "type": "KEY"
+        },
+        {
+          "movement": "RELEASE",
+          "key": "RETURN",
+          "timeClickMS": 50,
+          "delayMS": 250,
+          "type": "KEY"
+        }
+      ]
+    },
+    {
+      "name": "typing-stuff",
+      "delayTimeMS": 2000,
+      "actions": [
+        {
+          "typedString": "Lorem ipsum dollar sit amet, Cogito Maud obliviscaris aliorum.",
+          "charDelayMS": 10,
+          "dwellTimeMS": 10,
+          "delayMS": 0,
+          "type": "TYPING"
+        }
+      ]
+    },
+    {
+      "name": "sound-servomotor",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "delayMS": 100,
+          "type": "SOUND",
+          "SoundPath": "sound_servomotor.wav"
+        }
+      ]
+    },
+    {
+      "name": "sound-ahha",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "delayMS": 100,
+          "type": "SOUND",
+          "SoundPath": "ahha.wav"
+        }
+      ]
+    },
+    {
+      "name": "sound-dice",
+      "delayTimeMS": 100,
+      "actions": [
+        {
+          "delayMS": 0,
+          "type": "SOUND",
+          "SoundPath": "dice_roll.wav"
+        }
+      ]
+    },
+    {
+      "name": "repeat-sound-dice",
+      "delayTimeMS": 100,
+      "actions": [
+        {
+          "macroRepeater": "repeat-sound-dice",
+          "macro": "sound-dice",
+          "delayMS": 5000,
+          "type": "REPEAT"
+        }
+      ]
+    },
+    {
+      "name": "stop-sound-dice",
+      "delayTimeMS": 100,
+      "actions": [
+        {
+          "macroName": "repeat-sound-dice",
+          "delayMS": 0,
+          "type": "CANCEL"
+        }
+      ]
+    },
+    {
+      "name": "sound-tock",
+      "delayTimeMS": 100,
+      "actions": [
+        {
+          "delayMS": 0,
+          "type": "SOUND",
+          "SoundPath": "sound_click_tock.wav"
+        }
+      ]
+    },
+    {
+      "name": "repeat-sound-tock",
+      "delayTimeMS": 100,
+      "actions": [
+        {
+          "macroRepeater": "repeat-sound-tock",
+          "macro": "sound-tock",
+          "delayMS": 5000,
+          "type": "REPEAT"
+        }
+      ]
+    },
+    {
+      "name": "stop-sound-tock",
+      "delayTimeMS": 100,
+      "actions": [
+        {
+          "macroName": "repeat-sound-tock",
+          "delayMS": 0,
+          "type": "CANCEL"
+        }
+      ]
+    },
+    {
+      "name": "sound-estop",
+      "delayTimeMS": 100,
+      "actions": [
+        {
+          "delayMS": 0,
+          "type": "SOUND",
+          "SoundPath": "elev_stop.wav"
+        }
+      ]
+    },
+    {
+      "name": "repeat-sound-estop",
+      "delayTimeMS": 100,
+      "actions": [
+        {
+          "macroRepeater": "repeat-sound-estop",
+          "macro": "sound-estop",
+          "delayMS": 5000,
+          "type": "REPEAT"
+        }
+      ]
+    },
+    {
+      "name": "stop-sound-estop",
+      "delayTimeMS": 100,
+      "actions": [
+        {
+          "macroName": "repeat-sound-estop",
+          "delayMS": 0,
+          "type": "CANCEL"
+        }
+      ]
+    },
+    {
+      "name": "F10",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "movement": "CLICK",
+          "key": "F10",
+          "timeClickMS": 50,
+          "delayMS": 50,
+          "type": "KEY"
+        }
+      ]
+    },
+    {
+      "name": "toggle-down",
+      "delayTimeMS": 100,
+      "actions": [
+        {
+          "movement": "PRESS",
+          "key": "SPACE",
+          "timeClickMS": 50,
+          "delayMS": 0,
+          "type": "KEY"
+        }
+      ]
+    },
+    {
+      "name": "toggle-up",
+      "delayTimeMS": 100,
+      "actions": [
+        {
+          "movement": "RELEASE",
+          "key": "SPACE",
+          "timeClickMS": 50,
+          "delayMS": 0,
+          "type": "KEY"
+        }
+      ]
+    },
+    {
+      "name": "mouse-nudge-left",
+      "delayTimeMS": 100,
+      "actions": [
+        {
+          "clickType": "NONE",
+          "mode": "RELATIVE",
+          "button": "LeftButton",
+          "xMove": -1,
+          "yMove": 0,
+          "xButtonId": -1,
+          "delayMS": 0,
+          "type": "MOUSE"
+        }
+      ]
+    },
+    {
+      "name": "mouse-center",
+      "delayTimeMS": 100,
+      "actions": [
+        {
+          "clickType": "NONE",
+          "mode": "ABSOLUTE",
+          "button": "LeftButton",
+          "xMove": 32767,
+          "yMove": 32767,
+          "xButtonId": -1,
+          "delayMS": 0,
+          "type": "MOUSE"
+        }
+      ]
+    },
+    {
+      "name": "mouse-origin",
+      "delayTimeMS": 100,
+      "actions": [
+        {
+          "clickType": "NONE",
+          "mode": "PIXEL",
+          "button": "LeftButton",
+          "xMove": 1,
+          "yMove": 1,
+          "xButtonId": -1,
+          "delayMS": 0,
+          "type": "MOUSE"
+        }
+      ]
+    },
+    {
+      "name": "mouse-click-nomove",
+      "delayTimeMS": 100,
+      "actions": [
+        {
+          "clickType": "CLICK",
+          "mode": "NONE",
+          "button": "LeftButton",
+          "xMove": 0,
+          "yMove": 0,
+          "xButtonId": -1,
+          "delayMS": 0,
+          "type": "MOUSE"
+        }
+      ]
+    },
+    {
+      "name": "cancel-all",
+      "delayTimeMS": 100,
+      "actions": [
+        {
+          "macroName": "*",
+          "delayMS": 0,
+          "type": "CANCEL"
+        }
+      ]
+    }
+  ]
+}
