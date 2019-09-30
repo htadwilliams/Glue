@@ -16,6 +16,7 @@ namespace Glue.Actions
         MOUSE,
         REPEAT,
         CANCEL,
+        MOUSE_LOCK,
      }
 
     [JsonConverter(typeof(ActionConverter))]
