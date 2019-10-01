@@ -87,6 +87,7 @@
     <Compile Include="Actions\ActionQueue.cs" />
     <Compile Include="Actions\JsonContract\ActionContractResolver.cs" />
     <Compile Include="Actions\JsonContract\ActionConverter.cs" />
+    <Compile Include="DirectInputManager.cs" />
     <Compile Include="Forms\DialogEditMacros.cs">
       <SubType>Form</SubType>
     </Compile>
