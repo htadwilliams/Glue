@@ -1,10 +1,10 @@
-# Keyboard remapping and macroing tool for Windows written in C#.
+# Keyboard remapping and macroing tool for Windows.
 
 WARNING: This globally hooks keyboard/mouse input and logs to file if DEBUG mode is enabled. Don't run in DEBUG mode if you don't want your keys logged!
 
-Originally written in C++ and used to play EverQuest for over 10 years, this a rewrite in C# including low-level keyboard and mouse hooks (with lots of native windows API calls).
+Originally written in C++ and used to play EverQuest for over 10 years, this a rewrite in C# including low-level keyboard and mouse hooks (with lots of native windows API calls). 
 
-Better than placing a stack of nickels on keys, or using an oscillating desk fan to hit a button repeatedly!
+Better than placing a stack of nickels on keys, or using an oscillating desk fan to hit a button repeatedly.
 
 # Usage
 
