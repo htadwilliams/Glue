@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actions\ActionMouseLock.cs" />
+    <Compile Include="Actions\IActionScheduler.cs" />
     <Compile Include="Actions\Queue.cs" />
     <Compile Include="Actions\JsonContract\ActionContractResolver.cs" />
     <Compile Include="Actions\JsonContract\ActionConverter.cs" />

@@ -6,17 +6,6 @@ using System.Threading;
 
 namespace Glue.Actions
 {
-    public delegate void OnQueueChange(ReadOnlyCollection<Action> queue);
-
-    public interface IActionScheduler
-    {
-        void Schedule(Action action);
-
-        void Cancel(string name);
-
-        // event OnQueueChange;
-    }
-
     class Scheduler : IActionScheduler
     {
         public event OnQueueChange QueueChangeEvent;
@@ -56,6 +45,12 @@ namespace Glue.Actions
             eventWaitNextAction.Set();
         }
 
+        public void Cancel(string name)
+        {
+            actions.Cancel(name);
+            NotifySubscribers();
+        }
+
         public ReadOnlyCollection<Action> GetActions()
         {
             List<Action> actions = this.actions.GetActions().ToList<Action>();
@@ -69,12 +64,6 @@ namespace Glue.Actions
             {
                 QueueChangeEvent(GetActions());
             }
-        }
-
-        public void Cancel(string name)
-        {
-            actions.Cancel(name);
-            NotifySubscribers();
         }
 
        private void ScheduleThreadProc()
