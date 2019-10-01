@@ -27,7 +27,7 @@ namespace Glue
         public static Dictionary<string, Macro> Macros { get => s_macros; set => s_macros = value; }
         public static ViewMain MainForm { get => s_mainForm; set => s_mainForm = value; }
         public static string FileName { get => s_fileName; set => s_fileName = value; }
-        public static ActionQueueScheduler Scheduler { get => s_actionScheduler; }
+        public static Scheduler Scheduler { get => s_actionScheduler; }
         public static bool MouseLocked { get => s_lockMouse; set => s_lockMouse = value; }
 
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -38,7 +38,7 @@ namespace Glue
         private static Dictionary<VirtualKeyCode, KeyboardRemapEntry> s_keyMap;
 
         // Core sub-systems 
-        private static readonly ActionQueueScheduler s_actionScheduler = new ActionQueueScheduler();
+        private static readonly Scheduler s_actionScheduler = new Scheduler();
         private static bool s_lockMouse = false;
         private static readonly DirectInputManager s_directInputManager = new DirectInputManager();
 

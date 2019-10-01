@@ -17,7 +17,7 @@ namespace Glue.Actions
         // event OnQueueChange;
     }
 
-    class ActionQueueScheduler : IActionScheduler
+    class Scheduler : IActionScheduler
     {
         public event OnQueueChange QueueChangeEvent;
 
@@ -26,7 +26,7 @@ namespace Glue.Actions
 
         // Using https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp copied directly into the project 
         // Thanks to BlueRaja.admin@gmail.com
-        private readonly ActionQueue actions = new ActionQueue();
+        private readonly Queue actions = new Queue();
         private Thread thread = null;
         private readonly EventWaitHandle eventWaitNextAction = new AutoResetEvent (false);
 
