@@ -32,14 +32,32 @@ namespace Glue
 
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        // Core data structures
-        // TODO Keys over VirtualKeyCode where possible to limit dependency on WindowsInput
+        // Core data structures for macros, triggers, and keyboard remapping
+        private static Dictionary<string, Macro> s_macros;
         private static TriggerMap s_triggers;
         private static Dictionary<VirtualKeyCode, KeyboardRemapEntry> s_keyMap;
 
-        private static Dictionary<string, Macro> s_macros;
+        // Core sub-systems 
+        private static readonly ActionQueueScheduler s_actionScheduler = new ActionQueueScheduler();
+        private static bool s_lockMouse = false;
+        private static readonly DirectInputManager s_directInputManager = new DirectInputManager();
 
+        // GUI objects
+        private static ViewMain s_mainForm;
+        private static TrayApplicationContext s_context;
+
+        // GUI state
+        private static bool s_writeOnExit = false;                            // Set if example content created, or if GUI changes content
+        private static string s_fileName = FILENAME_DEFAULT;
+        private static List<VirtualKeyCode> s_keysDown = new List<VirtualKeyCode>();
+
+        // Override file used for form persistence
+        private const string FORM_SETTINGS_FILENAME         = "Glue.form-settings.json";
+
+        //
         // TODO Move example content generation to its own class
+        //
+
         // used to generate example content 
         private const string FILENAME_DEFAULT               = "macros.glue";
         private const string PROCESS_NAME_NOTEPAD           = "notepad";      // also matches Notepad++
@@ -50,18 +68,6 @@ namespace Glue
         private const int TIME_DELAY_GLOBAL_MS              = 100;            // Delay fudge everywhere - can crank up for debugging
         private const int TIME_DWELL_GLOBAL_MS              = 250;            // Pressed keys are held this long
         private const int TIME_DELAY_ACTION                 = 8 * 1000;       // Bound to trigger for single delayed action
-
-        // Override file used for form persistence
-        private const string FORM_SETTINGS_FILENAME         = "Glue.form-settings.json";
-
-        private static ViewMain s_mainForm;
-        private static bool s_writeOnExit = false;                            // Set if example content created, or if GUI changes content
-        private static string s_fileName = FILENAME_DEFAULT;
-
-        private static List<VirtualKeyCode> s_keysDown = new List<VirtualKeyCode>();
-        private static TrayApplicationContext s_context;
-        private static ActionQueueScheduler s_actionScheduler = new ActionQueueScheduler();
-        private static bool s_lockMouse = false;
 
         /// <summary>
         /// The main entry point for the application.
@@ -81,20 +87,23 @@ namespace Glue
             try
             {
                 InitLogging();
-                InitDirectX();
-
-                if (!FileName.Contains("EMPTY"))
-                {
-                    LoadFile(FileName);
-                }
+                s_directInputManager.Initialize();
 
                 // Native keyboard and mouse hook initialization
                 KeyInterceptor.Initialize(KeyboardHandler.HookCallback);
+
+                // TODO Make mouse hook a toggle-able option in GUI
+                // TODO Mouse hook should release when windows are being sized / dragged
                 MouseInterceptor.Initialize(MouseHandler.HookCallback);
 
                 // Starts thread for timed queue of actions such as pressing keys,
                 // activating game controller buttons, playing sounds, etc.
                 s_actionScheduler.Start();
+
+                if (!FileName.Contains("EMPTY"))
+                {
+                    LoadFile(FileName);
+                }
 
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
@@ -133,42 +142,6 @@ namespace Glue
             else
             {
                 LOGGER.Warn("Macro not found: " + macroName);
-            }
-        }
-
-        // TODO All the DirectX stuff should be moved to another wrapper class
-        private static void InitDirectX()
-        {
-            // Using https://github.com/sharpdx/sharpdx
-            // See quick example code 
-            // https://stackoverflow.com/questions/3929764/taking-input-from-a-joystick-with-c-sharp-net
-            LOGGER.Info("Enumerating DirectX Input devices...");
-
-            try
-            {
-                DirectInput directInput = new DirectInput();
-
-                foreach (DeviceType deviceType in Enum.GetValues(typeof(DeviceType)))
-                {
-                    IList<DeviceInstance> deviceInstances = directInput.GetDevices(deviceType, DeviceEnumerationFlags.AllDevices);
-                    if (deviceInstances.Count > 0)
-                    {
-                        LOGGER.Info("    Devices of type [" + deviceType.ToString() + "]:");
-
-                        foreach (DeviceInstance deviceInstance in deviceInstances)
-                        {
-                            string message = String.Format(
-                                "        {0} : GUID=[{1}]",
-                                deviceInstance.InstanceName,
-                                deviceInstance.ProductGuid.ToString());
-                            LOGGER.Info(message);
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error enumerating DirectX devices: ", e);
             }
         }
 
