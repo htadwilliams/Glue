@@ -1,8 +1,8 @@
-﻿using System.Linq;
-using System.Threading;
-using Glue.Native;
-using System.Collections.ObjectModel;
+﻿using Glue.Native;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading;
 
 namespace Glue.Actions
 {
@@ -22,6 +22,7 @@ namespace Glue.Actions
         public event OnQueueChange QueueChangeEvent;
 
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private const string THREAD_NAME = "ActionQueue";
 
         // Using https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp copied directly into the project 
         // Thanks to BlueRaja.admin@gmail.com
@@ -33,9 +34,9 @@ namespace Glue.Actions
         {
             if (null == thread)
             {
-                thread = new Thread(new ThreadStart(Threadproc))
+                thread = new Thread(new ThreadStart(ScheduleThreadProc))
                 {
-                    Name = "ActionQueue",
+                    Name = THREAD_NAME,
 
                     // set or app won't exit when main app thread closes
                     IsBackground = true
@@ -76,7 +77,7 @@ namespace Glue.Actions
             NotifySubscribers();
         }
 
-       private void Threadproc()
+       private void ScheduleThreadProc()
         {
             LOGGER.Debug("Thread: [" + this.thread.Name + "] starting...");
 
