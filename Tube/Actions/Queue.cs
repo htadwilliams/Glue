@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Glue.Actions
 {
-    class ActionQueue
+    class Queue
     {
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private readonly SimplePriorityQueue<Action, long> actions = new SimplePriorityQueue<Action, long>();

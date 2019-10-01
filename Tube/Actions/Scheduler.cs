@@ -6,18 +6,7 @@ using System.Threading;
 
 namespace Glue.Actions
 {
-    public delegate void OnQueueChange(ReadOnlyCollection<Action> queue);
-
-    public interface IActionScheduler
-    {
-        void Schedule(Action action);
-
-        void Cancel(string name);
-
-        // event OnQueueChange;
-    }
-
-    class ActionQueueScheduler : IActionScheduler
+    class Scheduler : IActionScheduler
     {
         public event OnQueueChange QueueChangeEvent;
 
@@ -26,7 +15,7 @@ namespace Glue.Actions
 
         // Using https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp copied directly into the project 
         // Thanks to BlueRaja.admin@gmail.com
-        private readonly ActionQueue actions = new ActionQueue();
+        private readonly Queue actions = new Queue();
         private Thread thread = null;
         private readonly EventWaitHandle eventWaitNextAction = new AutoResetEvent (false);
 
@@ -56,6 +45,12 @@ namespace Glue.Actions
             eventWaitNextAction.Set();
         }
 
+        public void Cancel(string name)
+        {
+            actions.Cancel(name);
+            NotifySubscribers();
+        }
+
         public ReadOnlyCollection<Action> GetActions()
         {
             List<Action> actions = this.actions.GetActions().ToList<Action>();
@@ -69,12 +64,6 @@ namespace Glue.Actions
             {
                 QueueChangeEvent(GetActions());
             }
-        }
-
-        public void Cancel(string name)
-        {
-            actions.Cancel(name);
-            NotifySubscribers();
         }
 
        private void ScheduleThreadProc()

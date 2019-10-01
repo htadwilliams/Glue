@@ -51,6 +51,9 @@ namespace Tests
 
             public List<Action> ScheduledList { get; set; } = new List<Action>();
 
+            // Not used but required to implement IActionScheduler event 
+            public event OnQueueChange QueueChangeEvent;
+
             public void Cancel(string name)
             {
                 throw new System.NotImplementedException();
@@ -59,16 +62,9 @@ namespace Tests
             public void Schedule(Action action)
             {
                 ScheduledList.Add(action);
-            }
 
-            public void SubscribeQueueChange(OnQueueChange changeHandler)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public void UnsubscribeScheduleChange(OnQueueChange changeHandler)
-            {
-                throw new System.NotImplementedException();
+                // Not used but makes compiler happy
+                QueueChangeEvent?.Invoke(ScheduledList.AsReadOnly());
             }
         }
 

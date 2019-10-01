@@ -84,7 +84,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actions\ActionMouseLock.cs" />
-    <Compile Include="Actions\ActionQueue.cs" />
+    <Compile Include="Actions\IActionScheduler.cs" />
+    <Compile Include="Actions\Queue.cs" />
     <Compile Include="Actions\JsonContract\ActionContractResolver.cs" />
     <Compile Include="Actions\JsonContract\ActionConverter.cs" />
     <Compile Include="DirectInputManager.cs" />
@@ -160,7 +161,7 @@
     <Compile Include="WindowsInput\MouseButton.cs" />
     <Compile Include="MouseHandler.cs" />
     <Compile Include="Native\MouseInterceptor.cs" />
-    <Compile Include="Actions\ActionQueueScheduler.cs" />
+    <Compile Include="Actions\Scheduler.cs" />
     <Compile Include="WindowsInput\Native\HARDWAREINPUT.cs" />
     <Compile Include="WindowsInput\Native\INPUT.cs" />
     <Compile Include="WindowsInput\Native\InputType.cs" />
