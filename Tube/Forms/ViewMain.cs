@@ -1,5 +1,6 @@
 ﻿using Glue.Actions;
 using Glue.Native;
+using SharpDX.DirectInput;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,6 +18,8 @@ namespace Glue.Forms
         private string BaseCaptionText { get => this.baseCaptionText; set => this.baseCaptionText = value; }
 
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        private delegate void LogControllerDelegate(ControllerEventArgs controllerEventArgs, string movement);
 
         private bool logInput = true;
         private bool rawKeyNames = false;
@@ -46,6 +49,9 @@ namespace Glue.Forms
 
             BaseCaptionText = this.Text;
             SetCaption(Tube.FileName);
+
+            Tube.DirectInputManager.ControllerButtonEvent += OnControllerButton;
+            Tube.DirectInputManager.ControllerHatEvent += OnControllerHat;
 
             checkBoxRawKeyNames.Enabled = logInput;
         }
@@ -227,17 +233,40 @@ namespace Glue.Forms
         {
             int xOut = xPos;
             int yOut = yPos;
-            if (this.NormalizeMouseCoords)
+            if (NormalizeMouseCoords)
             {
                 xOut = ActionMouse.NormalizeX(xPos);
                 yOut = ActionMouse.NormalizeY(yPos);
             }
 
-            if (this.LogInput && this.RawKeyNames)
+            if (LogInput && RawKeyNames)
             {
-                this.AppendText(String.Format(" CLICK({0}, {1})", xOut, yOut));
+                AppendText(String.Format(" CLICK({0}, {1})", xOut, yOut));
             }
             this.toolStripMousePosLastClick.Text = String.Format("Last click: ({0:n0}, {1:n0})", xOut, yOut);
+        }
+
+        public void OnControllerButton(ControllerEventArgs eventArgs)
+        {
+            LogController(eventArgs, ((ButtonMove) eventArgs.Update.Value).ToString());
+        }
+
+        private void OnControllerHat(ControllerEventArgs eventArgs)
+        {
+            LogController(eventArgs, ((HatMove) eventArgs.Update.Value).ToString());
+        }
+
+        internal void LogController(ControllerEventArgs eventArgs, string movement)
+        {
+            if (this.InvokeRequired)
+            { 
+                LogControllerDelegate d = new LogControllerDelegate(LogController);
+                this.Invoke(d, new object[] {eventArgs, movement});
+            }
+            else
+            {
+                AppendText(" " + eventArgs.Joystick.Information.InstanceName + " " + eventArgs.Update.Offset + "(" + movement + ")");
+            }
         }
     }
 }

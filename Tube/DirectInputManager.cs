@@ -6,17 +6,51 @@ using System.Threading;
 
 namespace Glue
 {
+    public enum ButtonMove
+    {
+        Release = 0,
+        Press =  128,
+    }
+
+    public enum HatMove
+    {
+        Release = -1,
+        Up = 0,
+        Upright = 4500,
+        Right = 9000,
+        Downright = 13500,
+        Down = 18000,
+        Downleft = 22500,
+        Left = 27000,
+        Upleft = 31500,
+    }
+
+    public class ControllerEventArgs : EventArgs
+    {
+        public JoystickUpdate Update => update;
+        public Joystick Joystick => joystick;
+
+        private readonly JoystickUpdate update;
+        private readonly Joystick joystick;
+
+        public ControllerEventArgs(Joystick joystick, JoystickUpdate update)
+        {
+            this.update = update;
+            this.joystick = joystick;
+        }
+    }
+
     /// <summary>
     /// 
     /// Gets button presses from DirectInput via SharpDX. See https://github.com/sharpdx/sharpdx
     ///
+    /// Note: according to DirectX nomenclature, anything that isn't a keyboard is a joystick
+    /// 
     /// </summary>
     public class DirectInputManager : IDisposable
     {
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private readonly DirectInput directInput;
-
-        // Note: according to DirectX nomenclature, anything that isn't a keyboard is a joystick
 
         // List of Joystick instances currently created and aquired via Joystick.Aquire() 
         private readonly List<Joystick> joysticks = new List<Joystick>();
@@ -24,7 +58,9 @@ namespace Glue
         private Thread threadPolling;                   // Polls and disconnects devices that are connected
         private Thread threadDeviceConnector;           // Adds Joysticks to collection periodically
 
-        private static readonly HashSet<JoystickOffset> s_offsetFilterSet = new HashSet<JoystickOffset>();
+        private static readonly HashSet<JoystickOffset> s_offsetsHat = new HashSet<JoystickOffset>();
+        private static readonly HashSet<JoystickOffset> s_offsetsAxis = new HashSet<JoystickOffset>();
+        private static readonly HashSet<JoystickOffset> s_offsetsForceFeedback = new HashSet<JoystickOffset>();
 
         private const int POLLING_INTERVAL_HZ = 30;     // Polling interval in polls per second
         private const int DEVICE_BUFFER_SIZE = 128;     // Magic number from an example 
@@ -32,25 +68,75 @@ namespace Glue
         private const string THREAD_NAME_POLLING = "DirectX.Polling";
         private const string THREAD_NAME_CONNECTOR = "DirectX.Connector";
 
+        private static readonly object s_initLock = new object();
+
         private static readonly DeviceType[] DEVICE_TYPES = 
         { 
             DeviceType.Gamepad, 
-            DeviceType.Joystick, 
+            DeviceType.Joystick,
+            DeviceType.Remote,
+            DeviceType.Flight,
         };
 
-        private static readonly JoystickOffset[] JOYSTICK_OFFSET_FILTERS =
+        private static readonly JoystickOffset[] OFFSETS_AXIS =
         {
-            JoystickOffset.AccelerationSliders0,
-            JoystickOffset.AccelerationSliders1,
-            JoystickOffset.RotationX,
-            JoystickOffset.RotationY,
-            JoystickOffset.RotationZ,
             JoystickOffset.X,
             JoystickOffset.Y,
             JoystickOffset.Z,
+
+            JoystickOffset.RotationX,
+            JoystickOffset.RotationY,
+            JoystickOffset.RotationZ,
+
             JoystickOffset.Sliders0,
             JoystickOffset.Sliders1,
+
+            JoystickOffset.TorqueX,
+            JoystickOffset.TorqueY,
+            JoystickOffset.TorqueZ,
+
+            JoystickOffset.AccelerationX,
+            JoystickOffset.AccelerationY,
+            JoystickOffset.AccelerationZ,
+
+            JoystickOffset.AccelerationSliders0,
+            JoystickOffset.AccelerationSliders1,
+
+            JoystickOffset.AngularAccelerationX,
+            JoystickOffset.AngularAccelerationY,
+            JoystickOffset.AngularAccelerationZ,
+
+            JoystickOffset.AngularVelocityX,
+            JoystickOffset.AngularVelocityY,
+            JoystickOffset.AngularVelocityZ,
         };
+
+        private static readonly JoystickOffset[] OFFSETS_FORCE_FEEDBACK =
+        {
+            JoystickOffset.ForceX,
+            JoystickOffset.ForceY,
+            JoystickOffset.ForceZ,
+
+            JoystickOffset.ForceSliders0,
+            JoystickOffset.ForceSliders1,
+        };
+
+        private static readonly JoystickOffset[] OFFSETS_HAT =
+        {
+            JoystickOffset.PointOfViewControllers0,
+            JoystickOffset.PointOfViewControllers1,
+            JoystickOffset.PointOfViewControllers2,
+            JoystickOffset.PointOfViewControllers3,
+        };
+
+        public event OnControllerButton ControllerButtonEvent;
+        public delegate void OnControllerButton(ControllerEventArgs eventArgs);
+        
+        public event OnControllerHat ControllerHatEvent;
+        public delegate void OnControllerHat(ControllerEventArgs eventArgs);
+
+        public event OnControllerAxis ControllerAxisEvent;
+        public delegate void OnControllerAxis(ControllerEventArgs eventArgs);
 
         public DirectInputManager()
         {
@@ -59,22 +145,29 @@ namespace Glue
 
         internal void Initialize()
         {
-            InitializeOffsetFilter();
+            InitializeOffsetFilters();
             InitJoysticks();
 
             StartDeviceConnector();
             StartPolling();
         }
 
-        private void InitializeOffsetFilter()
+        private void InitializeOffsetFilters()
         {
-            lock (s_offsetFilterSet)
+            InitializeOffsets(OFFSETS_HAT, s_offsetsHat);
+            InitializeOffsets(OFFSETS_AXIS, s_offsetsAxis);
+            InitializeOffsets(OFFSETS_FORCE_FEEDBACK, s_offsetsForceFeedback);
+        }
+
+        private void InitializeOffsets(JoystickOffset[] offsetArray, HashSet<JoystickOffset> offsetsToInitialize)
+        {
+            lock (s_initLock)
             {
-                if (s_offsetFilterSet.Count < 1)
+                if (offsetsToInitialize.Count < 1)
                 {
-                    foreach (JoystickOffset offset in JOYSTICK_OFFSET_FILTERS)
+                    foreach (JoystickOffset offset in offsetArray)
                     {
-                        s_offsetFilterSet.Add(offset);
+                        offsetsToInitialize.Add(offset);
                     }
                 }
             }
@@ -103,7 +196,7 @@ namespace Glue
                             {
                                 this.joysticks.Add(joystick);
 
-                                LOGGER.Info("Adding new Joystick instance: " + joystick.Information.InstanceName);
+                                LOGGER.Info("Connected " + joystick.Information.Type + ": " + joystick.Information.InstanceName);
                             }
                         }
                     }
@@ -241,47 +334,77 @@ namespace Glue
                 {
                     foreach (Joystick joystick in joysticks)
                     {
+                        JoystickUpdate[] joystickUpdates = null;
+
                         try
                         {
                             joystick.Poll();
-
-                            JoystickUpdate[] joystickUpdates = joystick.GetBufferedData();
-                            foreach (JoystickUpdate joystickUpdate in joystickUpdates)
-                            {
-                                if (!s_offsetFilterSet.Contains(joystickUpdate.Offset))
-                                {
-                                    LOGGER.Info(joystickUpdate);
-                                }
-                            }
+                            joystickUpdates = joystick.GetBufferedData();
                         }
                         catch (SharpDXException dxException)
                         {
                             // Expected case when controllers are unplugged
                             if (dxException.Descriptor == ResultCode.InputLost)
                             {
-                                LOGGER.Info("Unplugged device: " + joystick.Information.Type.ToString() + " [" + joystick.Information.InstanceName + "]");
-
                                 // Add to list for removal after iterating
                                 joysticksUnplugged.Add(joystick);
+                                LOGGER.Info("Disconnected " + joystick.Information.Type.ToString() + ": " + joystick.Information.InstanceName);
                             }
                             else
                             {
                                 LOGGER.Error("SharpDXException thrown while polling: ", dxException);
                             }
                         }
-                        catch (Exception e)
+
+                        if (null != joystickUpdates)
                         {
-                            LOGGER.Error("Exception thrown while polling: ", e);
+                            ProcessUpdates(joystick, joystickUpdates);
                         }
                     }
 
-                    foreach (Joystick joystickUnplugged in joysticksUnplugged)
-                    {
-                        joysticks.Remove(joystickUnplugged);
-                        joystickUnplugged.Dispose();
-                    }
+                    RemoveJoysticks(joysticksUnplugged);
                     joysticksUnplugged.Clear();
-                } 
+                }
+            }
+        }
+
+        private void RemoveJoysticks(List<Joystick> joysticksUnplugged)
+        {
+            foreach (Joystick joystickUnplugged in joysticksUnplugged)
+            {
+                joysticks.Remove(joystickUnplugged);
+                joystickUnplugged.Dispose();
+            }
+        }
+
+        private void ProcessUpdates(Joystick joystick, JoystickUpdate[] joystickUpdates)
+        {
+            foreach (JoystickUpdate joystickUpdate in joystickUpdates)
+            {
+                if (joystickUpdate.Offset >= JoystickOffset.Buttons0 &&
+                    joystickUpdate.Offset <= JoystickOffset.Buttons127)
+                {
+                    LOGGER.Info(
+                        joystick.Information.InstanceName + " " +
+                        joystickUpdate.Offset.ToString() + " " +
+                        (ButtonMove) joystickUpdate.Value);
+
+                    ControllerButtonEvent?.Invoke(new ControllerEventArgs(joystick, joystickUpdate));
+                }
+                else if (s_offsetsHat.Contains(joystickUpdate.Offset))
+                {
+                    ControllerHatEvent?.Invoke(new ControllerEventArgs(joystick, joystickUpdate));
+
+                    LOGGER.Info(
+                        joystick.Information.InstanceName + " " +
+                        joystickUpdate.Offset.ToString() + " " +
+                        (HatMove) joystickUpdate.Value);
+                }
+                else if (s_offsetsAxis.Contains(joystickUpdate.Offset))
+                {
+                    ControllerAxisEvent?.Invoke(new ControllerEventArgs(joystick, joystickUpdate));
+                }
+
             }
         }
 
