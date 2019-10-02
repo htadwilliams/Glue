@@ -30,6 +30,8 @@ namespace Glue
         public static Scheduler Scheduler { get => s_actionScheduler; }
         public static bool MouseLocked { get => s_lockMouse; set => s_lockMouse = value; }
 
+        public static DirectInputManager DirectInputManager => s_directInputManager;
+
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         // Core data structures for macros, triggers, and keyboard remapping
