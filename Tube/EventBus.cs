@@ -4,7 +4,7 @@ namespace Glue
 {
     public class BusEventArgs<T> : EventArgs
     {
-        private T busEvent;
+        private readonly T busEvent;
 
         public BusEventArgs(T busEvent)
         {
@@ -46,9 +46,37 @@ namespace Glue
 
         public event EventHandler<BusEventArgs<T>> EventRecieved;
 
-        public void CreateEvent(object sender, T newEvent)
+        public int SendEvent(object sender, T newEvent)
         {
-            EventRecieved?.Invoke(sender, new BusEventArgs<T>(newEvent));
+            lock (s_lock)
+            {
+                if (null != EventRecieved)
+                {
+                    EventRecieved(sender, new BusEventArgs<T>(newEvent));
+
+                    return EventRecieved.GetInvocationList().Length;
+                }
+                else 
+                {
+                    return 0;
+                }
+            }
+        }
+
+        public int Empty()
+        {
+            int itemsDumped = 0;
+
+            lock (s_lock)
+            {
+                if (null != EventRecieved)
+                {
+                    itemsDumped = EventRecieved.GetInvocationList().Length;
+                    EventRecieved = null;
+                }
+
+                return itemsDumped;
+            }
         }
     }
 }
