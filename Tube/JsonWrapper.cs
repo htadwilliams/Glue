@@ -12,12 +12,12 @@ namespace Glue
     internal class JsonWrapper
     {
         public List<Macro> Macros { get => macros; set => macros = value; }
-        internal List<Trigger> Triggers { get => triggers; set => triggers = value; }
+        internal List<KeyboardTrigger> Triggers { get => triggers; set => triggers = value; }
         internal List<KeyboardRemapEntry> RemapKeys { get => remapKeys; set => remapKeys = value; }
 
         // Never put these tags on class properties. JSon should always serialize lower case names.
         [JsonProperty]
-        private List<Trigger> triggers;
+        private List<KeyboardTrigger> triggers;
         [JsonProperty]
         private List<KeyboardRemapEntry> remapKeys;
         [JsonProperty]
@@ -35,10 +35,10 @@ namespace Glue
             Dictionary<VirtualKeyCode, KeyboardRemapEntry> keyMap,
             Dictionary<string, Macro> macros)
         {
-            this.Triggers = new List<Trigger>();
+            this.Triggers = new List<KeyboardTrigger>();
 
             // Flatten trigger map into easily serializable list
-            foreach (List<Trigger> triggerList in triggers.Values)
+            foreach (List<KeyboardTrigger> triggerList in triggers.Values)
             {
                 this.Triggers.AddRange(triggerList);
             }
@@ -58,7 +58,7 @@ namespace Glue
         {
             TriggerMap triggerMap = new TriggerMap(this.Triggers.Count);
 
-            foreach (Trigger trigger in Triggers)
+            foreach (KeyboardTrigger trigger in Triggers)
             {
                 triggerMap.Add(trigger);
             }

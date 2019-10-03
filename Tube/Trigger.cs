@@ -1,28 +1,28 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Glue.Native;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace Glue
 {
-    [JsonObject(MemberSerialization.OptIn)]
-    class Trigger
+    public class KeyboardTrigger : Trigger
     {
-        public Keys TriggerKey => this.triggerKey;
-        public bool EatInput => this.eatInput;
-        public TriggerType Type => this.type;
+        public KeyCondition Condition => this.condition;
 
-        private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        public Keys TriggerKey => triggerKey;
+
+        public List<Keys> ModKeys => modKeys;
 
         [Flags]
-        public enum TriggerType
+        public enum KeyCondition
         {
             Down = 0x01,
             Up   = 0x02,
             Both = 0x03,
         };
+
+        private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         [JsonProperty]
         [JsonConverter(typeof(StringEnumConverter))]
@@ -30,60 +30,45 @@ namespace Glue
 
         [JsonProperty]
         [JsonConverter(typeof(StringEnumConverter))]
-        private readonly TriggerType type;
+        private readonly KeyCondition condition;
 
-        [JsonProperty]
-        private readonly List<string> macroNames = new List<string>();
-        
         [JsonProperty (ItemConverterType = typeof(StringEnumConverter))]
         private readonly List<Keys> modKeys = new List<Keys>();
 
-        [JsonProperty]
-        private readonly bool eatInput;
-
-        internal int indexMacroCurrent = 0;
-
         [JsonConstructor]
-        public Trigger(Keys triggerKey, List<string> macroNames, TriggerType type, bool eatInput)
+        public KeyboardTrigger(Keys triggerKey, List<string> macroNames, KeyCondition condition, bool eatInput) : base(macroNames, eatInput)
         {
             this.triggerKey = triggerKey;
-            this.macroNames.AddRange(macroNames);
-            this.type = type;
-            this.eatInput = eatInput;
+            this.condition = condition;
         }
 
-        public Trigger(Keys triggerKey, List<string> macroNames, bool eatInput)
+        public KeyboardTrigger(Keys triggerKey, List<string> macroNames, bool eatInput) : base(macroNames, eatInput)
         {
             this.triggerKey = triggerKey;
-            this.macroNames.AddRange(macroNames);
-            this.eatInput = eatInput;
-            this.type = TriggerType.Down;
+            this.condition = KeyCondition.Down;
         }
 
-        public Trigger(Keys triggerKey, List<string> macroNames, TriggerType type)
+        public KeyboardTrigger(Keys triggerKey, List<string> macroNames, KeyCondition condition) : base(macroNames, false)
         {
             this.triggerKey = triggerKey;
-            this.macroNames.AddRange(macroNames);
-            this.type = type;
+            this.condition = condition;
         }
 
-        public Trigger(Keys triggerKey, List<string> macroNames)
+        public KeyboardTrigger(Keys triggerKey, List<string> macroNames) : base(macroNames, false)
         {
             this.triggerKey = triggerKey;
-            this.macroNames.AddRange(macroNames);
-            this.type = TriggerType.Down;
+            this.condition = KeyCondition.Down;
         }
 
-        public Trigger(Keys triggerKey, string macroName)
+        public KeyboardTrigger(Keys triggerKey, string macroName) : base (macroName, false)
         {
             this.triggerKey = triggerKey;
-            this.macroNames.Add(macroName);
-            this.type = TriggerType.Down;
+            this.condition = KeyCondition.Down;
         }
 
         public Trigger AddModifier(Keys modKey)
         {
-            this.modKeys.Add(modKey);
+            ModKeys.Add(modKey);
             return this;
         }
 
@@ -91,7 +76,7 @@ namespace Glue
         {
             bool modKeysAreActive = true;
 
-            foreach(Keys key in this.modKeys)
+            foreach(Keys key in ModKeys)
             {
                 if (!Keyboard.IsKeyDown(key))
                 {
@@ -103,22 +88,6 @@ namespace Glue
             return modKeysAreActive;
         }
 
-        internal static string FormatSeparatedList<T>(List<T> list, string separator)
-        {
-            string formattedList = "";
-            int itemCount = 0;
-            foreach (T item in list)
-            {
-                formattedList += item.ToString();
-                if (++itemCount < list.Count)
-                {
-                    formattedList += ", ";
-                }
-            }
-
-            return formattedList;
-        }
-
         internal bool CheckAndFire()
         {
             if (!AreModKeysActive())
@@ -126,20 +95,20 @@ namespace Glue
                 return false;
             }
 
-            if (this.indexMacroCurrent >= this.macroNames.Count)
+            if (this.indexMacroCurrent >= MacroNames.Count)
             {
                 indexMacroCurrent = 0;
             }
 
-            String macroName = macroNames[this.indexMacroCurrent];
+            String macroName = MacroNames[this.indexMacroCurrent];
 
             if (LOGGER.IsInfoEnabled)
             {
                 string message = "TRIGGER FIRED: triggerKey = [" + TriggerKey + "]";
-                if (this.modKeys.Count > 0)
+                if (this.ModKeys.Count > 0)
                 {
                     message += " modKeys = [";
-                    message += FormatSeparatedList(this.modKeys, ", ");
+                    message += Utils.FormatSeparatedList(ModKeys, ", ");
                     message += "]";
                 }
                 message += " macro = [" + macroName + "]";
@@ -150,7 +119,7 @@ namespace Glue
             // no-op entries in macro "ripple" effect 
             if (null != macroName)
             {
-                Tube.PlayMacro(macroNames[this.indexMacroCurrent]);
+                Tube.PlayMacro(MacroNames[this.indexMacroCurrent]);
             }
             this.indexMacroCurrent++;
 
@@ -161,7 +130,42 @@ namespace Glue
                 Tube.MainForm.AppendText(" [" + macroName + "]");
             }
 
-            return this.eatInput;
+            return EatInput;
+        }
+    }
+
+    [JsonObject(MemberSerialization.OptIn)]
+    public class Trigger
+    {
+        public bool EatInput => this.eatInput;
+
+        public List<string> MacroNames => macroNames;
+
+        private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        [JsonProperty]
+        private readonly List<string> macroNames = new List<string>();
+        
+        [JsonProperty]
+        private readonly bool eatInput;
+
+        internal int indexMacroCurrent = 0;
+
+        [JsonConstructor]
+        public Trigger(List<string> macroNames, bool eatInput)
+        {
+            this.macroNames.AddRange(macroNames);
+            this.eatInput = eatInput;
+        }
+
+        public Trigger(string macroName, bool eatInput)
+        {
+            this.macroNames.Add(macroName);
+            this.eatInput = eatInput;
+        }
+
+        public Trigger()
+        {
         }
     }
 }
