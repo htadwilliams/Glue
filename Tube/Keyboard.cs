@@ -224,14 +224,14 @@ namespace Glue
             return GetKey((int) keys);
         }
 
-        public static bool IsKeyDown(Keys keys)
+        public static bool IsKeyDown(Keys key)
         {
-            return Native.Keyboard.IsKeyDown(keys);
+            return Native.Keyboard.IsKeyDown((int) key);
         }
 
         internal static bool IsKeyToggled(Keys key)
         {
-            return Native.Keyboard.IsKeyToggled(key);
+            return Native.Keyboard.IsKeyToggled((int) key);
         }
 
         private static void InitKeys()

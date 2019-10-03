@@ -1,25 +1,24 @@
 ﻿using System;
-using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using System.Windows.Input;
 
 namespace Glue.Native
 {
-    // From http://forums.codeguru.com/showthread.php?503595-GetKeyState-function-in-C
     public abstract class Keyboard
     {
-        private static KeyStates GetKeyState(Keys key)
+        private static KeyStates GetKeyStates(int virtualKeyCode)
         {
             KeyStates state = KeyStates.None;
-            short retVal = GetKeyState((int)key);
+            short retVal = GetKeyState(virtualKeyCode);
 
-            //If the high-order bit is 1, the key is down
-            //otherwise, it is up.
+            // If the high-order bit is 1, the key is down
+            // otherwise, it is up.
             if ((retVal & 0x8000) == 0x8000)
             {
                 state |= KeyStates.Down;
             }
 
-            //If the low-order bit is 1, the key is toggled.
+            // If the low-order bit is 1, the key is toggled.
             if ((retVal & 1) == 1)
             { 
                 state |= KeyStates.Toggled;
@@ -28,25 +27,17 @@ namespace Glue.Native
             return state;
         }
 
-        public static bool IsKeyDown(Keys key)
+        public static bool IsKeyDown(int virtualKeyCode)
         {
-            return KeyStates.Down == (GetKeyState(key) & KeyStates.Down);
+            return KeyStates.Down == (GetKeyStates(virtualKeyCode) & KeyStates.Down);
         }
 
-        public static bool IsKeyToggled(Keys key)
+        public static bool IsKeyToggled(int virtualKeyCode)
         {
-            return KeyStates.Toggled == (GetKeyState(key) & KeyStates.Toggled);
+            return KeyStates.Toggled == (GetKeyStates(virtualKeyCode) & KeyStates.Toggled);
         }
 
         #region Win API Functions and Constants
-
-        [Flags]
-        private enum KeyStates
-        {
-            None = 0,
-            Down = 1,
-            Toggled = 2
-        }
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
         private static extern short GetKeyState(int keyCode);
