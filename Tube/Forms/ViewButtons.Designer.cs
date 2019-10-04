@@ -87,7 +87,6 @@
             this.Name = "ViewButtons";
             this.ShowInTaskbar = false;
             this.Text = "Button State";
-            this.Load += new System.EventHandler(this.ViewButtons_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

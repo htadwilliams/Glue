@@ -1,15 +1,18 @@
-﻿using Glue.Native;
+﻿using Glue.Event;
+using Glue.Native;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using WindowsInput.Native;
 
 namespace Glue.Forms
 {
     public partial class ViewButtons : Form
     {
-        protected readonly string labelHeadingFormat;
-        private FormSettingsHandler formSettingsHandler;
+        private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        private readonly string labelHeadingFormat;
+        private readonly FormSettingsHandler formSettingsHandler;
+        private readonly HashSet<int> keysPressed = new HashSet<int>();
 
         public ViewButtons()
         {
@@ -20,6 +23,24 @@ namespace Glue.Forms
             
             labelHeadingFormat = labelHeading.Text;
             SetHeadingText(0);
+
+            EventBus<EventKeyboard>.Instance.EventRecieved += OnEventKeyboard;
+        }
+
+        private void OnEventKeyboard(object sender, BusEventArgs<EventKeyboard> e)
+        {
+            EventKeyboard eventKeyboard = e.BusEvent;
+
+            if (eventKeyboard.ButtonState == ButtonStates.Press)
+            {
+                keysPressed.Add(eventKeyboard.VirtualKeyCode);
+            }
+            else
+            {
+                keysPressed.Remove(eventKeyboard.VirtualKeyCode);
+            }
+
+            UpdateKeys();
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -44,23 +65,19 @@ namespace Glue.Forms
             this.labelHeading.Text = String.Format(labelHeadingFormat, countKeysPressed);
         }
 
-        internal void UpdateKeys(List<VirtualKeyCode> keys)
+        internal void UpdateKeys()
         {
-            SetHeadingText(keys.Count);
+            SetHeadingText(keysPressed.Count);
             this.textBoxButtonStates.Clear();
             
-            foreach(VirtualKeyCode keyCode in keys)
+            foreach(int keyCode in keysPressed)
             {
-                this.textBoxButtonStates.Text += keyCode.ToString();
+                Key key = Keyboard.GetKey(keyCode);
+                this.textBoxButtonStates.Text += key.ToString();;
                 this.textBoxButtonStates.Text += "\r\n";
             }
 
             WindowHandleUtils.HideCaret(this.textBoxButtonStates.Handle);
-        }
-
-        private void ViewButtons_Load(object sender, EventArgs e)
-        {
-            formSettingsHandler.OnFormLoad(sender, e);
         }
     }
 }

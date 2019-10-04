@@ -151,7 +151,7 @@
     <Compile Include="PropertyIO\PropertyString.cs" />
     <Compile Include="TrayApplicationContext.cs" />
     <Compile Include="PropertyIO\FormatDuration.cs" />
-    <Compile Include="EventBus.cs" />
+    <Compile Include="Event\EventBus.cs" />
     <Compile Include="Triggers.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="WindowsInput\InputBuilder.cs" />

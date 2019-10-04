@@ -1,12 +1,9 @@
 ﻿using Glue.Actions;
 using Glue.Event;
 using Glue.Native;
-using SharpDX.DirectInput;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Forms;
-using WindowsInput.Native;
 
 namespace Glue.Forms
 {
@@ -206,14 +203,6 @@ namespace Glue.Forms
 
             this.viewQueue = ShowView(this.viewQueue, Properties.Settings.Default.ViewQueue);
             this.menuItemViewQueue.Checked = Properties.Settings.Default.ViewQueue;
-        }
-
-        internal void UpdateKeys(List<VirtualKeyCode> keys)
-        {
-            if (this.viewButtons != null && this.viewButtons.Visible)
-            { 
-                this.viewButtons.UpdateKeys(keys);
-            }
         }
 
         private void MenuItemEditMacros_Click(object sender, EventArgs e)

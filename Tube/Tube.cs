@@ -50,7 +50,6 @@ namespace Glue
         // GUI state
         private static bool s_writeOnExit = false;                            // Set if example content created, or if GUI changes content
         private static string s_fileName = FILENAME_DEFAULT;
-        private static List<VirtualKeyCode> s_keysDown = new List<VirtualKeyCode>();
 
         // Override file used for form persistence
         private const string FORM_SETTINGS_FILENAME         = "Glue.form-settings.json";
@@ -304,12 +303,6 @@ namespace Glue
 
         public static void LogKeyDown(int vkCode)
         {
-            if (!s_keysDown.Contains((VirtualKeyCode) vkCode))
-            {
-                s_keysDown.Add((VirtualKeyCode)vkCode);
-                MainForm.UpdateKeys(s_keysDown);
-            }
-
             if (MainForm.LogInput)
             {
                 LOGGER.Debug("+" + (VirtualKeyCode) vkCode);
@@ -330,12 +323,6 @@ namespace Glue
 
         public static void LogKeyUp(int vkCode)
         {
-            while (s_keysDown.Contains((VirtualKeyCode) vkCode))
-            {
-                s_keysDown.Remove((VirtualKeyCode) vkCode);
-            }
-            MainForm.UpdateKeys(s_keysDown);
-
             if (MainForm.LogInput)
             {
                 LOGGER.Debug("-" + (VirtualKeyCode)vkCode);
