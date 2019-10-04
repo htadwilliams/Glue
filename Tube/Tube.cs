@@ -137,7 +137,9 @@ namespace Glue
             if (Macros.TryGetValue(macroName, out Macro macro))
             {
                 LOGGER.Debug("Playing macro [" + macroName + "]");
+
                 macro.ScheduleActions();
+                EventBus<EventMacro>.Instance.SendEvent(null, new EventMacro(macroName));
             }
             else
             {

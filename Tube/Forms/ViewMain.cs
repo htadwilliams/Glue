@@ -50,22 +50,12 @@ namespace Glue.Forms
 
             EventBus<EventKeyboard>.Instance.EventRecieved += EventKeyboard_Recieved;
             EventBus<EventMouse>.Instance.EventRecieved += EventMouse_Received;
+            EventBus<EventMacro>.Instance.EventRecieved += EventMacro_Received;
 
             Tube.DirectInputManager.ControllerButtonEvent += OnControllerButton;
             Tube.DirectInputManager.ControllerHatEvent += OnControllerHat;
 
             checkBoxRawKeyNames.Enabled = logInput;
-        }
-
-        private void EventMouse_Received(object sender, BusEventArgs<EventMouse> e)
-        {
-            EventMouse eventMouse = e.BusEvent;
-            LogMouseMove(eventMouse.X, eventMouse.Y);
-        }
-
-        private void EventKeyboard_Recieved(object sender, BusEventArgs<EventKeyboard> e)
-        {
-            EventKeyboard eventKeyboard = e.BusEvent;
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -270,6 +260,24 @@ namespace Glue.Forms
             else
             {
                 AppendText(" " + eventArgs.Joystick.Information.InstanceName + " " + eventArgs.Update.Offset + "(" + movement + ")");
+            }
+        }
+
+        private void EventMouse_Received(object sender, BusEventArgs<EventMouse> e)
+        {
+            EventMouse eventMouse = e.BusEvent;
+            LogMouseMove(eventMouse.X, eventMouse.Y);
+        }
+
+        private void EventKeyboard_Recieved(object sender, BusEventArgs<EventKeyboard> e)
+        {
+        }
+
+        private void EventMacro_Received(object sender, BusEventArgs<EventMacro> e)
+        {
+            if (LogInput && RawKeyNames)
+            {
+                Tube.MainForm.AppendText(" [" + e.BusEvent.MacroName + "]");
             }
         }
     }
