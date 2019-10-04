@@ -32,6 +32,7 @@ namespace Glue
                 ButtonStates buttonState = ButtonStates.Press;
 
                 // Switch could be refactored into a lookup table to make this cleaner
+                // Translate mouse messages into something Glue can use
                 switch (mouseMessage)
                 {
                     case MouseMessages.WM_XBUTTONDOWN:
@@ -77,23 +78,25 @@ namespace Glue
                     break;
                 }
 
-                // Fire trigger the same way keyboard input does
-                if (Tube.CheckAndFireTriggers((int) keyCode, buttonState))
+                // Mouse buttons are handled like keyboard keys
+                if (mouseMessage != MouseMessages.WM_MOUSEMOVE)
                 {
-                    // Eat mouse message if trigger tells us to do so
-                    return new IntPtr(1);
+                    if (Tube.CheckAndFireTriggers((int) keyCode, buttonState))
+                    {
+                        // Eat mouse message if trigger tells us to do so
+                        return new IntPtr(1);
+                    }
+
+                    // Only mouse buttons go on the keyboard bus
+                    EventBus<EventKeyboard>.Instance.SendEvent(
+                        null, 
+                        new EventKeyboard((int) keyCode, buttonState));
                 }
 
+                // All mouse events go on the mouse bus 
                 EventBus<EventMouse>.Instance.SendEvent(
                     null, 
-                    new EventMouse(
-                        mouseButton,
-                        buttonState,
-                        hookStruct.pt.x, hookStruct.pt.y));
-
-                EventBus<EventKeyboard>.Instance.SendEvent(
-                    null, 
-                    new EventKeyboard((int) keyCode, buttonState));
+                    new EventMouse(mouseButton, buttonState, hookStruct.pt.x, hookStruct.pt.y));
             }
 
             // Freeze the mouse if mouse safety is toggled
