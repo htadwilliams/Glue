@@ -1,7 +1,9 @@
 ﻿using Glue.Actions;
+using Glue.Event;
+using Glue.Native;
 using System;
 using System.Runtime.InteropServices;
-using WindowsInput;
+using System.Windows.Forms;
 using WindowsInput.Native;
 using static Glue.Native.MouseInterceptor;
 
@@ -25,52 +27,73 @@ namespace Glue
                 MSLLHOOKSTRUCT hookStruct = (MSLLHOOKSTRUCT) Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
 
                 // Translate mouse button into key code and action (press / release)
-                VirtualKeyCode keyCode = 0x00;
-                ActionKey.MoveType triggerMovement = ActionKey.MoveType.PRESS;
+                VirtualKeyCode keyCode;
+                MouseButtons mouseButton;
+                ButtonStates buttonState = ButtonStates.Press;
+
+                // Switch could be refactored into a lookup table to make this cleaner
                 switch (mouseMessage)
                 {
                     case MouseMessages.WM_XBUTTONDOWN:
-                        keyCode = GetXButton(hookStruct);
+                        keyCode = GetXButtonKeyCode(hookStruct);
+                        mouseButton = GetXButtonMouse(hookStruct);
                     break;
 
                     case MouseMessages.WM_LBUTTONDOWN:
-                        LOGGER.Info(String.Format("Click at ({0}, {1})", hookStruct.pt.x, hookStruct.pt.y));
-                        Tube.LogMouseClick(MouseButton.LeftButton, hookStruct.pt.x, hookStruct.pt.y);
                         keyCode = VirtualKeyCode.LBUTTON;
+                        mouseButton = MouseButtons.Left;
+
+                        LOGGER.Info(String.Format("Click at ({0}, {1})", hookStruct.pt.x, hookStruct.pt.y));
                     break;
 
                     case MouseMessages.WM_RBUTTONDOWN:
                         keyCode = VirtualKeyCode.RBUTTON;
+                        mouseButton = MouseButtons.Right;
                     break;
 
                     case MouseMessages.WM_XBUTTONUP:
-                        keyCode=GetXButton(hookStruct);
-                        triggerMovement = ActionKey.MoveType.RELEASE;
+                        keyCode=GetXButtonKeyCode(hookStruct);
+                        mouseButton = GetXButtonMouse(hookStruct);
+                        buttonState = ButtonStates.Release;
                     break;
 
                     case MouseMessages.WM_LBUTTONUP:
                         keyCode = VirtualKeyCode.LBUTTON;
-                        triggerMovement = ActionKey.MoveType.RELEASE;
+                        mouseButton = MouseButtons.Left;
+                        buttonState = ButtonStates.Release;
                     break;
 
                     case MouseMessages.WM_RBUTTONUP:
                         keyCode = VirtualKeyCode.RBUTTON;
-                        triggerMovement = ActionKey.MoveType.RELEASE;
+                        mouseButton = MouseButtons.Right;
+                        buttonState = ButtonStates.Release;
                     break;
 
                     case MouseMessages.WM_MOUSEMOVE:
                     default:
-                        Tube.LogMouseMove(hookStruct.pt.x, hookStruct.pt.y);
+                        keyCode = 0;
+                        mouseButton = MouseButtons.None;
+                        buttonState = ButtonStates.Release;
                     break;
-
                 }
 
                 // Fire trigger the same way keyboard input does
-                if (Tube.CheckAndFireTriggers((int) keyCode, triggerMovement))
+                if (Tube.CheckAndFireTriggers((int) keyCode, buttonState))
                 {
                     // Eat mouse message if trigger tells us to do so
                     return new IntPtr(1);
                 }
+
+                EventBus<EventMouse>.Instance.SendEvent(
+                    null, 
+                    new EventMouse(
+                        mouseButton,
+                        buttonState,
+                        hookStruct.pt.x, hookStruct.pt.y));
+
+                EventBus<EventKeyboard>.Instance.SendEvent(
+                    null, 
+                    new EventKeyboard((int) keyCode, buttonState));
             }
 
             // Freeze the mouse if mouse safety is toggled
@@ -82,7 +105,7 @@ namespace Glue
             return new IntPtr(0);
         }
 
-        private static VirtualKeyCode GetXButton(MSLLHOOKSTRUCT hookStruct)
+        private static VirtualKeyCode GetXButtonKeyCode(MSLLHOOKSTRUCT hookStruct)
         {
             VirtualKeyCode keyCode;
             XBUTTONS xButton = (XBUTTONS) hookStruct.mouseData;
@@ -98,5 +121,23 @@ namespace Glue
 
             return keyCode;
         }
+
+        private static MouseButtons GetXButtonMouse(MSLLHOOKSTRUCT hookStruct)
+        {
+            MouseButtons mouseButton;
+            XBUTTONS xButton = (XBUTTONS) hookStruct.mouseData;
+
+            if (xButton == XBUTTONS.XBUTTON1)
+            {
+                mouseButton = MouseButtons.XButton1;
+            }
+            else
+            {
+                mouseButton = MouseButtons.XButton2;
+            }
+
+            return mouseButton;
+        }
+
     }
 }

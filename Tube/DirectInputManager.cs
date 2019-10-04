@@ -6,13 +6,13 @@ using System.Threading;
 
 namespace Glue
 {
-    public enum ButtonMove
+    public enum ButtonValues
     {
         Release = 0,
         Press =  128,
     }
 
-    public enum HatMove
+    public enum HatValues
     {
         Release = -1,
         Up = 0,
@@ -387,7 +387,7 @@ namespace Glue
                     LOGGER.Info(
                         joystick.Information.InstanceName + " " +
                         joystickUpdate.Offset.ToString() + " " +
-                        (ButtonMove) joystickUpdate.Value);
+                        (ButtonValues) joystickUpdate.Value);
 
                     ControllerButtonEvent?.Invoke(new ControllerEventArgs(joystick, joystickUpdate));
                 }
@@ -398,7 +398,7 @@ namespace Glue
                     LOGGER.Info(
                         joystick.Information.InstanceName + " " +
                         joystickUpdate.Offset.ToString() + " " +
-                        (HatMove) joystickUpdate.Value);
+                        (HatValues) joystickUpdate.Value);
                 }
                 else if (s_offsetsAxis.Contains(joystickUpdate.Offset))
                 {

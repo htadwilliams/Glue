@@ -1,4 +1,5 @@
 ﻿using Glue.Actions;
+using Glue.Event;
 using Glue.Native;
 using SharpDX.DirectInput;
 using System;
@@ -50,10 +51,24 @@ namespace Glue.Forms
             BaseCaptionText = this.Text;
             SetCaption(Tube.FileName);
 
+            EventBus<EventKeyboard>.Instance.EventRecieved += EventKeyboard_Recieved;
+            EventBus<EventMouse>.Instance.EventRecieved += EventMouse_Received;
+
             Tube.DirectInputManager.ControllerButtonEvent += OnControllerButton;
             Tube.DirectInputManager.ControllerHatEvent += OnControllerHat;
 
             checkBoxRawKeyNames.Enabled = logInput;
+        }
+
+        private void EventMouse_Received(object sender, BusEventArgs<EventMouse> e)
+        {
+            EventMouse eventMouse = e.BusEvent;
+            LogMouseMove(eventMouse.X, eventMouse.Y);
+        }
+
+        private void EventKeyboard_Recieved(object sender, BusEventArgs<EventKeyboard> e)
+        {
+            EventKeyboard eventKeyboard = e.BusEvent;
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -248,12 +263,12 @@ namespace Glue.Forms
 
         public void OnControllerButton(ControllerEventArgs eventArgs)
         {
-            LogController(eventArgs, ((ButtonMove) eventArgs.Update.Value).ToString());
+            LogController(eventArgs, ((ButtonValues) eventArgs.Update.Value).ToString());
         }
 
         private void OnControllerHat(ControllerEventArgs eventArgs)
         {
-            LogController(eventArgs, ((HatMove) eventArgs.Update.Value).ToString());
+            LogController(eventArgs, ((HatValues) eventArgs.Update.Value).ToString());
         }
 
         internal void LogController(ControllerEventArgs eventArgs, string movement)

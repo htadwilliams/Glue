@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace Glue 
 {
-    class TriggerMap : Dictionary<Keys, List<Trigger>>
+    internal class TriggerMap : Dictionary<Keys, List<KeyboardTrigger>>
     {
         public TriggerMap(int initialCount) : base(initialCount)
         {
@@ -13,11 +13,11 @@ namespace Glue
         {
         }
 
-        public void Add(Trigger trigger)
+        public void Add(KeyboardTrigger trigger)
         {
-            if (!TryGetValue(trigger.TriggerKey, out List<Trigger> triggerList))
+            if (!TryGetValue(trigger.TriggerKey, out List<KeyboardTrigger> triggerList))
             {
-                triggerList = new List<Trigger>();
+                triggerList = new List<KeyboardTrigger>();
                 Add(trigger.TriggerKey, triggerList);
             }
             triggerList.Add(trigger);

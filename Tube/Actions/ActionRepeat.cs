@@ -17,7 +17,7 @@ namespace Glue.Actions
         {
             this.macroRepeater = macroRepeater;
             this.macro = macro;
-            this.Type = ActionType.REPEAT;
+            this.Type = ActionType.Repeat;
         }
 
         public override void Play()

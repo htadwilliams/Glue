@@ -24,7 +24,7 @@ namespace Glue.Actions
         public ActionSound(long timeDelayMS, string soundPath) : base(timeDelayMS)
         {
             this.soundPath = soundPath;
-            this.Type = ActionType.SOUND;
+            this.Type = ActionType.Sound;
         }
 
         protected SoundPlayer GetPlayer(string soundFileName)

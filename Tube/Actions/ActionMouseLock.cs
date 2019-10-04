@@ -14,7 +14,7 @@ namespace Glue.Actions
 //        public ActionMouseLock(bool lockMouse) : base (0)
         public ActionMouseLock() : base (0)
         {
-            this.Type = ActionType.MOUSE_LOCK;
+            this.Type = ActionType.MouseLock;
         }
 
         public override void Play()

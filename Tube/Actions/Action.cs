@@ -10,13 +10,13 @@ namespace Glue.Actions
 {
     public enum ActionType
     {
-        KEY,
-        TYPING,
-        SOUND,
-        MOUSE,
-        REPEAT,
-        CANCEL,
-        MOUSE_LOCK,
+        Keyboard,
+        Typing,
+        Sound,
+        Mouse,
+        Repeat,
+        Cancel,
+        MouseLock,
      }
 
     [JsonConverter(typeof(ActionConverter))]

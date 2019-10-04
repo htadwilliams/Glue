@@ -13,7 +13,7 @@ namespace Glue.Actions
         public ActionCancel(string macroName) : base (0)
         {
             this.macroName = macroName;
-            this.Type = ActionType.CANCEL;
+            this.Type = ActionType.Cancel;
         }
 
         public override void Play()

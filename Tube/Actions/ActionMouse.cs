@@ -44,7 +44,7 @@ namespace Glue.Actions
             this.xMove = moveX;
             this.yMove = moveY;
             this.xButtonId = xButtonId;
-            this.Type = ActionType.MOUSE;
+            this.Type = ActionType.Mouse;
         }
 
         // Convenience constructors 
