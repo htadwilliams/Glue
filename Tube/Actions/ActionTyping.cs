@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Glue.Event;
 using Newtonsoft.Json;
 using WindowsInput;
 using WindowsInput.Native;
@@ -24,7 +25,7 @@ namespace Glue.Actions
             this.typedString=typedString;
             this.charDelayMS=keyDelayMS;
             this.dwellTimeMS=dwellTimeMS;
-            this.Type = ActionType.TYPING;
+            this.Type = ActionType.Typing;
         }
 
         public override Action[] Schedule(long timeScheduleFrom)
@@ -44,8 +45,8 @@ namespace Glue.Actions
                     actionTimeMS,
                     input, 
                     (actionCount % 2) == 0 
-                        ? ActionKey.MoveType.PRESS 
-                        : ActionKey.MoveType.RELEASE
+                        ? ButtonStates.Press
+                        : ButtonStates.Release
                     );
 
                 actions.Add(action);

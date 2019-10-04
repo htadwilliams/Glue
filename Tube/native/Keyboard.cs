@@ -1,10 +1,17 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using System.Windows.Input;
+﻿using System.Runtime.InteropServices;
 
 namespace Glue.Native
 {
-    public abstract class Keyboard
+    // Exact copy can be found in System.Presentation.Core, but that brings  
+    // in many things that aren't desirable just for one enum
+    public enum KeyStates
+    {
+        None = 0,
+        Down = 1,
+        Toggled = 2,
+    }
+
+    public abstract  class Keyboard
     {
         private static KeyStates GetKeyStates(int virtualKeyCode)
         {

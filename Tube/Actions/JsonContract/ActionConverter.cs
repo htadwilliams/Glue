@@ -33,30 +33,37 @@ namespace Glue.Actions.JsonContract
             JObject jo = JObject.Load(reader);
             string typeString = jo["type"].Value<string>();
 
-            ActionType type = (ActionType) Enum.Parse(typeof(ActionType), typeString, true);
-
-            switch (type)
+            try
             {
-                // TODO Type constants should be defined in one place, and possibly use an enum if the contract will support it
-                case ActionType.KEY:
-                    return JsonConvert.DeserializeObject<ActionKey>(jo.ToString(), SpecifiedSubclassConversion);
-                case ActionType.TYPING:
-                    return JsonConvert.DeserializeObject<ActionTyping>(jo.ToString(), SpecifiedSubclassConversion);
-                case ActionType.SOUND:
-                    return JsonConvert.DeserializeObject<ActionSound>(jo.ToString(), SpecifiedSubclassConversion);
-                case ActionType.MOUSE:
-                    return JsonConvert.DeserializeObject<ActionMouse>(jo.ToString(), SpecifiedSubclassConversion);
-                case ActionType.REPEAT:
-                    return JsonConvert.DeserializeObject<ActionRepeat>(jo.ToString(), SpecifiedSubclassConversion);
-                case ActionType.CANCEL:
-                    return JsonConvert.DeserializeObject<ActionCancel>(jo.ToString(), SpecifiedSubclassConversion);
-                case ActionType.MOUSE_LOCK:
-                    return JsonConvert.DeserializeObject<ActionMouseLock>(jo.ToString(), SpecifiedSubclassConversion);
+                ActionType type = (ActionType) Enum.Parse(typeof(ActionType), typeString, true);
 
-                default:
-                    string message = "Unknown type [" + type + "] encountered during deserialization";
-                    LOGGER.Warn(message);
-                    return null;
+                switch (type)
+                {
+                    case ActionType.Keyboard:
+                        return JsonConvert.DeserializeObject<ActionKey>(jo.ToString(), SpecifiedSubclassConversion);
+                    case ActionType.Typing:
+                        return JsonConvert.DeserializeObject<ActionTyping>(jo.ToString(), SpecifiedSubclassConversion);
+                    case ActionType.Sound:
+                        return JsonConvert.DeserializeObject<ActionSound>(jo.ToString(), SpecifiedSubclassConversion);
+                    case ActionType.Mouse:
+                        return JsonConvert.DeserializeObject<ActionMouse>(jo.ToString(), SpecifiedSubclassConversion);
+                    case ActionType.Repeat:
+                        return JsonConvert.DeserializeObject<ActionRepeat>(jo.ToString(), SpecifiedSubclassConversion);
+                    case ActionType.Cancel:
+                        return JsonConvert.DeserializeObject<ActionCancel>(jo.ToString(), SpecifiedSubclassConversion);
+                    case ActionType.MouseLock:
+                        return JsonConvert.DeserializeObject<ActionMouseLock>(jo.ToString(), SpecifiedSubclassConversion);
+
+                    default:
+                        string message = "Unknown type [" + type + "] encountered during deserialization";
+                        LOGGER.Warn(message);
+                        return null;
+                }
+            }
+            catch (Exception e)
+            {
+                LOGGER.Error(e);
+                return null;
             }
         }
 

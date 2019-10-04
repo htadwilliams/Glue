@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using Glue.Event;
 using Glue.Native;
 using Glue.PropertyIO;
 using Newtonsoft.Json;
@@ -11,22 +12,15 @@ namespace Glue.Actions
 {
     public class ActionKey : Action
     {
-        public enum MoveType
-        {
-            PRESS,
-            RELEASE,
-            CLICK
-        }
-
         private const string MOVEMENT = "movement";
         public static readonly IntPtr INJECTION_ID = new IntPtr(0xD00D);
         public Nullable<VirtualKeyCode> Key => key;
 
-        public MoveType Movement { get => movement; set => movement = value; }
+        public ButtonStates Movement { get => movement; set => movement = value; }
 
         [JsonProperty]
         [JsonConverter(typeof(StringEnumConverter))]
-        private MoveType movement;
+        private ButtonStates movement;
 
         [JsonProperty]
         [JsonConverter(typeof(StringEnumConverter))]
@@ -34,7 +28,7 @@ namespace Glue.Actions
 
         [JsonProperty]
         [DefaultValue (50)]
-        // Options - if specified will be used to schedule if MoveType is CLICK
+        // Options - if specified will be used to schedule if ButtonStates is CLICK
         protected long timeClickMS = 50;
 
         // Generated only if scheduled by ActionTyping with a string
@@ -44,26 +38,26 @@ namespace Glue.Actions
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         [JsonConstructor]
-        public ActionKey(long timeDelayMS, VirtualKeyCode key, MoveType movement) : base(timeDelayMS)
+        public ActionKey(long timeDelayMS, VirtualKeyCode key, ButtonStates movement) : base(timeDelayMS)
         {
             this.key = key;
             this.Movement = movement;
             this.input = null;
-            this.Type = ActionType.KEY;
+            this.Type = ActionType.Keyboard;
         }
 
-        internal ActionKey(long timeDelayMS, INPUT input, MoveType movement) : base(timeDelayMS)
+        internal ActionKey(long timeDelayMS, INPUT input, ButtonStates movement) : base(timeDelayMS)
         {
             this.input=input;
             this.key = null;
             this.Movement = movement;
-            this.Type = ActionType.KEY;
+            this.Type = ActionType.Keyboard;
         }
 
         public override Action[] Schedule(long timeScheduleFrom)
         {
             Action[] scheduledActions;
-            if (this.Movement == MoveType.CLICK)
+            if (this.Movement == ButtonStates.Both)
             {
                 long timeClickMS = 
                     this.timeClickMS > 0 
@@ -72,11 +66,11 @@ namespace Glue.Actions
 
                 scheduledActions = new Action[]
                 {
-                    new ActionKey(this.DelayMS, (VirtualKeyCode) this.key, MoveType.PRESS)
+                    new ActionKey(this.DelayMS, (VirtualKeyCode) this.key, ButtonStates.Press)
                     {
                         ScheduledTick = timeScheduleFrom + this.delayMS
                     },
-                    new ActionKey(timeClickMS, (VirtualKeyCode) this.key, MoveType.RELEASE)
+                    new ActionKey(timeClickMS, (VirtualKeyCode) this.key, ButtonStates.Release)
                     {
                         ScheduledTick = timeScheduleFrom + this.delayMS + timeClickMS
                     }
@@ -105,10 +99,10 @@ namespace Glue.Actions
             {
                 switch (this.Movement)
                 {
-                    case MoveType.PRESS:
+                    case ButtonStates.Press:
                         inputs = new InputBuilder().AddKeyDown((VirtualKeyCode) this.key).ToArray();
                         break;
-                    case MoveType.RELEASE:
+                    case ButtonStates.Release:
                         inputs = new InputBuilder().AddKeyUp((VirtualKeyCode) this.key).ToArray();
                         break;
                 }
@@ -147,27 +141,27 @@ namespace Glue.Actions
 
             if (null != key)
             {
-                toString += " " + MoveTypeToString(this.Movement) + key.ToString();
+                toString += " " + ButtonStatesToString(this.Movement) + key.ToString();
             }
 
             return toString;
         }
 
-        public static string MoveTypeToString(MoveType moveType)
+        public static string ButtonStatesToString(ButtonStates ButtonStates)
         {
             string toString = "";
 
-            switch (moveType)
+            switch (ButtonStates)
             {
-                case MoveType.CLICK:
+                case ButtonStates.Both:
                     toString = "*";
                     break;
 
-                case MoveType.PRESS:
+                case ButtonStates.Press:
                     toString = "+";
                     break;
 
-                case MoveType.RELEASE:
+                case ButtonStates.Release:
                     toString = "-";
                     break;
 

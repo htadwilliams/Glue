@@ -71,14 +71,10 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -89,6 +85,10 @@
     <Compile Include="Actions\JsonContract\ActionContractResolver.cs" />
     <Compile Include="Actions\JsonContract\ActionConverter.cs" />
     <Compile Include="DirectInputManager.cs" />
+    <Compile Include="Event\Event.cs" />
+    <Compile Include="Event\EventController.cs" />
+    <Compile Include="Event\EventKeyboard.cs" />
+    <Compile Include="Event\EventMouse.cs" />
     <Compile Include="Forms\DialogEditMacros.cs">
       <SubType>Form</SubType>
     </Compile>

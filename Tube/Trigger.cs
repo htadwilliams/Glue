@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Glue.Event;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
@@ -8,19 +9,11 @@ namespace Glue
 {
     public class KeyboardTrigger : Trigger
     {
-        public KeyCondition Condition => this.condition;
+        public ButtonStates Condition => this.buttonState;
 
         public Keys TriggerKey => triggerKey;
 
         public List<Keys> ModKeys => modKeys;
-
-        [Flags]
-        public enum KeyCondition
-        {
-            Down = 0x01,
-            Up   = 0x02,
-            Both = 0x03,
-        };
 
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -30,40 +23,40 @@ namespace Glue
 
         [JsonProperty]
         [JsonConverter(typeof(StringEnumConverter))]
-        private readonly KeyCondition condition;
+        private readonly ButtonStates buttonState;
 
         [JsonProperty (ItemConverterType = typeof(StringEnumConverter))]
         private readonly List<Keys> modKeys = new List<Keys>();
 
         [JsonConstructor]
-        public KeyboardTrigger(Keys triggerKey, List<string> macroNames, KeyCondition condition, bool eatInput) : base(macroNames, eatInput)
+        public KeyboardTrigger(Keys triggerKey, List<string> macroNames, ButtonStates buttonState, bool eatInput) : base(macroNames, eatInput)
         {
             this.triggerKey = triggerKey;
-            this.condition = condition;
+            this.buttonState = buttonState;
         }
 
         public KeyboardTrigger(Keys triggerKey, List<string> macroNames, bool eatInput) : base(macroNames, eatInput)
         {
             this.triggerKey = triggerKey;
-            this.condition = KeyCondition.Down;
+            this.buttonState = ButtonStates.Press;
         }
 
-        public KeyboardTrigger(Keys triggerKey, List<string> macroNames, KeyCondition condition) : base(macroNames, false)
+        public KeyboardTrigger(Keys triggerKey, List<string> macroNames, ButtonStates buttonState) : base(macroNames, false)
         {
             this.triggerKey = triggerKey;
-            this.condition = condition;
+            this.buttonState = buttonState;
         }
 
         public KeyboardTrigger(Keys triggerKey, List<string> macroNames) : base(macroNames, false)
         {
             this.triggerKey = triggerKey;
-            this.condition = KeyCondition.Down;
+            this.buttonState = ButtonStates.Press;
         }
 
         public KeyboardTrigger(Keys triggerKey, string macroName) : base (macroName, false)
         {
             this.triggerKey = triggerKey;
-            this.condition = KeyCondition.Down;
+            this.buttonState = ButtonStates.Press;
         }
 
         public Trigger AddModifier(Keys modKey)

@@ -1,4 +1,5 @@
 ﻿using Glue.Actions;
+using Glue.Event;
 using Glue.Native;
 using System;
 using System.Runtime.InteropServices;
@@ -26,7 +27,7 @@ namespace Glue
                 // Don't do remap for keys injected by our own process
                 if (!KeyWasFromGlue(kbd.dwExtraInfo))
                 {
-                    VirtualKeyCode keyRemapped = DoRemap((VirtualKeyCode) vkCode, ActionKey.MoveType.PRESS);
+                    VirtualKeyCode keyRemapped = DoRemap((VirtualKeyCode) vkCode, ButtonStates.Press);
 
                     if ((int) keyRemapped != vkCode)
                     {
@@ -38,7 +39,7 @@ namespace Glue
                         return new IntPtr(1);
                     }
 
-                    if (Tube.CheckAndFireTriggers(vkCode, ActionKey.MoveType.PRESS))
+                    if (Tube.CheckAndFireTriggers(vkCode, ButtonStates.Press))
                     {
                         // Eat keystroke if trigger tells us to do so
                         return new IntPtr(1);
@@ -46,13 +47,14 @@ namespace Glue
                 }
 
                 Tube.LogKeyDown(vkCode);
+                EventBus<EventKeyboard>.Instance.SendEvent(null, new EventKeyboard(vkCode, ButtonStates.Press));
             }
 
             if (wParam == (IntPtr) KeyInterceptor.WM_KEYUP || wParam == (IntPtr) KeyInterceptor.WM_SYSKEYUP)
             {
                 if (!KeyWasFromGlue(kbd.dwExtraInfo))
                 {
-                    VirtualKeyCode keyRemapped = DoRemap((VirtualKeyCode) vkCode, ActionKey.MoveType.RELEASE);
+                    VirtualKeyCode keyRemapped = DoRemap((VirtualKeyCode) vkCode, ButtonStates.Release);
 
                     if ((int) keyRemapped != vkCode)
                     {
@@ -60,7 +62,7 @@ namespace Glue
                         return new IntPtr(1);
                     }
 
-                    if (Tube.CheckAndFireTriggers(vkCode, ActionKey.MoveType.RELEASE))
+                    if (Tube.CheckAndFireTriggers(vkCode, ButtonStates.Release))
                     {
                         // Eat keystroke if trigger tells us to do so
                         return new IntPtr(1);
@@ -68,6 +70,7 @@ namespace Glue
                 }
 
                 Tube.LogKeyUp(vkCode);
+                EventBus<EventKeyboard>.Instance.SendEvent(null, new EventKeyboard(vkCode, ButtonStates.Release));
             }
 
             return new IntPtr(0);
@@ -78,7 +81,7 @@ namespace Glue
             return injectionId.ToUInt32() == ActionKey.INJECTION_ID.ToInt32();
         }
 
-        private static VirtualKeyCode DoRemap(VirtualKeyCode inputKey, ActionKey.MoveType movement)
+        private static VirtualKeyCode DoRemap(VirtualKeyCode inputKey, ButtonStates movement)
         {
             if (Tube.KeyMap != null && Tube.KeyMap.TryGetValue(inputKey, out KeyboardRemapEntry remap))
             {

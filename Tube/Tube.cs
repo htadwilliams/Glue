@@ -1,4 +1,5 @@
 ﻿using Glue.Actions;
+using Glue.Event;
 using Glue.Forms;
 using Glue.Native;
 using log4net.Config;
@@ -264,7 +265,7 @@ namespace Glue
             }
         }
 
-        public static bool CheckAndFireTriggers(int vkCode, MoveType movement)
+        public static bool CheckAndFireTriggers(int vkCode, ButtonStates movement)
         {
             bool eatInput = false;
 
@@ -276,19 +277,19 @@ namespace Glue
                 {
                     switch (trigger.Condition)
                     {
-                        case KeyCondition.Both:
+                        case ButtonStates.Both:
                             eatInput |= trigger.CheckAndFire();
                         break;
 
-                        case KeyCondition.Down:
-                        if (MoveType.PRESS == movement)
+                        case ButtonStates.Press:
+                        if (ButtonStates.Press == movement)
                         {
                             eatInput |= trigger.CheckAndFire();
                         }
                         break;
 
-                        case KeyCondition.Up:
-                        if (MoveType.RELEASE == movement)
+                        case ButtonStates.Release:
+                        if (ButtonStates.Release == movement)
                         {
                             eatInput |= trigger.CheckAndFire();
                         }
@@ -344,11 +345,6 @@ namespace Glue
                     MainForm.AppendText(" -" + (VirtualKeyCode)vkCode);
                 }
             }
-        }
-
-        internal static void LogMouseMove(int xPos, int yPos)
-        {
-            MainForm.LogMouseMove(xPos, yPos);
         }
 
         internal static void LogMouseClick(MouseButton button, int xPos, int yPos)
@@ -410,8 +406,7 @@ namespace Glue
             //
             Macro macro = new Macro(macroName = "delayed-action", TIME_DELAY_ACTION) 
                 .AddAction(new ActionSound(TIME_DELAY_GLOBAL_MS,  "ahha.wav"))
-                .AddAction(new ActionKey(TIME_DELAY_GLOBAL_MS,    VirtualKeyCode.RETURN,  MoveType.PRESS))
-                .AddAction(new ActionKey(TIME_DWELL_GLOBAL_MS,    VirtualKeyCode.RETURN,  MoveType.RELEASE))
+                .AddAction(new ActionKey(TIME_DELAY_GLOBAL_MS,    VirtualKeyCode.RETURN,  ButtonStates.Both))
                 ;
             Macros.Add(macroName, macro);
             // Setup trigger
@@ -490,7 +485,7 @@ namespace Glue
             // Macro bound to mouse button X1 / X2
             //
             macro = new Macro(macroName = "F10", 0);
-            macro.AddAction(new ActionKey(50, VirtualKeyCode.F10, MoveType.CLICK));
+            macro.AddAction(new ActionKey(50, VirtualKeyCode.F10, ButtonStates.Both));
             Macros.Add(macroName, macro);
 
             // Same macro bound to two triggers            
@@ -503,14 +498,15 @@ namespace Glue
             // Toggle - hold SPACE key every other time it is pressed 
             //
             macro = new Macro(macroName = "toggle-down", TIME_DELAY_GLOBAL_MS);
-            macro.AddAction(new ActionKey(0, VirtualKeyCode.SPACE, MoveType.PRESS));
+            macro.AddAction(new ActionKey(0, VirtualKeyCode.SPACE, ButtonStates.Press));
             Macros.Add(macroName, macro);
 
             macro = new Macro(macroName = "toggle-up", TIME_DELAY_GLOBAL_MS);
-            macro.AddAction(new ActionKey(0, VirtualKeyCode.SPACE, MoveType.RELEASE));
+            macro.AddAction(new ActionKey(0, VirtualKeyCode.SPACE, ButtonStates.Release));
             Macros.Add(macroName, macro);
 
-            trigger = new KeyboardTrigger(Keys.Space, new List<string> {"toggle-down", null, "toggle-up", null}, KeyCondition.Both, true);
+            trigger = new KeyboardTrigger(
+                Keys.Space, new List<string> {"toggle-down", null, "toggle-up", null}, ButtonStates.Both, true);
             trigger.AddModifier(Keys.LControlKey);
             Triggers.Add(trigger);
 

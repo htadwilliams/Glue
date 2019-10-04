@@ -29,6 +29,8 @@ namespace Glue
         {
         }
 
+        public event EventHandler<BusEventArgs<T>> EventRecieved;
+
         public static EventBus<T> Instance
         {
             get
@@ -43,8 +45,6 @@ namespace Glue
                 }
             }
         }
-
-        public event EventHandler<BusEventArgs<T>> EventRecieved;
 
         public int SendEvent(object sender, T newEvent)
         {
