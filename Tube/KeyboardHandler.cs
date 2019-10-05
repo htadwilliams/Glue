@@ -46,7 +46,11 @@ namespace Glue
                     }
                 }
 
-                Tube.LogKeyDown(vkCode);
+                if (Properties.Settings.Default.LogInput)
+                {
+                    LOGGER.Info("+" + (VirtualKeyCode) vkCode);
+                }
+
                 EventBus<EventKeyboard>.Instance.SendEvent(null, new EventKeyboard(vkCode, ButtonStates.Press));
             }
 
@@ -69,7 +73,11 @@ namespace Glue
                     }
                 }
 
-                Tube.LogKeyUp(vkCode);
+                if (Properties.Settings.Default.LogInput)
+                {
+                    LOGGER.Info("-" + (VirtualKeyCode)vkCode);
+                }
+
                 EventBus<EventKeyboard>.Instance.SendEvent(null, new EventKeyboard(vkCode, ButtonStates.Release));
             }
 

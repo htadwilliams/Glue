@@ -50,7 +50,6 @@ namespace Glue
         // GUI state
         private static bool s_writeOnExit = false;                            // Set if example content created, or if GUI changes content
         private static string s_fileName = FILENAME_DEFAULT;
-        private static List<VirtualKeyCode> s_keysDown = new List<VirtualKeyCode>();
 
         // Override file used for form persistence
         private const string FORM_SETTINGS_FILENAME         = "Glue.form-settings.json";
@@ -138,7 +137,9 @@ namespace Glue
             if (Macros.TryGetValue(macroName, out Macro macro))
             {
                 LOGGER.Debug("Playing macro [" + macroName + "]");
+
                 macro.ScheduleActions();
+                EventBus<EventMacro>.Instance.SendEvent(null, new EventMacro(macroName));
             }
             else
             {
@@ -300,96 +301,6 @@ namespace Glue
             }
 
             return eatInput;
-        }
-
-        public static void LogKeyDown(int vkCode)
-        {
-            if (!s_keysDown.Contains((VirtualKeyCode) vkCode))
-            {
-                s_keysDown.Add((VirtualKeyCode)vkCode);
-                MainForm.UpdateKeys(s_keysDown);
-            }
-
-            if (MainForm.LogInput)
-            {
-                LOGGER.Debug("+" + (VirtualKeyCode) vkCode);
-
-                string output;
-                if (MainForm.RawKeyNames)
-                {
-                    output = " +" + (VirtualKeyCode) vkCode;
-                }
-                else
-                {
-                    output = " " + FormatKeyString(vkCode);
-                }
-
-                MainForm.AppendText(output);
-            }
-        }
-
-        public static void LogKeyUp(int vkCode)
-        {
-            while (s_keysDown.Contains((VirtualKeyCode) vkCode))
-            {
-                s_keysDown.Remove((VirtualKeyCode) vkCode);
-            }
-            MainForm.UpdateKeys(s_keysDown);
-
-            if (MainForm.LogInput)
-            {
-                LOGGER.Debug("-" + (VirtualKeyCode)vkCode);
-
-                if (MainForm.RawKeyNames)
-                {
-                    MainForm.AppendText(" -" + (VirtualKeyCode)vkCode);
-                }
-            }
-        }
-
-        internal static void LogMouseClick(MouseButton button, int xPos, int yPos)
-        {
-            MainForm.LogMouseClick(xPos, yPos);
-        }
-
-        // TODO FormatKeyString should be in its own wrapper around Keyboard Key
-        private static string FormatKeyString(int vkCode)
-        {
-            string output = "";
-            
-            Key key = Keyboard.GetKey(vkCode);
-            if (null == key)
-            {
-                return output;
-            }
-
-            output = key.Display;
-            if (output == "")
-            {
-                output = key.ToString();
-            }
-
-            // Only printed characters are a single character long 
-            if (output.Length == 1)
-            {
-                // Could be simplified but this is super clear to read
-                if (Keyboard.IsKeyToggled(Keys.CapsLock))
-                {
-                    if (Keyboard.IsKeyDown(Keys.LShiftKey) || Keyboard.IsKeyDown(Keys.RShiftKey))
-                    {
-                        output = output.ToLower();
-                    }
-                }
-                else
-                {
-                    if (!Keyboard.IsKeyDown(Keys.LShiftKey) && !Keyboard.IsKeyDown(Keys.RShiftKey))
-                    {
-                        output = output.ToLower();
-                    }
-                }
-            }
-
-            return output;
         }
 
         internal static void ToggleMouseLock()

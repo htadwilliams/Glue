@@ -86,7 +86,9 @@
     <Compile Include="Actions\JsonContract\ActionConverter.cs" />
     <Compile Include="DirectInputManager.cs" />
     <Compile Include="Event\Event.cs" />
+    <Compile Include="Event\ReturningEventBus.cs" />
     <Compile Include="Event\EventController.cs" />
+    <Compile Include="Event\EventMacro.cs" />
     <Compile Include="Event\EventKeyboard.cs" />
     <Compile Include="Event\EventMouse.cs" />
     <Compile Include="Forms\DialogEditMacros.cs">
@@ -151,7 +153,7 @@
     <Compile Include="PropertyIO\PropertyString.cs" />
     <Compile Include="TrayApplicationContext.cs" />
     <Compile Include="PropertyIO\FormatDuration.cs" />
-    <Compile Include="EventBus.cs" />
+    <Compile Include="Event\EventBus.cs" />
     <Compile Include="Triggers.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="WindowsInput\InputBuilder.cs" />
