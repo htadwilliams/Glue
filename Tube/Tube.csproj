@@ -86,6 +86,7 @@
     <Compile Include="Actions\JsonContract\ActionConverter.cs" />
     <Compile Include="DirectInputManager.cs" />
     <Compile Include="Event\Event.cs" />
+    <Compile Include="Event\ReturningEventBus.cs" />
     <Compile Include="Event\EventController.cs" />
     <Compile Include="Event\EventMacro.cs" />
     <Compile Include="Event\EventKeyboard.cs" />

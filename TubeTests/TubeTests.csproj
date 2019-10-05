@@ -61,6 +61,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ReturningEventBusTests.cs" />
     <Compile Include="EventBusTests.cs" />
     <Compile Include="MacroTests.cs" />
     <Compile Include="PropertyTests.cs" />
