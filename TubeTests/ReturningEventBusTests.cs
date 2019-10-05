@@ -29,7 +29,7 @@ namespace Tests
                 bus.ReturningEventRecieved += Bus_ReturningEventRecieved;
             }
 
-            returns = bus.SendReturningEvent(this, BUS_MESSAGE_INT);
+            returns = bus.SendEvent(this, BUS_MESSAGE_INT);
 
             Assert.IsNotNull(returns);
             Assert.AreEqual(COUNT_LISTENERS, returns.Count);

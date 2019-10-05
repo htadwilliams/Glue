@@ -30,7 +30,7 @@ namespace Glue
             }
         }
 
-        public List<TReturnArgs> SendReturningEvent(object sender, TEventArgs newEvent)
+        public List<TReturnArgs> SendEvent(object sender, TEventArgs newEvent)
         {
             List<TReturnArgs> returnList;
 
