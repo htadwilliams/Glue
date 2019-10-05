@@ -4,6 +4,7 @@ using Glue.Native;
 using System;
 using System.Collections.ObjectModel;
 using System.Windows.Forms;
+using WindowsInput.Native;
 
 namespace Glue.Forms
 {
@@ -18,6 +19,7 @@ namespace Glue.Forms
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private delegate void LogControllerDelegate(ControllerEventArgs controllerEventArgs, string movement);
+        private delegate void AppendTextDelegate(string text);
 
         private bool logInput = true;
         private bool rawKeyNames = false;
@@ -83,12 +85,20 @@ namespace Glue.Forms
             this.Text = BaseCaptionText + " - " + fileName;
         }
 
-        internal void AppendText(string text)
+        private void AppendText(string text)
         {
-            if (!IsDisposed)
+            if (this.InvokeRequired)
             { 
-                textBoxInputStream.AppendText(text);
-                WindowHandleUtils.HideCaret(this.textBoxInputStream.Handle);
+                AppendTextDelegate d = new AppendTextDelegate(AppendText);
+                this.Invoke(d, new object[] {text});
+            }
+            else
+            {
+                if (!IsDisposed)
+                { 
+                    textBoxInputStream.AppendText(text);
+                    WindowHandleUtils.HideCaret(this.textBoxInputStream.Handle);
+                }
             }
         }
 
@@ -211,50 +221,60 @@ namespace Glue.Forms
         {
         }
 
-        internal void LogMouseMove(int xPos, int yPos)
+        internal void DisplayMouseMove(int xPos, int yPos)
         {
             int xOut = xPos;
             int yOut = yPos;
+
             if (this.NormalizeMouseCoords)
             {
                 xOut = ActionMouse.NormalizeX(xPos);
                 yOut = ActionMouse.NormalizeY(yPos);
             }
+
             this.toolStripMousePos.Text = String.Format("Mouse: ({0:n0}, {1:n0})", xOut, yOut);
         }
 
-        internal void LogMouseClick(int xPos, int yPos)
+        internal void DisplayMouseClick(MouseButtons mouseButton, int xPos, int yPos)
         {
             int xOut = xPos;
             int yOut = yPos;
+
             if (NormalizeMouseCoords)
             {
                 xOut = ActionMouse.NormalizeX(xPos);
                 yOut = ActionMouse.NormalizeY(yPos);
             }
 
-            if (LogInput && RawKeyNames)
+            string message;
+            if (rawKeyNames)
             {
-                AppendText(String.Format(" CLICK({0}, {1})", xOut, yOut));
+                message = String.Format("-click({0}, {1})", xOut, yOut);
             }
+            else
+            {
+                message = String.Format("-click({0:n0} {1:n0})", xOut, yOut);
+            }
+            AppendText(" " + mouseButton.ToString() + message);
+
             this.toolStripMousePosLastClick.Text = String.Format("Last click: ({0:n0}, {1:n0})", xOut, yOut);
         }
 
         public void OnControllerButton(ControllerEventArgs eventArgs)
         {
-            LogController(eventArgs, ((ButtonValues) eventArgs.Update.Value).ToString());
+            DisplayControllerEvent(eventArgs, ((ButtonValues) eventArgs.Update.Value).ToString());
         }
 
         private void OnControllerHat(ControllerEventArgs eventArgs)
         {
-            LogController(eventArgs, ((HatValues) eventArgs.Update.Value).ToString());
+            DisplayControllerEvent(eventArgs, ((HatValues) eventArgs.Update.Value).ToString());
         }
 
-        internal void LogController(ControllerEventArgs eventArgs, string movement)
+        internal void DisplayControllerEvent(ControllerEventArgs eventArgs, string movement)
         {
             if (this.InvokeRequired)
             { 
-                LogControllerDelegate d = new LogControllerDelegate(LogController);
+                LogControllerDelegate d = new LogControllerDelegate(DisplayControllerEvent);
                 this.Invoke(d, new object[] {eventArgs, movement});
             }
             else
@@ -266,19 +286,108 @@ namespace Glue.Forms
         private void EventMouse_Received(object sender, BusEventArgs<EventMouse> e)
         {
             EventMouse eventMouse = e.BusEvent;
-            LogMouseMove(eventMouse.X, eventMouse.Y);
+
+            // Always update status bar when mouse moves
+            DisplayMouseMove(eventMouse.X, eventMouse.Y);
+
+            // Only display click locations though if specified
+            if (LogInput)
+            {
+
+                if (eventMouse.MouseButton != MouseButtons.None && 
+                    eventMouse.ButtonState == ButtonStates.Press)
+                {
+                    DisplayMouseClick(eventMouse.MouseButton, eventMouse.X, eventMouse.Y);
+                }
+            }
         }
 
         private void EventKeyboard_Recieved(object sender, BusEventArgs<EventKeyboard> e)
         {
+            if (LogInput)
+            {
+                EventKeyboard eventKeyboard = e.BusEvent;
+
+                if (eventKeyboard.ButtonState == ButtonStates.Press)
+                {
+                    DisplayKeyDown(eventKeyboard.VirtualKeyCode);
+                }
+                else
+                {
+                    DisplayKeyUp(eventKeyboard.VirtualKeyCode);
+                }
+            }
         }
 
         private void EventMacro_Received(object sender, BusEventArgs<EventMacro> e)
         {
-            if (LogInput && RawKeyNames)
+            if (LogInput)
             {
                 Tube.MainForm.AppendText(" [" + e.BusEvent.MacroName + "]");
             }
+        }
+
+        public void DisplayKeyUp(int vkCode)
+        {
+            if (RawKeyNames)
+            {
+                AppendText(" -" + (VirtualKeyCode) vkCode);
+            }
+        }
+
+        public void DisplayKeyDown(int vkCode)
+        {
+            string output;
+            if (RawKeyNames)
+            {
+                output = " +" + (VirtualKeyCode) vkCode;
+            }
+            else
+            {
+                output = " " + FormatKeyString(vkCode);
+            }
+
+            AppendText(output);
+        }
+
+        // TODO FormatKeyString should be in its own wrapper around Keyboard Key
+        private static string FormatKeyString(int vkCode)
+        {
+            string output = "";
+            
+            Key key = Keyboard.GetKey(vkCode);
+            if (null == key)
+            {
+                return output;
+            }
+
+            output = key.Display;
+            if (output == "")
+            {
+                output = key.ToString();
+            }
+
+            // Only printed characters are a single character long 
+            if (output.Length == 1)
+            {
+                // Could be simplified but this is super clear to read
+                if (Keyboard.IsKeyToggled(Keys.CapsLock))
+                {
+                    if (Keyboard.IsKeyDown(Keys.LShiftKey) || Keyboard.IsKeyDown(Keys.RShiftKey))
+                    {
+                        output = output.ToLower();
+                    }
+                }
+                else
+                {
+                    if (!Keyboard.IsKeyDown(Keys.LShiftKey) && !Keyboard.IsKeyDown(Keys.RShiftKey))
+                    {
+                        output = output.ToLower();
+                    }
+                }
+            }
+
+            return output;
         }
     }
 }
