@@ -84,11 +84,6 @@ namespace Glue
                         // Eat mouse message if trigger tells us to do so
                         return new IntPtr(1);
                     }
-
-                    // Only mouse buttons go on the keyboard bus
-                    EventBus<EventKeyboard>.Instance.SendEvent(
-                        null, 
-                        new EventKeyboard((int) keyCode, buttonState));
                 }
 
                 // All mouse events go on the mouse bus 
