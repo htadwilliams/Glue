@@ -67,17 +67,20 @@ namespace Glue.Forms
 
         internal void UpdateKeys()
         {
-            SetHeadingText(keysPressed.Count);
-            this.textBoxButtonStates.Clear();
-            
-            foreach(int keyCode in keysPressed)
+            if (!IsDisposed)
             {
-                Key key = Keyboard.GetKey(keyCode);
-                this.textBoxButtonStates.Text += key.ToString();;
-                this.textBoxButtonStates.Text += "\r\n";
-            }
+                SetHeadingText(keysPressed.Count);
+                this.textBoxButtonStates.Clear();
+            
+                foreach(int keyCode in keysPressed)
+                {
+                    Key key = Keyboard.GetKey(keyCode);
+                    this.textBoxButtonStates.Text += key.ToString();;
+                    this.textBoxButtonStates.Text += "\r\n";
+                }
 
-            WindowHandleUtils.HideCaret(this.textBoxButtonStates.Handle);
+                WindowHandleUtils.HideCaret(this.textBoxButtonStates.Handle);
+            }
         }
     }
 }
