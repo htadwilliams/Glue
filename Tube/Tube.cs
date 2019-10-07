@@ -13,7 +13,7 @@ using System.Windows.Forms;
 using WindowsInput;
 using WindowsInput.Native;
 using static Glue.Actions.ActionKey;
-using static Glue.KeyboardTrigger;
+using static Glue.TriggerKeyboard;
 
 [assembly: XmlConfigurator(Watch = true)]
 
@@ -272,11 +272,11 @@ namespace Glue
 
             // Triggers fire macros 
             if (Tube.Triggers != null && 
-                Tube.Triggers.TryGetValue((Keys) vkCode, out List<KeyboardTrigger> triggers))
+                Tube.Triggers.TryGetValue((Keys) vkCode, out List<TriggerKeyboard> triggers))
             {
-                foreach (KeyboardTrigger trigger in triggers)
+                foreach (TriggerKeyboard trigger in triggers)
                 {
-                    switch (trigger.Condition)
+                    switch (trigger.ButtonState)
                     {
                         case ButtonStates.Both:
                             eatInput |= trigger.CheckAndFire();
@@ -321,7 +321,7 @@ namespace Glue
                 ;
             Macros.Add(macroName, macro);
             // Setup trigger
-            KeyboardTrigger trigger = new KeyboardTrigger(Keys.Z, macroName);
+            TriggerKeyboard trigger = new TriggerKeyboard(Keys.Z, macroName);
             trigger.AddModifier(Keys.LControlKey);
             Triggers.Add(trigger);
 
@@ -337,7 +337,7 @@ namespace Glue
                     10,     // delay MS
                     10));   // dwell time MS
             Macros.Add(macroName, macro);
-            trigger = new KeyboardTrigger(Keys.C, macroName);
+            trigger = new TriggerKeyboard(Keys.C, macroName);
             trigger.AddModifier(Keys.LControlKey);
             trigger.AddModifier(Keys.LMenu);
             Triggers.Add(trigger);
@@ -353,7 +353,7 @@ namespace Glue
             macro.AddAction(new ActionSound(TIME_DELAY_GLOBAL_MS, "ahha.wav"));
             Macros.Add(macroName, macro);
 
-            trigger = new KeyboardTrigger(Keys.S, new List<string> { "sound-servomotor", "sound-ahha" });
+            trigger = new TriggerKeyboard(Keys.S, new List<string> { "sound-servomotor", "sound-ahha" });
             trigger.AddModifier(Keys.LControlKey);
             Triggers.Add(trigger);
 
@@ -379,7 +379,7 @@ namespace Glue
                 macro = new Macro(macroName = repeatMacroName, TIME_DELAY_GLOBAL_MS);
                 macro.AddAction(new ActionRepeat(TIME_REPEAT_SOUND_MS, macroName, soundMacroName ));
                 Macros.Add(macroName, macro);
-                trigger = new KeyboardTrigger(triggerKey, repeatMacroName);
+                trigger = new TriggerKeyboard(triggerKey, repeatMacroName);
                 trigger.AddModifier(Keys.LMenu);
                 Triggers.Add(trigger);
 
@@ -387,7 +387,7 @@ namespace Glue
                 macro = new Macro(macroName = stopMacroName, TIME_DELAY_GLOBAL_MS);
                 macro.AddAction(new ActionCancel(repeatMacroName));
                 Macros.Add(macroName, macro);
-                trigger = new KeyboardTrigger(triggerKey, macroName);
+                trigger = new TriggerKeyboard(triggerKey, macroName);
                 trigger.AddModifier(Keys.LControlKey);
                 Triggers.Add(trigger);
             }
@@ -400,9 +400,9 @@ namespace Glue
             Macros.Add(macroName, macro);
 
             // Same macro bound to two triggers            
-            trigger = new KeyboardTrigger(Keys.XButton1, macroName);
+            trigger = new TriggerKeyboard(Keys.XButton1, macroName);
             Triggers.Add(trigger);
-            trigger = new KeyboardTrigger(Keys.XButton2, macroName);
+            trigger = new TriggerKeyboard(Keys.XButton2, macroName);
             Triggers.Add(trigger);
 
             // 
@@ -416,8 +416,8 @@ namespace Glue
             macro.AddAction(new ActionKey(0, VirtualKeyCode.SPACE, ButtonStates.Release));
             Macros.Add(macroName, macro);
 
-            trigger = new KeyboardTrigger(
-                Keys.Space, new List<string> {"toggle-down", null, "toggle-up", null}, ButtonStates.Both, true);
+            trigger = new TriggerKeyboard(
+                Keys.Space, ButtonStates.Both, new List<string> {"toggle-down", null, "toggle-up", null}, true);
             trigger.AddModifier(Keys.LControlKey);
             Triggers.Add(trigger);
 
@@ -431,7 +431,7 @@ namespace Glue
                     ActionMouse.CoordinateMode.RELATIVE,
                     -1, 0));
             Macros.Add(macroName, macro);
-            trigger = new KeyboardTrigger(Keys.Left, macroName);
+            trigger = new TriggerKeyboard(Keys.Left, macroName);
             trigger.AddModifier(Keys.LMenu);
             Triggers.Add(trigger);
 
@@ -442,7 +442,7 @@ namespace Glue
                     ActionMouse.CoordinateMode.ABSOLUTE, 
                     65535 / 2, 65535 / 2));
             Macros.Add(macroName, macro);
-            trigger = new KeyboardTrigger(Keys.Home, macroName);
+            trigger = new TriggerKeyboard(Keys.Home, macroName);
             trigger.AddModifier(Keys.LMenu);
             Triggers.Add(trigger);
 
@@ -453,7 +453,7 @@ namespace Glue
                     ActionMouse.CoordinateMode.PIXEL, 
                     1, 1));
             Macros.Add(macroName, macro);
-            trigger = new KeyboardTrigger(Keys.End, macroName);
+            trigger = new TriggerKeyboard(Keys.End, macroName);
             trigger.AddModifier(Keys.LMenu);
             Triggers.Add(trigger);
 
@@ -464,7 +464,7 @@ namespace Glue
                     ActionMouse.ClickType.CLICK,
                     MouseButton.LeftButton));
             Macros.Add(macroName, macro);
-            trigger = new KeyboardTrigger(Keys.Delete, macroName);
+            trigger = new TriggerKeyboard(Keys.Delete, macroName);
             trigger.AddModifier(Keys.LMenu);
             Triggers.Add(trigger);
 
@@ -473,10 +473,10 @@ namespace Glue
             Macros.Add(macroName, macro);
 
             // TODO Trigger mod keys should allow logical combinations e.g. (LControlKey | RControlKey) 
-            trigger = new KeyboardTrigger(Keys.C, macroName);
+            trigger = new TriggerKeyboard(Keys.C, macroName);
             trigger.AddModifier(Keys.LControlKey);
             Triggers.Add(trigger);
-            trigger = new KeyboardTrigger(Keys.C, macroName);
+            trigger = new TriggerKeyboard(Keys.C, macroName);
             trigger.AddModifier(Keys.RControlKey);
             Triggers.Add(trigger);
 
@@ -486,10 +486,10 @@ namespace Glue
             macro.AddAction(new ActionSound(TIME_DELAY_GLOBAL_MS, "sound_click_latch.wav"));
 
             Macros.Add(macroName, macro);
-            trigger = new KeyboardTrigger(Keys.L, macroName);
+            trigger = new TriggerKeyboard(Keys.L, macroName);
             trigger.AddModifier(Keys.LControlKey);
             Triggers.Add(trigger);
-            trigger = new KeyboardTrigger(Keys.L, macroName);
+            trigger = new TriggerKeyboard(Keys.L, macroName);
             trigger.AddModifier(Keys.RControlKey);
             Triggers.Add(trigger);
 
