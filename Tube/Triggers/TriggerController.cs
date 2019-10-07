@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace Glue
+namespace Glue.Triggers
 {
     [JsonObject(MemberSerialization.OptIn)]
     public class TriggerController : Trigger

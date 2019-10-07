@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Glue.Triggers;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace Glue 

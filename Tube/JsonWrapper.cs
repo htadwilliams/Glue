@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Glue.Triggers;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using WindowsInput.Native;

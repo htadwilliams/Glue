@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
 
-namespace Glue
+namespace Glue.Triggers
 {
 
     [JsonObject(MemberSerialization.OptIn)]

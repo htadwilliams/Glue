@@ -154,9 +154,9 @@
     <Compile Include="TrayApplicationContext.cs" />
     <Compile Include="PropertyIO\FormatDuration.cs" />
     <Compile Include="Event\EventBus.cs" />
-    <Compile Include="TriggerController.cs" />
-    <Compile Include="TriggerKeyboard.cs" />
-    <Compile Include="Triggers.cs" />
+    <Compile Include="Triggers\TriggerController.cs" />
+    <Compile Include="Triggers\TriggerKeyboard.cs" />
+    <Compile Include="Triggers\Triggers.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="WindowsInput\InputBuilder.cs" />
     <Compile Include="Priority_Queue\IPriorityQueue.cs" />
@@ -183,7 +183,7 @@
     <Compile Include="KeyboardRemapEntry.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Priority_Queue\SimplePriorityQueue.cs" />
-    <Compile Include="Trigger.cs" />
+    <Compile Include="Triggers\Trigger.cs" />
     <Compile Include="Native\WinConsole.cs" />
     <Compile Include="Forms\ViewMain.cs">
       <SubType>Form</SubType>

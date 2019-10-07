@@ -2,6 +2,7 @@
 using Glue.Event;
 using Glue.Forms;
 using Glue.Native;
+using Glue.Triggers;
 using log4net.Config;
 using Newtonsoft.Json;
 using System;
@@ -13,7 +14,6 @@ using System.Windows.Forms;
 using WindowsInput;
 using WindowsInput.Native;
 using static Glue.Actions.ActionKey;
-using static Glue.TriggerKeyboard;
 
 [assembly: XmlConfigurator(Watch = true)]
 
@@ -271,8 +271,8 @@ namespace Glue
             bool eatInput = false;
 
             // Triggers fire macros 
-            if (Tube.Triggers != null && 
-                Tube.Triggers.TryGetValue((Keys) vkCode, out List<TriggerKeyboard> triggers))
+            if (Tube.Triggers != null &&
+                Triggers.TryGetValue((Keys) vkCode, out List<TriggerKeyboard> triggers))
             {
                 foreach (TriggerKeyboard trigger in triggers)
                 {
