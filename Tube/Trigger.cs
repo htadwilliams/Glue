@@ -35,18 +35,6 @@ namespace Glue
             this.buttonState = buttonState;
         }
 
-        public KeyboardTrigger(Keys triggerKey, List<string> macroNames, bool eatInput) : base(macroNames, eatInput)
-        {
-            this.triggerKey = triggerKey;
-            this.buttonState = ButtonStates.Press;
-        }
-
-        public KeyboardTrigger(Keys triggerKey, List<string> macroNames, ButtonStates buttonState) : base(macroNames, false)
-        {
-            this.triggerKey = triggerKey;
-            this.buttonState = buttonState;
-        }
-
         public KeyboardTrigger(Keys triggerKey, List<string> macroNames) : base(macroNames, false)
         {
             this.triggerKey = triggerKey;
@@ -148,10 +136,6 @@ namespace Glue
         {
             this.macroNames.Add(macroName);
             this.eatInput = eatInput;
-        }
-
-        public Trigger()
-        {
         }
     }
 }
