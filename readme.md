@@ -26,6 +26,7 @@ The application by default attempts to read MACROS.GLUE from its working directo
 * Alt-, Alt-. Alt-/ begin looping different sounds every N seconds.
 * Ctrl-, Ctrl-. Ctrl-/ cancel individual sound loops. 
 * Ctrl-L toggles mouse pointer lock. 
+* Warthog Throttle controller EAC Arm/Off toggle switch (button 23) controls mouse lock. The button number and controller name are easily tweakable after the file is created. This is ideal for controllers with toggle switches.
 
 ## EXAMPLE KEY REMAPPING:
 * V and B are swapped if typing into notepad. Note that this is applied to any .exe with "notepad" in the name, so this includes things like Notepad++. Insert evil laugh here.
@@ -76,17 +77,21 @@ The application by default attempts to read MACROS.GLUE from its working directo
 # Feature TODO list
 
 ## Core TODO
- - [ ] Game controller button triggers.
- - [ ] Game controller actions.
+ - [x] Game controller button triggers.
+ - [ ] Game controller triggers support chording (with combinations of other controller or mouse buttons and keyboard keys.
+ - [ ] Game controller hat triggers (with inherited chording support).
+ - [ ] Game controller force feedback events.
+ - [ ] Game controller axis movement triggers.
  - [ ] Game controller button remapping.
  - [x] Queue view should update every second if nothing else is happening.
  - [ ] Remote control - trigger events via network client (most likely REST interface).
- - [ ] Triggers and actions may be filtered by target process name the same way key remapping works. 
+ - [ ] Triggers and actions may be filtered by target process name the same way keyboard remapping does. 
  - [ ] Game controller axis remapping.
  - [x] Mouse "safety" - freeze mouse cursor position (but not buttons)
 
 ## GUI TODO
  - [ ] Add mouse button state to buttons view.
+ - [ ] New view for controller buttons pressed.
  - [ ] View / edit keyboard remapping.
  - [ ] View / edit triggers.
  - [ ] View / editing macros.
