@@ -18,6 +18,8 @@ namespace Glue
         // used to generate example content 
         private const string PROCESS_NAME_NOTEPAD           = "notepad";      // also matches Notepad++
         private const string PROCESS_NAME_WASD              = "fallout4.exe";
+        private const string NAME_CONTROLLER                = "Throttle - HOTAS Warthog";
+        private const int BUTTON_CONTROLLER                 = 23;
 
         // example content tweakables
         private const int TIME_REPEAT_SOUND_MS              = 5 * 1000;       // For several sound delay loops 
@@ -197,12 +199,12 @@ namespace Glue
             trigger.AddModifier(Keys.RControlKey);
             triggerManager.Add(trigger);
 
-            // Toggle mouse-lock or "Mouse SAFETY"
-            macro = new Macro(macroName = "lock-mouse", 0);
-            macro.AddAction(new ActionMouseLock());
+            // Toggle mouse safety
+            macro = new Macro(macroName = "lock-mouse-toggle", 0);
+            macro.AddAction(new ActionMouseLock(LockAction.Toggle));
             macro.AddAction(new ActionSound(TIME_DELAY_GLOBAL_MS, "sound_click_latch.wav"));
-
             Macros.Add(macroName, macro);
+
             trigger = new TriggerKeyboard(Keys.L, macroName);
             trigger.AddModifier(Keys.LControlKey);
             triggerManager.Add(trigger);
@@ -210,7 +212,25 @@ namespace Glue
             trigger.AddModifier(Keys.RControlKey);
             triggerManager.Add(trigger);
 
-            TriggerController triggerController = new TriggerController(ButtonStates.Press, macroName, 23, "Warthog");
+            // Engage or mouse safety - example optimal for controller that 
+            // has a toggle switch
+            macro = new Macro(macroName = "lock-mouse-engage", 0);
+            macro.AddAction(new ActionMouseLock(LockAction.Lock));
+            macro.AddAction(new ActionSound(TIME_DELAY_GLOBAL_MS, "sound_click_latch.wav"));
+            Macros.Add(macroName, macro);
+            
+            TriggerController triggerController = new TriggerController(
+                ButtonStates.Press, macroName, BUTTON_CONTROLLER, NAME_CONTROLLER);
+            triggerManager.Add(triggerController);
+
+            // Disengage mouse safety
+            macro = new Macro(macroName = "lock-mouse-disengage", 0);
+            macro.AddAction(new ActionMouseLock(LockAction.Unlock));
+            macro.AddAction(new ActionSound(TIME_DELAY_GLOBAL_MS, "sound_click_latch.wav"));
+            Macros.Add(macroName, macro);
+            
+            triggerController = new TriggerController(
+                ButtonStates.Release, macroName, BUTTON_CONTROLLER, NAME_CONTROLLER);
             triggerManager.Add(triggerController);
 
             // Sunless skies (and other games) won't allow binding to shift key

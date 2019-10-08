@@ -11,7 +11,6 @@ using System.Configuration;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
-using WindowsInput;
 using WindowsInput.Native;
 
 [assembly: XmlConfigurator(Watch = true)]
@@ -263,10 +262,24 @@ namespace Glue
             }
         }
 
-        internal static void ToggleMouseLock()
+        internal static void ActivateMouseLock(LockAction lockAction)
         {
-            MouseLocked = !MouseLocked;
-            LOGGER.Info("Toggled Mouse lock: " + MouseLocked);
+            switch (lockAction)
+            {
+                case LockAction.Lock:
+                    MouseLocked = true;
+                    break;
+
+                case LockAction.Unlock:
+                    MouseLocked = false;
+                    break;
+
+                case LockAction.Toggle:
+                    MouseLocked = !MouseLocked;
+                    break;
+            }
+
+            LOGGER.Info("Activated mouse lock: action = " + lockAction + " lock = " + MouseLocked);
         }
     }
 }
