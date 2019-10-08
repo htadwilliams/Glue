@@ -10,47 +10,100 @@ Json containing the following elements
 
 */
 {
-  "triggers": [
+  "macros": [
+    {
+      "name": "lock-mouse-toggle",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "lockAction": "Toggle",
+          "delayMS": 0,
+          "type": "MouseLock"
+        },
+        {
+          "delayMS": 100,
+          "type": "Sound",
+          "SoundPath": "sound_click_latch.wav"
+        }
+      ]
+    },
+    {
+      "name": "lock-mouse-engage",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "lockAction": "Lock",
+          "delayMS": 0,
+          "type": "MouseLock"
+        },
+        {
+          "delayMS": 100,
+          "type": "Sound",
+          "SoundPath": "sound_click_latch.wav"
+        }
+      ]
+    },
+    {
+      "name": "lock-mouse-disengage",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "lockAction": "Unlock",
+          "delayMS": 0,
+          "type": "MouseLock"
+        },
+        {
+          "delayMS": 100,
+          "type": "Sound",
+          "SoundPath": "sound_click_latch.wav"
+        }
+      ]
+    }
+  ],
+  "keyboardTriggers": [
     {
       "triggerKey": "L",
-      "type": "Down",
-      "macroNames": [
-        "lock-mouse"
-      ],
       "modKeys": [
         "LControlKey"
+      ],
+      "buttonState": "Press",
+      "macroNames": [
+        "lock-mouse-toggle"
+      ],
+      "eatInput": true
+    },
+    {
+      "triggerKey": "L",
+      "modKeys": [
+        "RControlKey"
+      ],
+      "buttonState": "Press",
+      "macroNames": [
+        "lock-mouse-toggle"
+      ],
+      "eatInput": true
+    }
+  ],
+  "controllerTriggers": [
+    {
+      "namePart": "Throttle - HOTAS Warthog",
+      "button": 23,
+      "buttonState": "Press",
+      "macroNames": [
+        "lock-mouse-engage"
       ],
       "eatInput": false
     },
     {
-      "triggerKey": "L",
-      "type": "Down",
+      "namePart": "Throttle - HOTAS Warthog",
+      "button": 23,
+      "buttonState": "Release",
       "macroNames": [
-        "lock-mouse"
-      ],
-      "modKeys": [
-        "RControlKey"
+        "lock-mouse-disengage"
       ],
       "eatInput": false
     }
   ],
   "remapKeys": [
-  ],
-  "macros": [
-    {
-      "name": "lock-mouse",
-      "delayTimeMS": 0,
-      "actions": [
-        {
-          "delayMS": 0,
-          "type": "MOUSE_LOCK"
-        },
-        {
-          "delayMS": 100,
-          "type": "SOUND",
-          "SoundPath": "sound_click_latch.wav"
-        }
-      ]
-    }
   ]
 }
