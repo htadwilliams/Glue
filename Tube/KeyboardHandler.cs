@@ -39,7 +39,7 @@ namespace Glue
                         return new IntPtr(1);
                     }
 
-                    if (Tube.CheckAndFireTriggers(vkCode, ButtonStates.Press))
+                    if (Tube.TriggerManager.CheckAndFireTriggers(vkCode, ButtonStates.Press))
                     {
                         // Eat keystroke if trigger tells us to do so
                         return new IntPtr(1);
@@ -66,7 +66,7 @@ namespace Glue
                         return new IntPtr(1);
                     }
 
-                    if (Tube.CheckAndFireTriggers(vkCode, ButtonStates.Release))
+                    if (Tube.TriggerManager.CheckAndFireTriggers(vkCode, ButtonStates.Release))
                     {
                         // Eat keystroke if trigger tells us to do so
                         return new IntPtr(1);

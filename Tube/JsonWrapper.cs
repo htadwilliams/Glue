@@ -32,7 +32,7 @@ namespace Glue
         /// <param name="keyMap"></param>
         /// <param name="macros"></param>
         public JsonWrapper(
-            TriggerMap triggers,
+            Dictionary<Keys, List<TriggerKeyboard>> triggers,
             Dictionary<VirtualKeyCode, KeyboardRemapEntry> keyMap,
             Dictionary<string, Macro> macros)
         {
@@ -53,18 +53,6 @@ namespace Glue
         /// </summary>
         public JsonWrapper()
         {
-        }
-
-        public TriggerMap GetTriggerMap()
-        {
-            TriggerMap triggerMap = new TriggerMap(this.Triggers.Count);
-
-            foreach (TriggerKeyboard trigger in Triggers)
-            {
-                triggerMap.Add(trigger);
-            }
-
-            return triggerMap;
         }
 
         public Dictionary<string, Macro> GetMacroMap()
