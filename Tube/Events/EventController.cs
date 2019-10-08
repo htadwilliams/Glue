@@ -7,9 +7,10 @@ namespace Glue.Events
     {
         public enum EventType
         {
-            Button = 0,
-            Hat = 1,
-            Axis = 2,
+            Unknown = 0,
+            Button,
+            Hat,
+            Axis,
         }
 
         public Joystick Joystick { get; }
@@ -22,23 +23,32 @@ namespace Glue.Events
         {
             Joystick = joystick;
             JoystickUpdate = joystickUpdate;
+            Type = EventTypeFromOffset(joystickUpdate.Offset);
+            Button = GetButton(JoystickUpdate.Offset);
 
-            if (IsButton(joystickUpdate.Offset))
+            ButtonState = joystickUpdate.Value == (int) ButtonValues.Press 
+                ? ButtonStates.Press 
+                : ButtonStates.Release;
+        }
+
+        private static EventType EventTypeFromOffset(JoystickOffset joystickOffset)
+        {
+            EventType eventType = EventType.Unknown;
+
+            if (IsButtonOffset(joystickOffset))
             {
-                Type = EventType.Button;
-                Button = GetButton(JoystickUpdate.Offset);
-                ButtonState = joystickUpdate.Value == (int) ButtonValues.Press 
-                    ? ButtonStates.Press 
-                    : ButtonStates.Release;
+                eventType = EventType.Button;
             }
-            else if (DirectInputManager.OffsetsHat.Contains(joystickUpdate.Offset))
+            else if (DirectInputManager.OffsetsHat.Contains(joystickOffset))
             {
-                Type = EventType.Hat;
+                eventType = EventType.Hat;
             }
-            else if (DirectInputManager.OffsetsAxis.Contains(joystickUpdate.Offset))
+            else if (DirectInputManager.OffsetsAxis.Contains(joystickOffset))
             {
-                Type = EventType.Axis;
+                eventType = EventType.Axis;
             }
+
+            return eventType;
         }
 
         private static int GetButton(JoystickOffset offset)
@@ -46,7 +56,7 @@ namespace Glue.Events
             return (int) (offset - JoystickOffset.Buttons0);
         }
 
-        private static bool IsButton(JoystickOffset offset)
+        private static bool IsButtonOffset(JoystickOffset offset)
         {
             return (
                 offset >= JoystickOffset.Buttons0 && 

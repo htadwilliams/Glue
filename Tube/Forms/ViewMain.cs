@@ -13,7 +13,6 @@ namespace Glue.Forms
         public bool LogInput { get => logInput; set { logInput = value; checkBoxRawKeyNames.Enabled = value; } }
         public bool RawKeyNames { get => rawKeyNames; set => rawKeyNames = value; }
         public bool NormalizeMouseCoords { get => normalizeMouseCoords; set => normalizeMouseCoords = value; }
-
         private string BaseCaptionText { get => this.baseCaptionText; set => this.baseCaptionText = value; }
 
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -272,8 +271,16 @@ namespace Glue.Forms
             }
             else
             {
-                AppendText(" " + controllerEvent.Joystick.Information.InstanceName + 
-                    "(Button-" + controllerEvent.Button + ":" + controllerEvent.ButtonState + ")");
+                if (controllerEvent.Type == EventController.EventType.Button)
+                {
+                    AppendText(" " + controllerEvent.Joystick.Information.InstanceName + 
+                        " (Button " + controllerEvent.Button + " " + controllerEvent.ButtonState + ")");
+                }
+                else if (controllerEvent.Type == EventController.EventType.Hat)
+                {
+                    AppendText(" " + controllerEvent.Joystick.Information.InstanceName + 
+                        " (POV " + (HatValues) controllerEvent.JoystickUpdate.Value + ")");
+                }
             }
         }
 
