@@ -1,6 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
-using Glue.Event;
+using Glue.Events;
 using Glue.Native;
 using Glue.PropertyIO;
 using Newtonsoft.Json;

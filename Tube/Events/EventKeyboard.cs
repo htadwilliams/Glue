@@ -1,7 +1,7 @@
 ﻿using Glue.Native;
 using System.Windows.Input;
 
-namespace Glue.Event
+namespace Glue.Events
 {
     public class EventKeyboard
     {

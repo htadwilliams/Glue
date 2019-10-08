@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Glue
+namespace Glue.Events
 {
     public class BusEventArgs<T> : EventArgs
     {

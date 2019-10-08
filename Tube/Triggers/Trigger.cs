@@ -1,13 +1,14 @@
-﻿using Glue.Event;
+﻿using Glue.Events;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
+using static Glue.Events.Event;
 
 namespace Glue.Triggers
 {
 
     [JsonObject(MemberSerialization.OptIn)]
-    public class Trigger
+    public abstract class Trigger
     {
         public bool EatInput => this.eatInput;
         public List<string> MacroNames => macroNames;
@@ -43,6 +44,24 @@ namespace Glue.Triggers
             this.buttonState = buttonState;
             this.macroNames.Add(macroName);
             this.eatInput = eatInput;
+        }
+
+        protected virtual void Fire()
+        {
+            if (this.indexMacroCurrent >= MacroNames.Count)
+            {
+                indexMacroCurrent = 0;
+            }
+
+            string macroName = MacroNames[this.indexMacroCurrent];
+
+            // null macro names are allowed in list - useful for key toggles or other 
+            // no-op entries in macro "ripple" effect 
+            if (null != macroName)
+            {
+                Tube.PlayMacro(macroName);
+            }
+            this.indexMacroCurrent++;
         }
     }
 }

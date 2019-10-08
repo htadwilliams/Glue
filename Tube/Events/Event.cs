@@ -1,7 +1,7 @@
 ﻿using Glue.Native;
 using System.Threading;
 
-namespace Glue.Event
+namespace Glue.Events
 {
     public enum ButtonStates
     {

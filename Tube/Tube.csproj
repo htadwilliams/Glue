@@ -85,12 +85,12 @@
     <Compile Include="Actions\JsonContract\ActionContractResolver.cs" />
     <Compile Include="Actions\JsonContract\ActionConverter.cs" />
     <Compile Include="DirectInputManager.cs" />
-    <Compile Include="Event\Event.cs" />
-    <Compile Include="Event\ReturningEventBus.cs" />
-    <Compile Include="Event\EventController.cs" />
-    <Compile Include="Event\EventMacro.cs" />
-    <Compile Include="Event\EventKeyboard.cs" />
-    <Compile Include="Event\EventMouse.cs" />
+    <Compile Include="Events\Event.cs" />
+    <Compile Include="Events\ReturningEventBus.cs" />
+    <Compile Include="Events\EventController.cs" />
+    <Compile Include="Events\EventMacro.cs" />
+    <Compile Include="Events\EventKeyboard.cs" />
+    <Compile Include="Events\EventMouse.cs" />
     <Compile Include="Forms\DialogEditMacros.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -153,7 +153,7 @@
     <Compile Include="PropertyIO\PropertyString.cs" />
     <Compile Include="TrayApplicationContext.cs" />
     <Compile Include="PropertyIO\FormatDuration.cs" />
-    <Compile Include="Event\EventBus.cs" />
+    <Compile Include="Events\EventBus.cs" />
     <Compile Include="Triggers\TriggerController.cs" />
     <Compile Include="Triggers\TriggerKeyboard.cs" />
     <Compile Include="Triggers\TriggerManager.cs" />

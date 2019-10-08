@@ -1,4 +1,4 @@
-﻿using Glue.Event;
+﻿using Glue.Events;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -8,10 +8,30 @@ namespace Glue.Triggers
     public class TriggerManager
     {
         public Dictionary<Keys, List<TriggerKeyboard>> KeyboardTriggers { get; } = new Dictionary<Keys, List<TriggerKeyboard>>();
+        public List<TriggerController> ControllerTriggers { get; } = new List<TriggerController>();
+
+        public TriggerManager()
+        {
+            EventBus<EventController>.Instance.EventRecieved += OnEventController;
+        }
+
+        private void OnEventController(object sender, BusEventArgs<EventController> e)
+        {
+            foreach(TriggerController trigger in ControllerTriggers)
+            {
+                trigger.CheckAndFire(e.BusEvent);
+            }
+        }
 
         public void Clear()
         {
             KeyboardTriggers.Clear();
+            ControllerTriggers.Clear();
+        }
+
+        public void Add(TriggerController trigger)
+        {
+            ControllerTriggers.Add(trigger);
         }
 
         public void Add(TriggerKeyboard trigger)
@@ -63,7 +83,6 @@ namespace Glue.Triggers
                         break;
                     }
                 }
-
             }
 
             return eatInput;

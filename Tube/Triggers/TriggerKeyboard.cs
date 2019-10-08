@@ -1,4 +1,4 @@
-﻿using Glue.Event;
+﻿using Glue.Events;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
@@ -53,7 +53,7 @@ namespace Glue.Triggers
             return this;
         }
 
-        public bool AreModKeysActive()
+        private bool AreModKeysActive()
         {
             bool modKeysAreActive = true;
 
@@ -69,40 +69,14 @@ namespace Glue.Triggers
             return modKeysAreActive;
         }
 
-        internal bool CheckAndFire()
+        public bool CheckAndFire()
         {
             if (!AreModKeysActive())
             {
                 return false;
             }
 
-            if (this.indexMacroCurrent >= MacroNames.Count)
-            {
-                indexMacroCurrent = 0;
-            }
-
-            String macroName = MacroNames[this.indexMacroCurrent];
-
-            if (LOGGER.IsInfoEnabled)
-            {
-                string message = "TRIGGER FIRED: triggerKey = [" + TriggerKey + "]";
-                if (this.ModKeys.Count > 0)
-                {
-                    message += " modKeys = [";
-                    message += Utils.FormatSeparatedList(ModKeys, ", ");
-                    message += "]";
-                }
-                message += " macro = [" + macroName + "]";
-                LOGGER.Info(message);
-            }
-
-            // null macro names are allowed in list - useful for key toggles or other 
-            // no-op entries in macro "ripple" effect 
-            if (null != macroName)
-            {
-                Tube.PlayMacro(macroName);
-            }
-            this.indexMacroCurrent++;
+            Fire();
 
             return EatInput;
         }

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Glue.Event;
+using Glue.Events;
 using Newtonsoft.Json;
 using WindowsInput;
 using WindowsInput.Native;

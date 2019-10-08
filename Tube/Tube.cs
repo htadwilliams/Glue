@@ -1,5 +1,5 @@
 ﻿using Glue.Actions;
-using Glue.Event;
+using Glue.Events;
 using Glue.Forms;
 using Glue.Native;
 using Glue.Triggers;
@@ -251,9 +251,10 @@ namespace Glue
                 }
                 if (null != triggers && triggers.Count != 0)
                 {
-                    LOGGER.Info(String.Format("    Loaded {0} triggers", triggers.Count));
-                    TriggerManager.Clear();
+                    TriggerManager.KeyboardTriggers.Clear();
                     TriggerManager.AddTriggers(triggers);
+
+                    LOGGER.Info(String.Format("    Loaded {0} triggers", triggers.Count));
                 }
                 if (null != KeyMap && KeyMap.Count != 0)
                 {
@@ -459,6 +460,9 @@ namespace Glue
             trigger = new TriggerKeyboard(Keys.L, macroName);
             trigger.AddModifier(Keys.RControlKey);
             TriggerManager.Add(trigger);
+
+            TriggerController triggerController = new TriggerController(ButtonStates.Press, macroName, 23, "Warthog");
+            TriggerManager.Add(triggerController);
 
             // Sunless skies (and other games) won't allow binding to shift key
             // Mapping A to Shift allows binding game functions to that instead.
