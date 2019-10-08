@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Glue.Triggers;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using WindowsInput.Native;
@@ -12,12 +13,12 @@ namespace Glue
     internal class JsonWrapper
     {
         public List<Macro> Macros { get => macros; set => macros = value; }
-        internal List<KeyboardTrigger> Triggers { get => triggers; set => triggers = value; }
+        internal List<TriggerKeyboard> Triggers { get => triggers; set => triggers = value; }
         internal List<KeyboardRemapEntry> RemapKeys { get => remapKeys; set => remapKeys = value; }
 
         // Never put these tags on class properties. JSon should always serialize lower case names.
         [JsonProperty]
-        private List<KeyboardTrigger> triggers;
+        private List<TriggerKeyboard> triggers;
         [JsonProperty]
         private List<KeyboardRemapEntry> remapKeys;
         [JsonProperty]
@@ -31,14 +32,14 @@ namespace Glue
         /// <param name="keyMap"></param>
         /// <param name="macros"></param>
         public JsonWrapper(
-            TriggerMap triggers,
+            Dictionary<Keys, List<TriggerKeyboard>> triggers,
             Dictionary<VirtualKeyCode, KeyboardRemapEntry> keyMap,
             Dictionary<string, Macro> macros)
         {
-            this.Triggers = new List<KeyboardTrigger>();
+            this.Triggers = new List<TriggerKeyboard>();
 
             // Flatten trigger map into easily serializable list
-            foreach (List<KeyboardTrigger> triggerList in triggers.Values)
+            foreach (List<TriggerKeyboard> triggerList in triggers.Values)
             {
                 this.Triggers.AddRange(triggerList);
             }
@@ -52,18 +53,6 @@ namespace Glue
         /// </summary>
         public JsonWrapper()
         {
-        }
-
-        public TriggerMap GetTriggerMap()
-        {
-            TriggerMap triggerMap = new TriggerMap(this.Triggers.Count);
-
-            foreach (KeyboardTrigger trigger in Triggers)
-            {
-                triggerMap.Add(trigger);
-            }
-
-            return triggerMap;
         }
 
         public Dictionary<string, Macro> GetMacroMap()

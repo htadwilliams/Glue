@@ -1,4 +1,5 @@
-﻿using SharpDX;
+﻿using Glue.Events;
+using SharpDX;
 using SharpDX.DirectInput;
 using System;
 using System.Collections.Generic;
@@ -129,14 +130,15 @@ namespace Glue
             JoystickOffset.PointOfViewControllers3,
         };
 
-        public event OnControllerButton ControllerButtonEvent;
-        public delegate void OnControllerButton(ControllerEventArgs eventArgs);
-        
         public event OnControllerHat ControllerHatEvent;
         public delegate void OnControllerHat(ControllerEventArgs eventArgs);
 
         public event OnControllerAxis ControllerAxisEvent;
         public delegate void OnControllerAxis(ControllerEventArgs eventArgs);
+
+        public static HashSet<JoystickOffset> OffsetsHat => s_offsetsHat;
+        public static HashSet<JoystickOffset> OffsetsAxis => s_offsetsAxis;
+        public static HashSet<JoystickOffset> OffsetsForceFeedback => s_offsetsForceFeedback;
 
         public DirectInputManager()
         {
@@ -315,7 +317,6 @@ namespace Glue
                 InitJoysticks();
             }
         }
-
         public void PollingThreadProc()
         {
             int sleepDurationMS = 1000 / POLLING_INTERVAL_HZ;
@@ -381,30 +382,7 @@ namespace Glue
         {
             foreach (JoystickUpdate joystickUpdate in joystickUpdates)
             {
-                if (joystickUpdate.Offset >= JoystickOffset.Buttons0 &&
-                    joystickUpdate.Offset <= JoystickOffset.Buttons127)
-                {
-                    LOGGER.Info(
-                        joystick.Information.InstanceName + " " +
-                        joystickUpdate.Offset.ToString() + " " +
-                        (ButtonValues) joystickUpdate.Value);
-
-                    ControllerButtonEvent?.Invoke(new ControllerEventArgs(joystick, joystickUpdate));
-                }
-                else if (s_offsetsHat.Contains(joystickUpdate.Offset))
-                {
-                    ControllerHatEvent?.Invoke(new ControllerEventArgs(joystick, joystickUpdate));
-
-                    LOGGER.Info(
-                        joystick.Information.InstanceName + " " +
-                        joystickUpdate.Offset.ToString() + " " +
-                        (HatValues) joystickUpdate.Value);
-                }
-                else if (s_offsetsAxis.Contains(joystickUpdate.Offset))
-                {
-                    ControllerAxisEvent?.Invoke(new ControllerEventArgs(joystick, joystickUpdate));
-                }
-
+                EventBus<EventController>.Instance.SendEvent(this, new EventController(joystick, joystickUpdate));
             }
         }
 

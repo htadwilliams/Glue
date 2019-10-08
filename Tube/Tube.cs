@@ -1,7 +1,8 @@
 ﻿using Glue.Actions;
-using Glue.Event;
+using Glue.Events;
 using Glue.Forms;
 using Glue.Native;
+using Glue.Triggers;
 using log4net.Config;
 using Newtonsoft.Json;
 using System;
@@ -13,7 +14,6 @@ using System.Windows.Forms;
 using WindowsInput;
 using WindowsInput.Native;
 using static Glue.Actions.ActionKey;
-using static Glue.KeyboardTrigger;
 
 [assembly: XmlConfigurator(Watch = true)]
 
@@ -21,21 +21,20 @@ namespace Glue
 {
     internal static class Tube
     {
-        internal static TriggerMap Triggers { get => s_triggers; set => s_triggers = value; }
         internal static Dictionary<VirtualKeyCode, KeyboardRemapEntry> KeyMap { get => s_keyMap; set => s_keyMap = value; }
         public static Dictionary<string, Macro> Macros { get => s_macros; set => s_macros = value; }
         public static ViewMain MainForm { get => s_mainForm; set => s_mainForm = value; }
         public static string FileName { get => s_fileName; set => s_fileName = value; }
         public static Scheduler Scheduler { get => s_actionScheduler; }
         public static bool MouseLocked { get => s_lockMouse; set => s_lockMouse = value; }
-
         public static DirectInputManager DirectInputManager => s_directInputManager;
+        public static TriggerManager TriggerManager { get => s_triggerManager; set => s_triggerManager = value; }
 
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         // Core data structures for macros, triggers, and keyboard remapping
         private static Dictionary<string, Macro> s_macros;
-        private static TriggerMap s_triggers;
+        private static TriggerManager s_triggerManager = new TriggerManager();
         private static Dictionary<VirtualKeyCode, KeyboardRemapEntry> s_keyMap;
 
         // Core sub-systems 
@@ -192,16 +191,17 @@ namespace Glue
                     "    keyMap     Each entry remaps a key on the keyboard.\r\n\r\n");
                 sw.Write("\r\n");
 
-                JsonWrapper jsonWrapper = new JsonWrapper(Triggers, KeyMap, Macros);
+                JsonWrapper jsonWrapper = new JsonWrapper(TriggerManager.KeyboardTriggers, KeyMap, Macros);
                 serializer.Serialize(writer, jsonWrapper);
             }
         }
 
         private static void InitData()
         {
-            Triggers = new TriggerMap();
             KeyMap = new Dictionary<VirtualKeyCode, KeyboardRemapEntry>();
             Macros = new Dictionary<string, Macro>();
+
+            TriggerManager.Clear();
         }
 
         public static void LoadFile(string fileName)
@@ -212,6 +212,8 @@ namespace Glue
 
             if (File.Exists(fileName))
             {
+                List<TriggerKeyboard> triggers;
+
                 JsonSerializer serializer = new JsonSerializer
                 {
                     DefaultValueHandling = DefaultValueHandling.Populate
@@ -230,8 +232,8 @@ namespace Glue
                             JsonWrapper jsonWrapper = serializer.Deserialize<JsonWrapper>(reader);
 
                             Macros = jsonWrapper.GetMacroMap();
-                            Triggers = jsonWrapper.GetTriggerMap();
                             KeyMap = jsonWrapper.GetKeyboardMap();
+                            triggers = jsonWrapper.Triggers;
                         }
                     }
                 }
@@ -247,9 +249,12 @@ namespace Glue
                 {
                     LOGGER.Info(String.Format("    Loaded {0} macros", Macros.Count));
                 }
-                if (null != Triggers && Triggers.Count != 0)
+                if (null != triggers && triggers.Count != 0)
                 {
-                    LOGGER.Info(String.Format("    Loaded {0} triggers", Triggers.Count));
+                    TriggerManager.KeyboardTriggers.Clear();
+                    TriggerManager.AddTriggers(triggers);
+
+                    LOGGER.Info(String.Format("    Loaded {0} triggers", triggers.Count));
                 }
                 if (null != KeyMap && KeyMap.Count != 0)
                 {
@@ -264,43 +269,6 @@ namespace Glue
                 CreateDefaultContent();
                 SaveFile(fileName);
             }
-        }
-
-        public static bool CheckAndFireTriggers(int vkCode, ButtonStates movement)
-        {
-            bool eatInput = false;
-
-            // Triggers fire macros 
-            if (Tube.Triggers != null && 
-                Tube.Triggers.TryGetValue((Keys) vkCode, out List<KeyboardTrigger> triggers))
-            {
-                foreach (KeyboardTrigger trigger in triggers)
-                {
-                    switch (trigger.Condition)
-                    {
-                        case ButtonStates.Both:
-                            eatInput |= trigger.CheckAndFire();
-                        break;
-
-                        case ButtonStates.Press:
-                        if (ButtonStates.Press == movement)
-                        {
-                            eatInput |= trigger.CheckAndFire();
-                        }
-                        break;
-
-                        case ButtonStates.Release:
-                        if (ButtonStates.Release == movement)
-                        {
-                            eatInput |= trigger.CheckAndFire();
-                        }
-                        break;
-                    }
-                }
-
-            }
-
-            return eatInput;
         }
 
         internal static void ToggleMouseLock()
@@ -321,9 +289,9 @@ namespace Glue
                 ;
             Macros.Add(macroName, macro);
             // Setup trigger
-            KeyboardTrigger trigger = new KeyboardTrigger(Keys.Z, macroName);
+            TriggerKeyboard trigger = new TriggerKeyboard(Keys.Z, macroName);
             trigger.AddModifier(Keys.LControlKey);
-            Triggers.Add(trigger);
+            TriggerManager.Add(trigger);
 
             //
             // Create and bind a typing macro (string of text) 
@@ -337,10 +305,10 @@ namespace Glue
                     10,     // delay MS
                     10));   // dwell time MS
             Macros.Add(macroName, macro);
-            trigger = new KeyboardTrigger(Keys.C, macroName);
+            trigger = new TriggerKeyboard(Keys.C, macroName);
             trigger.AddModifier(Keys.LControlKey);
             trigger.AddModifier(Keys.LMenu);
-            Triggers.Add(trigger);
+            TriggerManager.Add(trigger);
 
             //
             // Create a trigger that alternates between macros - ripple fire example
@@ -353,9 +321,9 @@ namespace Glue
             macro.AddAction(new ActionSound(TIME_DELAY_GLOBAL_MS, "ahha.wav"));
             Macros.Add(macroName, macro);
 
-            trigger = new KeyboardTrigger(Keys.S, new List<string> { "sound-servomotor", "sound-ahha" });
+            trigger = new TriggerKeyboard(Keys.S, new List<string> { "sound-servomotor", "sound-ahha" });
             trigger.AddModifier(Keys.LControlKey);
-            Triggers.Add(trigger);
+            TriggerManager.Add(trigger);
 
             //
             // Drum kit!
@@ -379,17 +347,17 @@ namespace Glue
                 macro = new Macro(macroName = repeatMacroName, TIME_DELAY_GLOBAL_MS);
                 macro.AddAction(new ActionRepeat(TIME_REPEAT_SOUND_MS, macroName, soundMacroName ));
                 Macros.Add(macroName, macro);
-                trigger = new KeyboardTrigger(triggerKey, repeatMacroName);
+                trigger = new TriggerKeyboard(triggerKey, repeatMacroName);
                 trigger.AddModifier(Keys.LMenu);
-                Triggers.Add(trigger);
+                TriggerManager.Add(trigger);
 
                 // Stopper macro and trigger
                 macro = new Macro(macroName = stopMacroName, TIME_DELAY_GLOBAL_MS);
                 macro.AddAction(new ActionCancel(repeatMacroName));
                 Macros.Add(macroName, macro);
-                trigger = new KeyboardTrigger(triggerKey, macroName);
+                trigger = new TriggerKeyboard(triggerKey, macroName);
                 trigger.AddModifier(Keys.LControlKey);
-                Triggers.Add(trigger);
+                TriggerManager.Add(trigger);
             }
 
             //
@@ -400,10 +368,10 @@ namespace Glue
             Macros.Add(macroName, macro);
 
             // Same macro bound to two triggers            
-            trigger = new KeyboardTrigger(Keys.XButton1, macroName);
-            Triggers.Add(trigger);
-            trigger = new KeyboardTrigger(Keys.XButton2, macroName);
-            Triggers.Add(trigger);
+            trigger = new TriggerKeyboard(Keys.XButton1, macroName);
+            TriggerManager.Add(trigger);
+            trigger = new TriggerKeyboard(Keys.XButton2, macroName);
+            TriggerManager.Add(trigger);
 
             // 
             // Toggle - hold SPACE key every other time it is pressed 
@@ -416,10 +384,10 @@ namespace Glue
             macro.AddAction(new ActionKey(0, VirtualKeyCode.SPACE, ButtonStates.Release));
             Macros.Add(macroName, macro);
 
-            trigger = new KeyboardTrigger(
-                Keys.Space, new List<string> {"toggle-down", null, "toggle-up", null}, ButtonStates.Both, true);
+            trigger = new TriggerKeyboard(
+                Keys.Space, ButtonStates.Both, new List<string> {"toggle-down", null, "toggle-up", null}, true);
             trigger.AddModifier(Keys.LControlKey);
-            Triggers.Add(trigger);
+            TriggerManager.Add(trigger);
 
             // 
             // Create mouse movement
@@ -431,9 +399,9 @@ namespace Glue
                     ActionMouse.CoordinateMode.RELATIVE,
                     -1, 0));
             Macros.Add(macroName, macro);
-            trigger = new KeyboardTrigger(Keys.Left, macroName);
+            trigger = new TriggerKeyboard(Keys.Left, macroName);
             trigger.AddModifier(Keys.LMenu);
-            Triggers.Add(trigger);
+            TriggerManager.Add(trigger);
 
             macro = new Macro(macroName = "mouse-center", TIME_DELAY_GLOBAL_MS);
             macro.AddAction(
@@ -442,9 +410,9 @@ namespace Glue
                     ActionMouse.CoordinateMode.ABSOLUTE, 
                     65535 / 2, 65535 / 2));
             Macros.Add(macroName, macro);
-            trigger = new KeyboardTrigger(Keys.Home, macroName);
+            trigger = new TriggerKeyboard(Keys.Home, macroName);
             trigger.AddModifier(Keys.LMenu);
-            Triggers.Add(trigger);
+            TriggerManager.Add(trigger);
 
             macro = new Macro(macroName = "mouse-origin", TIME_DELAY_GLOBAL_MS);
             macro.AddAction(
@@ -453,9 +421,9 @@ namespace Glue
                     ActionMouse.CoordinateMode.PIXEL, 
                     1, 1));
             Macros.Add(macroName, macro);
-            trigger = new KeyboardTrigger(Keys.End, macroName);
+            trigger = new TriggerKeyboard(Keys.End, macroName);
             trigger.AddModifier(Keys.LMenu);
-            Triggers.Add(trigger);
+            TriggerManager.Add(trigger);
 
             macro = new Macro(macroName = "mouse-click-nomove", TIME_DELAY_GLOBAL_MS);
             macro.AddAction(
@@ -464,21 +432,21 @@ namespace Glue
                     ActionMouse.ClickType.CLICK,
                     MouseButton.LeftButton));
             Macros.Add(macroName, macro);
-            trigger = new KeyboardTrigger(Keys.Delete, macroName);
+            trigger = new TriggerKeyboard(Keys.Delete, macroName);
             trigger.AddModifier(Keys.LMenu);
-            Triggers.Add(trigger);
+            TriggerManager.Add(trigger);
 
             macro = new Macro(macroName = "cancel-all", TIME_DELAY_GLOBAL_MS);
             macro.AddAction(new ActionCancel("*"));
             Macros.Add(macroName, macro);
 
             // TODO Trigger mod keys should allow logical combinations e.g. (LControlKey | RControlKey) 
-            trigger = new KeyboardTrigger(Keys.C, macroName);
+            trigger = new TriggerKeyboard(Keys.C, macroName);
             trigger.AddModifier(Keys.LControlKey);
-            Triggers.Add(trigger);
-            trigger = new KeyboardTrigger(Keys.C, macroName);
+            TriggerManager.Add(trigger);
+            trigger = new TriggerKeyboard(Keys.C, macroName);
             trigger.AddModifier(Keys.RControlKey);
-            Triggers.Add(trigger);
+            TriggerManager.Add(trigger);
 
             // Toggle mouse-lock or "Mouse SAFETY"
             macro = new Macro(macroName = "lock-mouse", 0);
@@ -486,12 +454,15 @@ namespace Glue
             macro.AddAction(new ActionSound(TIME_DELAY_GLOBAL_MS, "sound_click_latch.wav"));
 
             Macros.Add(macroName, macro);
-            trigger = new KeyboardTrigger(Keys.L, macroName);
+            trigger = new TriggerKeyboard(Keys.L, macroName);
             trigger.AddModifier(Keys.LControlKey);
-            Triggers.Add(trigger);
-            trigger = new KeyboardTrigger(Keys.L, macroName);
+            TriggerManager.Add(trigger);
+            trigger = new TriggerKeyboard(Keys.L, macroName);
             trigger.AddModifier(Keys.RControlKey);
-            Triggers.Add(trigger);
+            TriggerManager.Add(trigger);
+
+            TriggerController triggerController = new TriggerController(ButtonStates.Press, macroName, 23, "Warthog");
+            TriggerManager.Add(triggerController);
 
             // Sunless skies (and other games) won't allow binding to shift key
             // Mapping A to Shift allows binding game functions to that instead.

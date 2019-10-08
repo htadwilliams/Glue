@@ -6,3 +6,5 @@ Code snippets
 
   VirtualKeyCode.GetValues(typeof(VirtualKeyCode)))
   
+Keyboard driver author does exactly what we want!
+https://github.com/jasonpang/Interceptor

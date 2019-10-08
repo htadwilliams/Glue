@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Glue
+namespace Glue.Events
 {
     public class ReturningEventBus<TEventArgs, TReturnArgs>
     {

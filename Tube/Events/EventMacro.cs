@@ -1,4 +1,4 @@
-﻿namespace Glue.Event
+﻿namespace Glue.Events
 {
     public class EventMacro : Event
     {

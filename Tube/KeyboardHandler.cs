@@ -1,5 +1,5 @@
 ﻿using Glue.Actions;
-using Glue.Event;
+using Glue.Events;
 using Glue.Native;
 using System;
 using System.Runtime.InteropServices;
@@ -39,7 +39,7 @@ namespace Glue
                         return new IntPtr(1);
                     }
 
-                    if (Tube.CheckAndFireTriggers(vkCode, ButtonStates.Press))
+                    if (Tube.TriggerManager.CheckAndFireTriggers(vkCode, ButtonStates.Press))
                     {
                         // Eat keystroke if trigger tells us to do so
                         return new IntPtr(1);
@@ -66,7 +66,7 @@ namespace Glue
                         return new IntPtr(1);
                     }
 
-                    if (Tube.CheckAndFireTriggers(vkCode, ButtonStates.Release))
+                    if (Tube.TriggerManager.CheckAndFireTriggers(vkCode, ButtonStates.Release))
                     {
                         // Eat keystroke if trigger tells us to do so
                         return new IntPtr(1);

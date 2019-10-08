@@ -1,5 +1,5 @@
 ﻿using Glue.Actions;
-using Glue.Event;
+using Glue.Events;
 using Glue.Native;
 using System;
 using System.Collections.ObjectModel;
@@ -18,7 +18,7 @@ namespace Glue.Forms
 
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private delegate void LogControllerDelegate(ControllerEventArgs controllerEventArgs, string movement);
+        private delegate void LogControllerDelegate(EventController eventController);
         private delegate void AppendTextDelegate(string text);
 
         private bool logInput = true;
@@ -53,11 +53,14 @@ namespace Glue.Forms
             EventBus<EventKeyboard>.Instance.EventRecieved += EventKeyboard_Recieved;
             EventBus<EventMouse>.Instance.EventRecieved += EventMouse_Received;
             EventBus<EventMacro>.Instance.EventRecieved += EventMacro_Received;
-
-            Tube.DirectInputManager.ControllerButtonEvent += OnControllerButton;
-            Tube.DirectInputManager.ControllerHatEvent += OnControllerHat;
+            EventBus<EventController>.Instance.EventRecieved += EventController_Received;
 
             checkBoxRawKeyNames.Enabled = logInput;
+        }
+
+        private void EventController_Received(object sender, BusEventArgs<EventController> e)
+        {
+            DisplayControllerEvent(e.BusEvent);
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -260,26 +263,17 @@ namespace Glue.Forms
             this.toolStripMousePosLastClick.Text = String.Format("Last click: ({0:n0}, {1:n0})", xOut, yOut);
         }
 
-        public void OnControllerButton(ControllerEventArgs eventArgs)
-        {
-            DisplayControllerEvent(eventArgs, ((ButtonValues) eventArgs.Update.Value).ToString());
-        }
-
-        private void OnControllerHat(ControllerEventArgs eventArgs)
-        {
-            DisplayControllerEvent(eventArgs, ((HatValues) eventArgs.Update.Value).ToString());
-        }
-
-        internal void DisplayControllerEvent(ControllerEventArgs eventArgs, string movement)
+        internal void DisplayControllerEvent(EventController controllerEvent)
         {
             if (this.InvokeRequired)
             { 
                 LogControllerDelegate d = new LogControllerDelegate(DisplayControllerEvent);
-                this.Invoke(d, new object[] {eventArgs, movement});
+                this.Invoke(d, new object[] {controllerEvent});
             }
             else
             {
-                AppendText(" " + eventArgs.Joystick.Information.InstanceName + " " + eventArgs.Update.Offset + "(" + movement + ")");
+                AppendText(" " + controllerEvent.Joystick.Information.InstanceName + 
+                    "(Button-" + controllerEvent.Button + ":" + controllerEvent.ButtonState + ")");
             }
         }
 

@@ -1,4 +1,4 @@
-﻿using Glue.Event;
+﻿using Glue.Events;
 using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -79,7 +79,7 @@ namespace Glue
                 // Mouse buttons are handled like keyboard keys
                 if (mouseMessage != MouseMessages.WM_MOUSEMOVE)
                 {
-                    if (Tube.CheckAndFireTriggers((int) keyCode, buttonState))
+                    if (Tube.TriggerManager.CheckAndFireTriggers((int) keyCode, buttonState))
                     {
                         // Eat mouse message if trigger tells us to do so
                         return new IntPtr(1);

@@ -1,4 +1,4 @@
-﻿using Glue;
+﻿using Glue.Events;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Tests
