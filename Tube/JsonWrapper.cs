@@ -13,16 +13,19 @@ namespace Glue
     internal class JsonWrapper
     {
         public List<Macro> Macros { get => macros; set => macros = value; }
-        internal List<TriggerKeyboard> Triggers { get => triggers; set => triggers = value; }
-        internal List<KeyboardRemapEntry> RemapKeys { get => remapKeys; set => remapKeys = value; }
+        public List<TriggerKeyboard> KeyboardTriggers { get => keyboardTriggers; set => keyboardTriggers = value; }
+        public List<TriggerController> ControllerTriggers { get => controllerTriggers; set => controllerTriggers = value; }
+        public List<KeyboardRemapEntry> RemapKeys { get => remapKeys; set => remapKeys = value; }
 
         // Never put these tags on class properties. JSon should always serialize lower case names.
         [JsonProperty]
-        private List<TriggerKeyboard> triggers;
+        private List<Macro> macros;
+        [JsonProperty]
+        private List<TriggerKeyboard> keyboardTriggers;
+        [JsonProperty]
+        private List<TriggerController> controllerTriggers;
         [JsonProperty]
         private List<KeyboardRemapEntry> remapKeys;
-        [JsonProperty]
-        private List<Macro> macros;
 
         /// <summary>
         /// Use this constructor to create wrapper before serialization
@@ -32,17 +35,20 @@ namespace Glue
         /// <param name="keyMap"></param>
         /// <param name="macros"></param>
         public JsonWrapper(
-            Dictionary<Keys, List<TriggerKeyboard>> triggers,
+            TriggerManager triggerManager,
             Dictionary<VirtualKeyCode, KeyboardRemapEntry> keyMap,
             Dictionary<string, Macro> macros)
         {
-            this.Triggers = new List<TriggerKeyboard>();
+            this.KeyboardTriggers = new List<TriggerKeyboard>();
 
-            // Flatten trigger map into easily serializable list
-            foreach (List<TriggerKeyboard> triggerList in triggers.Values)
+            // Flatten keyboard trigger map into list - map can be re-built on 
+            // deserialization.
+            foreach (List<TriggerKeyboard> triggerList in triggerManager.KeyboardTriggers.Values)
             {
-                this.Triggers.AddRange(triggerList);
+                this.KeyboardTriggers.AddRange(triggerList);
             }
+
+            this.ControllerTriggers = triggerManager.ControllerTriggers;
 
             this.RemapKeys = new List<KeyboardRemapEntry>(keyMap.Values);
             this.Macros = new List<Macro>(macros.Values);
