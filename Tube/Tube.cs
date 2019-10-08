@@ -222,10 +222,15 @@ namespace Glue
                         }
                     }
                 }
-                catch (Exception e)
+                catch (JsonReaderException e)
                 {
-                    MessageBox.Show(e.Message);
-                    LOGGER.Error("Failed to load file with exception: " + e);
+                    string message = 
+                        "Failed to load " + fileName + ".\r\n\r\n" +
+                        e.Message;
+
+                    MessageBox.Show(message, "Glue - File Load Error");
+                    LOGGER.Error(message, e);
+                         
                     return;
                 }
 
