@@ -19,6 +19,13 @@ namespace Glue.Actions
         MouseLock,
      }
 
+    public enum LockAction
+    {
+        Unlock = 0,
+        Lock = 1,
+        Toggle = 2,
+    }
+
     [JsonConverter(typeof(ActionConverter))]
     [JsonObject(MemberSerialization.OptIn)]
     public abstract class Action : IComparable

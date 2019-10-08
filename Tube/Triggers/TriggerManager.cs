@@ -52,6 +52,14 @@ namespace Glue.Triggers
             }
         }
 
+        internal void AddTriggers(List<TriggerController> triggers)
+        {
+            foreach (TriggerController trigger in triggers)
+            {
+                Add(trigger);
+            }
+        }
+
         public bool CheckAndFireTriggers(int vkCode, ButtonStates movement)
         {
             bool eatInput = false;

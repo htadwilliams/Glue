@@ -1,30 +1,29 @@
-﻿using Glue.PropertyIO;
-using Newtonsoft.Json;
-using WindowsInput.Native;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Glue.Actions
 {
     [JsonObject(MemberSerialization.OptIn)]
     class ActionMouseLock : Action
     {
-        //[JsonProperty]
-        //private bool  lockMouse;
-        //private const string LOCK = "lockMouse";
+        [JsonProperty]
+        [JsonConverter(typeof(StringEnumConverter))]
+        private readonly LockAction lockAction;
 
-//        public ActionMouseLock(bool lockMouse) : base (0)
-        public ActionMouseLock() : base (0)
+        public ActionMouseLock(LockAction lockAction) : base (0)
         {
-            this.Type = ActionType.MouseLock;
+            Type = ActionType.MouseLock;
+            this.lockAction = lockAction;
         }
 
         public override void Play()
         {
-            Glue.Tube.ToggleMouseLock();
+            Glue.Tube.ActivateMouseLock(this.lockAction);
         }
 
         public override Action[] Schedule(long scheduleFromTick)
         {
-            ActionMouseLock scheduledCopy = new ActionMouseLock()
+            ActionMouseLock scheduledCopy = new ActionMouseLock(this.lockAction)
             {
                 ScheduledTick = scheduleFromTick + this.DelayMS
             };
@@ -34,7 +33,7 @@ namespace Glue.Actions
 
         public override string ToString()
         {
-            return base.ToString();
+            return base.ToString() + "(" + this.lockAction + ")";
         }
     }
 }
