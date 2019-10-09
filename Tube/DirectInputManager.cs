@@ -130,12 +130,6 @@ namespace Glue
             JoystickOffset.PointOfViewControllers3,
         };
 
-        public event OnControllerHat ControllerHatEvent;
-        public delegate void OnControllerHat(ControllerEventArgs eventArgs);
-
-        public event OnControllerAxis ControllerAxisEvent;
-        public delegate void OnControllerAxis(ControllerEventArgs eventArgs);
-
         public static HashSet<JoystickOffset> OffsetsHat => s_offsetsHat;
         public static HashSet<JoystickOffset> OffsetsAxis => s_offsetsAxis;
         public static HashSet<JoystickOffset> OffsetsForceFeedback => s_offsetsForceFeedback;
