@@ -85,6 +85,10 @@ namespace Glue
                         buttonState = ButtonStates.Release;
                     break;
 
+                    case MouseMessages.WM_MOUSEWHEEL:
+                        // Not processing mouse wheel yet
+                        return new IntPtr(0);
+
                     case MouseMessages.WM_MOUSEMOVE:
                     default:
                         keyCode = 0;
@@ -155,6 +159,5 @@ namespace Glue
 
             return mouseButton;
         }
-
     }
 }
