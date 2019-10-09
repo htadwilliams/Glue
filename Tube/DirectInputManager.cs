@@ -9,11 +9,12 @@ namespace Glue
 {
     public enum ButtonValues
     {
+        Unknown = -1,
         Release = 0,
         Press =  128,
     }
 
-    public enum HatValues
+    public enum POVStates
     {
         Release = -1,
         Up = 0,
@@ -59,7 +60,7 @@ namespace Glue
         private Thread threadPolling;                   // Polls and disconnects devices that are connected
         private Thread threadDeviceConnector;           // Adds Joysticks to collection periodically
 
-        private static readonly HashSet<JoystickOffset> s_offsetsHat = new HashSet<JoystickOffset>();
+        private static readonly HashSet<JoystickOffset> s_offsetsPOV = new HashSet<JoystickOffset>();
         private static readonly HashSet<JoystickOffset> s_offsetsAxis = new HashSet<JoystickOffset>();
         private static readonly HashSet<JoystickOffset> s_offsetsForceFeedback = new HashSet<JoystickOffset>();
 
@@ -122,7 +123,7 @@ namespace Glue
             JoystickOffset.ForceSliders1,
         };
 
-        private static readonly JoystickOffset[] OFFSETS_HAT =
+        private static readonly JoystickOffset[] OFFSETS_POV =
         {
             JoystickOffset.PointOfViewControllers0,
             JoystickOffset.PointOfViewControllers1,
@@ -130,7 +131,7 @@ namespace Glue
             JoystickOffset.PointOfViewControllers3,
         };
 
-        public static HashSet<JoystickOffset> OffsetsHat => s_offsetsHat;
+        public static HashSet<JoystickOffset> OffsetsPOV => s_offsetsPOV;
         public static HashSet<JoystickOffset> OffsetsAxis => s_offsetsAxis;
         public static HashSet<JoystickOffset> OffsetsForceFeedback => s_offsetsForceFeedback;
 
@@ -150,7 +151,7 @@ namespace Glue
 
         private void InitializeOffsetFilters()
         {
-            InitializeOffsets(OFFSETS_HAT, s_offsetsHat);
+            InitializeOffsets(OFFSETS_POV, s_offsetsPOV);
             InitializeOffsets(OFFSETS_AXIS, s_offsetsAxis);
             InitializeOffsets(OFFSETS_FORCE_FEEDBACK, s_offsetsForceFeedback);
         }

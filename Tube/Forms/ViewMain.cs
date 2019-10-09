@@ -276,10 +276,10 @@ namespace Glue.Forms
                     AppendText(" " + controllerEvent.Joystick.Information.InstanceName + 
                         " (Button " + controllerEvent.Button + " " + controllerEvent.ButtonState + ")");
                 }
-                else if (controllerEvent.Type == EventController.EventType.Hat)
+                else if (controllerEvent.Type == EventController.EventType.POV)
                 {
                     AppendText(" " + controllerEvent.Joystick.Information.InstanceName + 
-                        " (POV " + (HatValues) controllerEvent.JoystickUpdate.Value + ")");
+                        " (POV " + controllerEvent.POVState + ")");
                 }
             }
         }

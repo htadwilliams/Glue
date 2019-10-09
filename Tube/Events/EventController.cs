@@ -9,41 +9,65 @@ namespace Glue.Events
         {
             Unknown = 0,
             Button,
-            Hat,
+            POV,
             Axis,
         }
 
         public Joystick Joystick { get; }
         public JoystickUpdate JoystickUpdate { get; }
+
+        /// <summary>
+        /// Will always be -1 if EventType is not Button
+        /// </summary>
         public int Button { get; } = -1;
-        public ButtonStates ButtonState { get; }
+
+        /// <summary>
+        /// Will always be ButtonStates.Release if EventType is not Button
+        /// </summary>
+        public ButtonStates ButtonState { get; } = ButtonStates.Release;
+
+        /// <summary>
+        /// Will always be POVStates.Release if EventType is not POV
+        /// </summary>
+        public POVStates POVState { get; }
+
+        /// <summary>
+        /// Determined by JoystickUpdate.Offset as documented by MSDN (DirectX)
+        /// </summary>
         public EventType Type { get; }
 
         public EventController(Joystick joystick, JoystickUpdate joystickUpdate) : base()
         {
             Joystick = joystick;
             JoystickUpdate = joystickUpdate;
-            Type = EventTypeFromOffset(joystickUpdate.Offset);
-            Button = GetButton(JoystickUpdate.Offset);
-
-            ButtonState = joystickUpdate.Value == (int) ButtonValues.Press 
-                ? ButtonStates.Press 
-                : ButtonStates.Release;
+            Type = GetEventType();
+            POVState = GetPOVState();
+            Button = GetButton();
+            ButtonState = GetButtonState();
         }
 
-        private static EventType EventTypeFromOffset(JoystickOffset joystickOffset)
+        private ButtonStates GetButtonState()
+        {
+            if (Type == EventType.Button && ButtonValues.Press == (ButtonValues) JoystickUpdate.Value)
+            {
+                return ButtonStates.Press;
+            }
+            return ButtonStates.Release;
+        }
+
+        private EventType GetEventType()
         {
             EventType eventType = EventType.Unknown;
 
-            if (IsButtonOffset(joystickOffset))
+            if (IsButtonOffset(JoystickUpdate.Offset))
             {
                 eventType = EventType.Button;
             }
-            else if (DirectInputManager.OffsetsHat.Contains(joystickOffset))
+            else if (DirectInputManager.OffsetsPOV.Contains(JoystickUpdate.Offset))
             {
-                eventType = EventType.Hat;
+                eventType = EventType.POV;
             }
-            else if (DirectInputManager.OffsetsAxis.Contains(joystickOffset))
+            else if (DirectInputManager.OffsetsAxis.Contains(JoystickUpdate.Offset))
             {
                 eventType = EventType.Axis;
             }
@@ -51,9 +75,21 @@ namespace Glue.Events
             return eventType;
         }
 
-        private static int GetButton(JoystickOffset offset)
+        private int GetButton()
         {
-            return (int) (offset - JoystickOffset.Buttons0);
+            return (int) (JoystickUpdate.Offset - JoystickOffset.Buttons0);
+        }
+
+        private POVStates GetPOVState()
+        {
+            if (Type == EventType.POV)
+            {
+                return (POVStates) JoystickUpdate.Value;
+            }
+            else
+            {
+                return POVStates.Release;
+            }
         }
 
         private static bool IsButtonOffset(JoystickOffset offset)
