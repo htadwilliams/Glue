@@ -21,7 +21,7 @@ Json containing the following elements
           "type": "MouseLock"
         },
         {
-          "delayMS": 100,
+          "delayMS": 0,
           "type": "Sound",
           "SoundPath": "sound_click_latch.wav"
         }
@@ -37,7 +37,7 @@ Json containing the following elements
           "type": "MouseLock"
         },
         {
-          "delayMS": 100,
+          "delayMS": 0,
           "type": "Sound",
           "SoundPath": "sound_click_latch.wav"
         }
@@ -53,12 +53,38 @@ Json containing the following elements
           "type": "MouseLock"
         },
         {
-          "delayMS": 100,
+          "delayMS": 0,
           "type": "Sound",
           "SoundPath": "sound_click_latch.wav"
         }
       ]
-    }
+    },
+    {
+      "name": "toggle-down",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "movement": "Press",
+          "key": "SPACE",
+          "timeClickMS": 50,
+          "delayMS": 0,
+          "type": "Keyboard"
+        }
+      ]
+    },
+    {
+      "name": "toggle-up",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "movement": "Release",
+          "key": "SPACE",
+          "timeClickMS": 0,
+          "delayMS": 0,
+          "type": "Keyboard"
+        }
+      ]
+    },
   ],
   "keyboardTriggers": [
     {
@@ -82,7 +108,21 @@ Json containing the following elements
         "lock-mouse-toggle"
       ],
       "eatInput": true
-    }
+    },
+    {
+      "triggerKey": "Space",
+      "modKeys": [
+        "LControlKey"
+      ],
+      "buttonState": "Both",
+      "macroNames": [
+        "toggle-down",
+        null,
+        "toggle-up",
+        null
+      ],
+      "eatInput": true
+    },
   ],
   "controllerTriggers": [
     {
