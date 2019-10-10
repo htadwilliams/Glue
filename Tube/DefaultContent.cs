@@ -1,6 +1,6 @@
-﻿using Glue.Actions;
+﻿using Glue.Triggers;
+using Glue.Actions;
 using Glue.Events;
-using Glue.Triggers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -212,15 +212,22 @@ namespace Glue
             trigger.AddModifier(Keys.RControlKey);
             triggerManager.Add(trigger);
 
-            // Engage or mouse safety - example optimal for controller that 
+            // 
+            // Mouse safety - example optimal for controller that 
             // has a toggle switch
+            //
+
+            // Engage mouse safety
             macro = new Macro(macroName = "lock-mouse-engage", 0);
             macro.AddAction(new ActionMouseLock(LockAction.Lock));
             macro.AddAction(new ActionSound(TIME_DELAY_GLOBAL_MS, "sound_click_latch.wav"));
             Macros.Add(macroName, macro);
             
-            TriggerController triggerController = new TriggerController(
-                ButtonStates.Press, macroName, BUTTON_CONTROLLER, NAME_CONTROLLER);
+            TriggerController triggerController = new TriggerControllerButton(
+                 NAME_CONTROLLER, BUTTON_CONTROLLER, ButtonValues.Press, macroName);
+            triggerManager.Add(triggerController);
+
+            triggerController = new TriggerControllerPOV(NAME_CONTROLLER, POVStates.Up, macroName);
             triggerManager.Add(triggerController);
 
             // Disengage mouse safety
@@ -229,8 +236,10 @@ namespace Glue
             macro.AddAction(new ActionSound(TIME_DELAY_GLOBAL_MS, "sound_click_latch.wav"));
             Macros.Add(macroName, macro);
             
-            triggerController = new TriggerController(
-                ButtonStates.Release, macroName, BUTTON_CONTROLLER, NAME_CONTROLLER);
+            triggerController = new TriggerControllerButton(
+                NAME_CONTROLLER, BUTTON_CONTROLLER, ButtonValues.Release, macroName );
+            triggerManager.Add(triggerController);
+            triggerController = new TriggerControllerPOV(NAME_CONTROLLER, POVStates.Down, macroName);
             triggerManager.Add(triggerController);
 
             // Sunless skies (and other games) won't allow binding to shift key

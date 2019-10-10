@@ -88,6 +88,7 @@ Json containing the following elements
   ],
   "keyboardTriggers": [
     {
+      "type": "Keyboard",
       "triggerKey": "L",
       "modKeys": [
         "LControlKey"
@@ -99,6 +100,7 @@ Json containing the following elements
       "eatInput": true
     },
     {
+      "type": "Keyboard",
       "triggerKey": "L",
       "modKeys": [
         "RControlKey"
@@ -110,6 +112,7 @@ Json containing the following elements
       "eatInput": true
     },
     {
+      "type": "Keyboard",
       "triggerKey": "Space",
       "modKeys": [
         "LControlKey"
@@ -126,18 +129,20 @@ Json containing the following elements
   ],
   "controllerTriggers": [
     {
+      "type": "ControllerButton",
       "namePart": "Throttle - HOTAS Warthog",
       "button": 23,
-      "buttonState": "Press",
+      "buttonValue": "Press",
       "macroNames": [
         "lock-mouse-engage"
       ],
       "eatInput": false
     },
     {
+      "type": "ControllerButton",
       "namePart": "Throttle - HOTAS Warthog",
       "button": 23,
-      "buttonState": "Release",
+      "buttonValue": "Release",
       "macroNames": [
         "lock-mouse-disengage"
       ],

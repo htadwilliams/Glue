@@ -22,9 +22,9 @@ namespace Glue.Events
         public int Button { get; } = -1;
 
         /// <summary>
-        /// Will always be ButtonStates.Release if EventType is not Button
+        /// Will always be ButtonValues.Unknown if EventType is not Button
         /// </summary>
-        public ButtonStates ButtonState { get; } = ButtonStates.Release;
+        public ButtonValues ButtonValue { get; } = ButtonValues.Unknown;
 
         /// <summary>
         /// Will always be POVStates.Release if EventType is not POV
@@ -43,16 +43,19 @@ namespace Glue.Events
             Type = GetEventType();
             POVState = GetPOVState();
             Button = GetButton();
-            ButtonState = GetButtonState();
+            ButtonValue = GetButtonState();
         }
 
-        private ButtonStates GetButtonState()
+        private ButtonValues GetButtonState()
         {
-            if (Type == EventType.Button && ButtonValues.Press == (ButtonValues) JoystickUpdate.Value)
+            if (Type == EventType.Button)
             {
-                return ButtonStates.Press;
+                return (ButtonValues) JoystickUpdate.Value;
             }
-            return ButtonStates.Release;
+            else
+            {
+                return ButtonValues.Unknown;
+            }
         }
 
         private EventType GetEventType()

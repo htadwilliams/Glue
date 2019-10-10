@@ -155,7 +155,11 @@
     <Compile Include="TrayApplicationContext.cs" />
     <Compile Include="PropertyIO\FormatDuration.cs" />
     <Compile Include="Events\EventBus.cs" />
+    <Compile Include="Triggers\JsonContract\TriggerContractResolver.cs" />
+    <Compile Include="Triggers\JsonContract\TriggerConverter.cs" />
     <Compile Include="Triggers\TriggerController.cs" />
+    <Compile Include="Triggers\TriggerControllerPOV.cs" />
+    <Compile Include="Triggers\TriggerControllerButton.cs" />
     <Compile Include="Triggers\TriggerKeyboard.cs" />
     <Compile Include="Triggers\TriggerManager.cs" />
     <Compile Include="Utils.cs" />

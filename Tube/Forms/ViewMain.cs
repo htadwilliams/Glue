@@ -274,7 +274,7 @@ namespace Glue.Forms
                 if (controllerEvent.Type == EventController.EventType.Button)
                 {
                     AppendText(" " + controllerEvent.Joystick.Information.InstanceName + 
-                        " (Button " + controllerEvent.Button + " " + controllerEvent.ButtonState + ")");
+                        " (Button " + controllerEvent.Button + " " + controllerEvent.ButtonValue + ")");
                 }
                 else if (controllerEvent.Type == EventController.EventType.POV)
                 {

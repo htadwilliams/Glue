@@ -10,10 +10,12 @@ namespace Glue.Triggers
     public class TriggerKeyboard : Trigger
     {
         public Keys TriggerKey => triggerKey;
-
+        public ButtonStates ButtonState => this.buttonState;
         public List<Keys> ModKeys => modKeys;
 
-        private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        [JsonProperty]
+        [JsonConverter(typeof(StringEnumConverter))]
+        private readonly ButtonStates buttonState;
 
         [JsonProperty]
         [JsonConverter(typeof(StringEnumConverter))]
@@ -28,23 +30,29 @@ namespace Glue.Triggers
             ButtonStates buttonState, 
             List<string> macroNames, 
             bool eatInput
-            ) : base(buttonState, macroNames, eatInput)
+            ) : base(macroNames, eatInput)
         {
+            this.Type = TriggerType.Keyboard;
             this.triggerKey = triggerKey;
+            this.buttonState = buttonState;
         }
 
         public TriggerKeyboard(
             Keys triggerKey, 
-            List<string> macroNames) : base(ButtonStates.Press, macroNames, false)
+            List<string> macroNames) : base(macroNames, false)
         {
+            this.Type = TriggerType.Keyboard;
             this.triggerKey = triggerKey;
+            this.buttonState = ButtonStates.Press;
         }
 
         public TriggerKeyboard(
             Keys triggerKey,
-            string macroName) : base (ButtonStates.Press, macroName, false)
+            string macroName) : base (macroName, false)
         {
+            this.Type = TriggerType.Keyboard;
             this.triggerKey = triggerKey;
+            this.buttonState = ButtonStates.Press;
         }
 
         public Trigger AddModifier(Keys modKey)
