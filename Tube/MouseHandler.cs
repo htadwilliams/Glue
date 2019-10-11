@@ -104,7 +104,7 @@ namespace Glue
                         null, 
                         new EventKeyboard((int) keyCode, buttonState));
 
-                    if (Tube.TriggerManager.CheckAndFireTriggers((int) keyCode, buttonState))
+                    if (Tube.TriggerManager.OnKeyboard((int) keyCode, buttonState))
                     {
                         // Eat mouse message if trigger says to do so
                         return new IntPtr(1);

@@ -18,6 +18,7 @@ namespace Glue.Triggers
                 
             : base(macroNames, false)
         {
+            EventBus<EventController>.Instance.EventRecieved += OnEventController;
             this.namePart = namePart;
         }
 
@@ -30,6 +31,6 @@ namespace Glue.Triggers
             this.namePart = namePart;
         }
 
-        public abstract void CheckAndFire(EventController eventController);
+        protected abstract void OnEventController(object sender, BusEventArgs<EventController> e);
     }
 }

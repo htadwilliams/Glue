@@ -1,7 +1,6 @@
 ﻿using Glue.Events;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using System;
 using System.Collections.Generic;
 
 namespace Glue.Triggers
@@ -39,11 +38,13 @@ namespace Glue.Triggers
             this.povState = povState;
         }
 
-        public override void CheckAndFire(EventController busEvent)
+        protected override void OnEventController(object sender, BusEventArgs<EventController> e)
         {
-            if (busEvent.Type == EventController.EventType.POV &&
-                busEvent.POVState == POVState &&
-                busEvent.Joystick.Information.InstanceName.Contains(NamePart))
+            EventController eventController = e.BusEvent;
+
+            if (eventController.Type == EventController.EventType.POV &&
+                eventController.POVState == POVState &&
+                eventController.Joystick.Information.InstanceName.Contains(NamePart))
             {
                 Fire();
             }

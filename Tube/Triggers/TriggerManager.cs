@@ -1,5 +1,4 @@
 ﻿using Glue.Events;
-using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
@@ -7,34 +6,30 @@ namespace Glue.Triggers
 {
     public class TriggerManager
     {
-        private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-        // TODO unify trigger list and stop defeating polymorphism
+        // private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private Dictionary<Keys, List<TriggerKeyboard>> KeyboardTriggers { get; } = new Dictionary<Keys, List<TriggerKeyboard>>();
-        private List<TriggerController> ControllerTriggers { get; } = new List<TriggerController>();
+        private List<Trigger> Triggers { get; } = new List<Trigger>();
 
         public TriggerManager()
         {
-            EventBus<EventController>.Instance.EventRecieved += OnEventController;
-        }
-
-        private void OnEventController(object sender, BusEventArgs<EventController> e)
-        {
-            foreach(TriggerController trigger in ControllerTriggers)
-            {
-                trigger.CheckAndFire(e.BusEvent);
-            }
         }
 
         public void Clear()
         {
             KeyboardTriggers.Clear();
-            ControllerTriggers.Clear();
+            Triggers.Clear();
         }
 
-        public void Add(TriggerController trigger)
+        public void Add(Trigger trigger)
         {
-            ControllerTriggers.Add(trigger);
+            if (trigger.GetType() == typeof(TriggerKeyboard))
+            {
+                Add((TriggerKeyboard) trigger);
+            }
+            else 
+            {
+                Triggers.Add(trigger);
+            }
         }
 
         public void Add(TriggerKeyboard trigger)
@@ -47,7 +42,7 @@ namespace Glue.Triggers
             triggerList.Add(trigger);
         }
 
-        public bool CheckAndFireTriggers(int vkCode, ButtonStates movement)
+        public bool OnKeyboard(int vkCode, ButtonStates movement)
         {
             bool eatInput = false;
 
@@ -85,7 +80,7 @@ namespace Glue.Triggers
 
         internal List<Trigger> GetTriggers()
         {
-            List<Trigger> triggerList = new List<Trigger>(ControllerTriggers);
+            List<Trigger> triggerList = new List<Trigger>(Triggers);
 
             foreach (List<TriggerKeyboard> keyboardTriggerList in KeyboardTriggers.Values)
             {
@@ -102,21 +97,7 @@ namespace Glue.Triggers
         {
             foreach (Trigger trigger in triggers)
             {
-                if (trigger.GetType() == typeof(TriggerKeyboard))
-                {
-                    Add((TriggerKeyboard) trigger);
-                }
-                else 
-                {
-                    try
-                    {
-                        Add((TriggerController) trigger);
-                    }
-                    catch (InvalidCastException e)
-                    {
-                        LOGGER.Error("Unknown Trigger type: " + trigger.GetType(), e);
-                    }
-                }
+                Add(trigger);
             }
         }
     }
