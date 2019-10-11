@@ -7,8 +7,11 @@ namespace Glue.Triggers
 {
     public class TriggerManager
     {
-        public Dictionary<Keys, List<TriggerKeyboard>> KeyboardTriggers { get; } = new Dictionary<Keys, List<TriggerKeyboard>>();
-        public List<TriggerController> ControllerTriggers { get; } = new List<TriggerController>();
+        private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        // TODO unify trigger list and stop defeating polymorphism
+        private Dictionary<Keys, List<TriggerKeyboard>> KeyboardTriggers { get; } = new Dictionary<Keys, List<TriggerKeyboard>>();
+        private List<TriggerController> ControllerTriggers { get; } = new List<TriggerController>();
 
         public TriggerManager()
         {
@@ -42,22 +45,6 @@ namespace Glue.Triggers
                 KeyboardTriggers.Add(trigger.TriggerKey, triggerList);
             }
             triggerList.Add(trigger);
-        }
-
-        internal void AddTriggers(List<TriggerKeyboard> triggers)
-        {
-            foreach (TriggerKeyboard trigger in triggers)
-            {
-                Add(trigger);
-            }
-        }
-
-        internal void AddTriggers(List<TriggerController> triggers)
-        {
-            foreach (TriggerController trigger in triggers)
-            {
-                Add(trigger);
-            }
         }
 
         public bool CheckAndFireTriggers(int vkCode, ButtonStates movement)
@@ -94,6 +81,43 @@ namespace Glue.Triggers
             }
 
             return eatInput;
+        }
+
+        internal List<Trigger> GetTriggers()
+        {
+            List<Trigger> triggerList = new List<Trigger>(ControllerTriggers);
+
+            foreach (List<TriggerKeyboard> keyboardTriggerList in KeyboardTriggers.Values)
+            {
+                foreach (Trigger keyboardTrigger in keyboardTriggerList)
+                {
+                    triggerList.Add(keyboardTrigger);
+                }
+            }
+            
+            return triggerList;
+        }
+
+        internal void AddTriggers(List<Trigger> triggers)
+        {
+            foreach (Trigger trigger in triggers)
+            {
+                if (trigger.GetType() == typeof(TriggerKeyboard))
+                {
+                    Add((TriggerKeyboard) trigger);
+                }
+                else 
+                {
+                    try
+                    {
+                        Add((TriggerController) trigger);
+                    }
+                    catch (InvalidCastException e)
+                    {
+                        LOGGER.Error("Unknown Trigger type: " + trigger.GetType(), e);
+                    }
+                }
+            }
         }
     }
 }

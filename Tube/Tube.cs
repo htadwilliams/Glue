@@ -175,7 +175,7 @@ namespace Glue
                     "    keyMap     Each entry remaps a key on the keyboard.\r\n\r\n");
                 sw.Write("\r\n");
 
-                JsonWrapper jsonWrapper = new JsonWrapper(TriggerManager, KeyMap, Macros);
+                JsonWrapper jsonWrapper = new JsonWrapper(TriggerManager.GetTriggers(), KeyMap, Macros);
                 serializer.Serialize(writer, jsonWrapper);
             }
         }
@@ -196,8 +196,7 @@ namespace Glue
 
             if (File.Exists(fileName))
             {
-                List<TriggerKeyboard> keyboardTriggers;
-                List<TriggerController> controllerTriggers;
+                List<Trigger> triggers;
 
                 JsonSerializer serializer = new JsonSerializer
                 {
@@ -217,8 +216,7 @@ namespace Glue
 
                             Macros = jsonWrapper.GetMacroMap();
                             KeyMap = jsonWrapper.GetKeyboardMap();
-                            keyboardTriggers = jsonWrapper.KeyboardTriggers;
-                            controllerTriggers = jsonWrapper.ControllerTriggers;
+                            triggers = jsonWrapper.Triggers;
                         }
                     }
                 }
@@ -238,19 +236,12 @@ namespace Glue
                 {
                     LOGGER.Info(String.Format("    Loaded {0} macros", Macros.Count));
                 }
-                if (null != keyboardTriggers && keyboardTriggers.Count != 0)
+                if (null != triggers && triggers.Count != 0)
                 {
-                    TriggerManager.KeyboardTriggers.Clear();
-                    TriggerManager.AddTriggers(keyboardTriggers);
+                    TriggerManager.Clear();
+                    TriggerManager.AddTriggers(triggers);
 
-                    LOGGER.Info(String.Format("    Loaded {0} keyboard triggers", keyboardTriggers.Count));
-                }
-                if (null != controllerTriggers && controllerTriggers.Count != 0)
-                {
-                    TriggerManager.ControllerTriggers.Clear();
-                    TriggerManager.AddTriggers(controllerTriggers);
-
-                    LOGGER.Info(String.Format("    Loaded {0} controller triggers", controllerTriggers.Count));
+                    LOGGER.Info(String.Format("    Loaded {0} triggers", triggers.Count));
                 }
                 if (null != KeyMap && KeyMap.Count != 0)
                 {
