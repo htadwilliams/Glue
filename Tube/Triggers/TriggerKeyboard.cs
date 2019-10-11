@@ -1,7 +1,6 @@
 ﻿using Glue.Events;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
@@ -35,6 +34,28 @@ namespace Glue.Triggers
             this.Type = TriggerType.Keyboard;
             this.triggerKey = triggerKey;
             this.buttonState = buttonState;
+        }
+
+        protected override void SubscribeEvent()
+        {
+            ReturningEventBus<EventKeyboard, bool>.Instance.ReturningEventRecieved += OnEventKeyboard;
+        }
+
+        private bool OnEventKeyboard(object sender, EventKeyboard e)
+        {
+            if (
+                TriggerKey == (Keys) e.VirtualKeyCode && 
+                    (ButtonState == ButtonStates.Both || 
+                    ButtonState == e.ButtonState))
+            {
+                if (AreModKeysActive())
+                {
+                    Fire();
+                    return EatInput;
+                }
+            }
+
+            return false;
         }
 
         public TriggerKeyboard(
@@ -75,18 +96,6 @@ namespace Glue.Triggers
             }
 
             return modKeysAreActive;
-        }
-
-        public bool CheckAndFire()
-        {
-            if (!AreModKeysActive())
-            {
-                return false;
-            }
-
-            Fire();
-
-            return EatInput;
         }
     }
 }

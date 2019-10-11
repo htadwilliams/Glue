@@ -26,13 +26,13 @@ namespace Glue
         public static Scheduler Scheduler { get => s_actionScheduler; }
         public static bool MouseLocked { get => s_lockMouse; set => s_lockMouse = value; }
         public static DirectInputManager DirectInputManager => s_directInputManager;
-        public static TriggerManager TriggerManager { get => s_triggerManager; set => s_triggerManager = value; }
+        public static List<Trigger> Triggers { get => s_triggers; set => s_triggers = value; }
 
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         // Core data structures for macros, triggers, and keyboard remapping
         private static Dictionary<string, Macro> s_macros;
-        private static TriggerManager s_triggerManager = new TriggerManager();
+        private static List<Trigger> s_triggers;
         private static Dictionary<VirtualKeyCode, KeyboardRemapEntry> s_keyMap;
 
         // Core sub-systems 
@@ -175,7 +175,7 @@ namespace Glue
                     "    keyMap     Each entry remaps a key on the keyboard.\r\n\r\n");
                 sw.Write("\r\n");
 
-                JsonWrapper jsonWrapper = new JsonWrapper(TriggerManager.GetTriggers(), KeyMap, Macros);
+                JsonWrapper jsonWrapper = new JsonWrapper(Triggers, KeyMap, Macros);
                 serializer.Serialize(writer, jsonWrapper);
             }
         }
@@ -184,8 +184,7 @@ namespace Glue
         {
             KeyMap = new Dictionary<VirtualKeyCode, KeyboardRemapEntry>();
             Macros = new Dictionary<string, Macro>();
-
-            TriggerManager.Clear();
+            Triggers = new List<Trigger>();
         }
 
         public static void LoadFile(string fileName)
@@ -196,8 +195,6 @@ namespace Glue
 
             if (File.Exists(fileName))
             {
-                List<Trigger> triggers;
-
                 JsonSerializer serializer = new JsonSerializer
                 {
                     DefaultValueHandling = DefaultValueHandling.Populate
@@ -216,7 +213,7 @@ namespace Glue
 
                             Macros = jsonWrapper.GetMacroMap();
                             KeyMap = jsonWrapper.GetKeyboardMap();
-                            triggers = jsonWrapper.Triggers;
+                            Triggers = jsonWrapper.Triggers;
                         }
                     }
                 }
@@ -236,12 +233,9 @@ namespace Glue
                 {
                     LOGGER.Info(String.Format("    Loaded {0} macros", Macros.Count));
                 }
-                if (null != triggers && triggers.Count != 0)
+                if (null != Triggers && Triggers.Count != 0)
                 {
-                    TriggerManager.Clear();
-                    TriggerManager.AddTriggers(triggers);
-
-                    LOGGER.Info(String.Format("    Loaded {0} triggers", triggers.Count));
+                    LOGGER.Info(String.Format("    Loaded {0} triggers", Triggers.Count));
                 }
                 if (null != KeyMap && KeyMap.Count != 0)
                 {

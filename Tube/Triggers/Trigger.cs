@@ -1,9 +1,7 @@
 ﻿using Glue.Triggers.JsonContract;
-using Glue.Events;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
-using static Glue.Events.Event;
 
 namespace Glue.Triggers
 {
@@ -21,7 +19,6 @@ namespace Glue.Triggers
         public bool EatInput => this.eatInput;
         public List<string> MacroNames => macroNames;
         protected TriggerType Type { get => type; set => type = value; }
-
 
         // Index into ripple fire macros
         protected int indexMacroCurrent = 0;
@@ -44,12 +41,21 @@ namespace Glue.Triggers
         {
             this.macroNames.AddRange(macroNames);
             this.eatInput = eatInput;
+
+            SubscribeEvent();
         }
 
         public Trigger(string macroName, bool eatInput)
         {
             this.macroNames.Add(macroName);
             this.eatInput = eatInput;
+
+            SubscribeEvent();
+        }
+
+        protected virtual void SubscribeEvent()
+        {
+            // Do nothing by default - subclasses must opt in
         }
 
         protected virtual void Fire()

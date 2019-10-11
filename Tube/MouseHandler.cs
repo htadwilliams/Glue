@@ -100,13 +100,9 @@ namespace Glue
                 // Mouse buttons are handled like keyboard keys
                 if (mouseMessage != MouseMessages.WM_MOUSEMOVE)
                 {
-                    EventBus<EventKeyboard>.Instance.SendEvent(
-                        null, 
-                        new EventKeyboard((int) keyCode, buttonState));
-
-                    if (Tube.TriggerManager.OnKeyboard((int) keyCode, buttonState))
+                    if (KeyboardHandler.BroadcastKeyboardEvent((int) keyCode, buttonState))
                     {
-                        // Eat mouse message if trigger says to do so
+                        // Eat mouse message if any event listener says to do so
                         return new IntPtr(1);
                     }
                 }

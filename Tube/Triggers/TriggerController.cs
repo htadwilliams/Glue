@@ -18,7 +18,6 @@ namespace Glue.Triggers
                 
             : base(macroNames, false)
         {
-            EventBus<EventController>.Instance.EventRecieved += OnEventController;
             this.namePart = namePart;
         }
 
@@ -29,6 +28,11 @@ namespace Glue.Triggers
             : base(macroName, false)
         {
             this.namePart = namePart;
+        }
+
+        protected override void SubscribeEvent()
+        {
+            EventBus<EventController>.Instance.EventRecieved += OnEventController;
         }
 
         protected abstract void OnEventController(object sender, BusEventArgs<EventController> e);
