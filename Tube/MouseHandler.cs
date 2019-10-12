@@ -1,6 +1,7 @@
 ﻿using Glue.Events;
 using Glue.Native;
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using WindowsInput.Native;
@@ -29,6 +30,7 @@ namespace Glue
                 VirtualKeyCode keyCode;
                 MouseButtons mouseButton;
                 ButtonStates buttonState = ButtonStates.Press;
+                WheelMoves wheelMove = WheelMoves.None;
 
                 // Switch could be refactored into a lookup table to make this cleaner
                 // Translate mouse messages into something Glue can use
@@ -86,8 +88,17 @@ namespace Glue
                     break;
 
                     case MouseMessages.WM_MOUSEWHEEL:
-                        // Not processing mouse wheel yet
-                        return new IntPtr(0);
+                        if (unchecked((short)((long) hookStruct.mouseData >> 16)) > 0)
+                        {
+                            wheelMove = WheelMoves.Up;
+                        }
+                        else
+                        {
+                            wheelMove = WheelMoves.Down;
+                        }
+                        keyCode = 0;
+                        mouseButton = MouseButtons.None;
+                        break;
 
                     case MouseMessages.WM_MOUSEMOVE:
                     default:
@@ -108,9 +119,10 @@ namespace Glue
                 }
 
                 // All mouse events go on the mouse bus 
-                EventBus<EventMouse>.Instance.SendEvent(
-                    null, 
-                    new EventMouse(mouseButton, buttonState, hookStruct.pt.x, hookStruct.pt.y));
+                if (BroadcastMouseEvent(new EventMouse(mouseButton, buttonState, wheelMove, hookStruct.pt.x, hookStruct.pt.y)))
+                {
+                    return new IntPtr(1);
+                }
             }
 
             // Freeze the mouse if mouse safety is toggled
@@ -120,6 +132,15 @@ namespace Glue
             }
             
             return new IntPtr(0);
+        }
+
+        private static bool BroadcastMouseEvent(EventMouse eventMouse)
+        {
+            EventBus<EventMouse>.Instance.SendEvent(null, eventMouse);
+
+            List<bool> eatInputResults = ReturningEventBus<EventMouse, bool>.Instance.SendEvent(null, eventMouse);
+
+            return (null != eatInputResults && eatInputResults.Contains(true));
         }
 
         private static VirtualKeyCode GetXButtonKeyCode(MSLLHOOKSTRUCT hookStruct)
