@@ -32,18 +32,21 @@ namespace Glue.Events
 
         public List<TReturnArgs> SendEvent(object sender, TEventArgs newEvent)
         {
-            List<TReturnArgs> returnList;
+            List<TReturnArgs> returnList = null;
 
             lock (s_lock)
             {
-                returnList = new List<TReturnArgs>(ReturningEventRecieved.GetInvocationList().Length);
-
                 if (null != ReturningEventRecieved)
                 {
-                    foreach(Delegate returningEventRecieved in ReturningEventRecieved.GetInvocationList())
+                    returnList = new List<TReturnArgs>(ReturningEventRecieved.GetInvocationList().Length);
+
+                    if (null != ReturningEventRecieved)
                     {
-                        object returnObject = returningEventRecieved.DynamicInvoke(new object[] {sender, newEvent});
-                        returnList.Add((TReturnArgs) returnObject);
+                        foreach(Delegate returningEventRecieved in ReturningEventRecieved.GetInvocationList())
+                        {
+                            object returnObject = returningEventRecieved.DynamicInvoke(new object[] {sender, newEvent});
+                            returnList.Add((TReturnArgs) returnObject);
+                        }
                     }
                 }
 
