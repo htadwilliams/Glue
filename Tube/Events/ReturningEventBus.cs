@@ -40,13 +40,10 @@ namespace Glue.Events
                 {
                     returnList = new List<TReturnArgs>(ReturningEventRecieved.GetInvocationList().Length);
 
-                    if (null != ReturningEventRecieved)
+                    foreach(Delegate returningEventRecieved in ReturningEventRecieved.GetInvocationList())
                     {
-                        foreach(Delegate returningEventRecieved in ReturningEventRecieved.GetInvocationList())
-                        {
-                            object returnObject = returningEventRecieved.DynamicInvoke(new object[] {sender, newEvent});
-                            returnList.Add((TReturnArgs) returnObject);
-                        }
+                        object returnObject = returningEventRecieved.DynamicInvoke(new object[] {sender, newEvent});
+                        returnList.Add((TReturnArgs) returnObject);
                     }
                 }
 
