@@ -71,6 +71,12 @@ namespace Glue
             trigger.AddModifier(Keys.LControlKey);
             Tube.Triggers.Add(trigger);
 
+            TriggerMouseWheel triggerMouseWheel = new TriggerMouseWheel(WheelMoves.Up, "sound-servomotor", false);
+            Tube.Triggers.Add(triggerMouseWheel);
+            triggerMouseWheel = new TriggerMouseWheel(WheelMoves.Down, "sound-ahha", false);
+            Tube.Triggers.Add(triggerMouseWheel);
+
+
             //
             // Drum kit!
             // Schedule repeating sound every N MS 

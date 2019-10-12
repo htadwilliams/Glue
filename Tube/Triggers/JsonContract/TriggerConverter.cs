@@ -45,6 +45,8 @@ namespace Glue.Triggers.JsonContract
                         return JsonConvert.DeserializeObject<TriggerControllerButton>(jo.ToString(), SpecifiedSubclassConversion);
                     case TriggerType.ControllerPOV:
                         return JsonConvert.DeserializeObject<TriggerControllerPOV>(jo.ToString(), SpecifiedSubclassConversion);
+                    case TriggerType.MouseWheel:
+                        return JsonConvert.DeserializeObject<TriggerMouseWheel>(jo.ToString(), SpecifiedSubclassConversion);
 
                     default:
                         string message = "Unknown type [" + type + "] encountered during deserialization";

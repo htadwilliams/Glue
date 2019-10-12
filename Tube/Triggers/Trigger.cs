@@ -8,6 +8,7 @@ namespace Glue.Triggers
     public enum TriggerType
     {
         Keyboard,
+        MouseWheel,
         ControllerButton,
         ControllerPOV,
      }
