@@ -79,7 +79,7 @@ The application by default attempts to read MACROS.GLUE from its working directo
 ## Core TODO
  - [x] Game controller button triggers.
  - [ ] Game controller triggers support chording (with combinations of other controller or mouse buttons and keyboard keys.
- - [ ] Game controller hat triggers (with inherited chording support).
+ - [X] Game controller hat triggers (with inherited chording support).
  - [ ] Game controller force feedback events.
  - [ ] Game controller axis movement triggers.
  - [ ] Game controller button remapping.
@@ -90,7 +90,7 @@ The application by default attempts to read MACROS.GLUE from its working directo
  - [x] Mouse "safety" - freeze mouse cursor position (but not buttons)
 
 ## GUI TODO
- - [ ] Add mouse button state to buttons view.
+ - [X] Add mouse button state to buttons view.
  - [ ] New view for controller buttons pressed.
  - [ ] View / edit keyboard remapping.
  - [ ] View / edit triggers.
