@@ -13,17 +13,14 @@ namespace Glue
     internal class JsonWrapper
     {
         public List<Macro> Macros { get => macros; set => macros = value; }
-        public List<TriggerKeyboard> KeyboardTriggers { get => keyboardTriggers; set => keyboardTriggers = value; }
-        public List<TriggerController> ControllerTriggers { get => controllerTriggers; set => controllerTriggers = value; }
+        public List<Trigger> Triggers{ get => triggers; set => Triggers = value; }
         public List<KeyboardRemapEntry> RemapKeys { get => remapKeys; set => remapKeys = value; }
 
         // Never put these tags on class properties. JSon should always serialize lower case names.
         [JsonProperty]
         private List<Macro> macros;
         [JsonProperty]
-        private List<TriggerKeyboard> keyboardTriggers;
-        [JsonProperty]
-        private List<TriggerController> controllerTriggers;
+        private List<Trigger> triggers;
         [JsonProperty]
         private List<KeyboardRemapEntry> remapKeys;
 
@@ -35,21 +32,11 @@ namespace Glue
         /// <param name="keyMap"></param>
         /// <param name="macros"></param>
         public JsonWrapper(
-            TriggerManager triggerManager,
+            List<Trigger> triggerList,
             Dictionary<VirtualKeyCode, KeyboardRemapEntry> keyMap,
             Dictionary<string, Macro> macros)
         {
-            this.KeyboardTriggers = new List<TriggerKeyboard>();
-
-            // Flatten keyboard trigger map into list - map can be re-built on 
-            // deserialization.
-            foreach (List<TriggerKeyboard> triggerList in triggerManager.KeyboardTriggers.Values)
-            {
-                this.KeyboardTriggers.AddRange(triggerList);
-            }
-
-            this.ControllerTriggers = triggerManager.ControllerTriggers;
-
+            this.triggers = new List<Trigger>(triggerList);
             this.RemapKeys = new List<KeyboardRemapEntry>(keyMap.Values);
             this.Macros = new List<Macro>(macros.Values);
         }

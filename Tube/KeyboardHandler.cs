@@ -2,12 +2,27 @@
 using Glue.Events;
 using Glue.Native;
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using WindowsInput.Native;
 using static Glue.Native.KeyInterceptor;
 
 namespace Glue
 {
+    /// <summary>
+    /// 
+    /// Processes low level keyboard hook messages via KeyInterceptor.
+    /// 
+    /// </summary>
+    /// 
+    /// <remarks>
+    /// 
+    /// MSDN: If the hook procedure processed the message, it may return a 
+    /// nonzero value to prevent the system from passing the message to the 
+    /// rest of the hook chain or the target window procedure.
+    /// 
+    /// </remarks>
+
     static class KeyboardHandler
     {
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -31,17 +46,7 @@ namespace Glue
 
                     if ((int) keyRemapped != vkCode)
                     {
-                        // Eat keystroke
-
-                        // MSDN: if the hook procedure processed the message, it may return a nonzero value to prevent 
-                        // the system from passing the message to the rest of the hook chain or the target window 
-                        // procedure.
-                        return new IntPtr(1);
-                    }
-
-                    if (Tube.TriggerManager.CheckAndFireTriggers(vkCode, ButtonStates.Press))
-                    {
-                        // Eat keystroke if trigger tells us to do so
+                        // Eat keystroke if remapped
                         return new IntPtr(1);
                     }
                 }
@@ -51,7 +56,11 @@ namespace Glue
                     LOGGER.Info("+" + (VirtualKeyCode) vkCode);
                 }
 
-                EventBus<EventKeyboard>.Instance.SendEvent(null, new EventKeyboard(vkCode, ButtonStates.Press));
+                if (BroadcastKeyboardEvent(vkCode, ButtonStates.Press))
+                {
+                    // Eat keystroke if any event handlers say so
+                    return new IntPtr(1);
+                }
             }
 
             if (wParam == (IntPtr) KeyInterceptor.WM_KEYUP || wParam == (IntPtr) KeyInterceptor.WM_SYSKEYUP)
@@ -62,13 +71,7 @@ namespace Glue
 
                     if ((int) keyRemapped != vkCode)
                     {
-                        // Eat keystroke
-                        return new IntPtr(1);
-                    }
-
-                    if (Tube.TriggerManager.CheckAndFireTriggers(vkCode, ButtonStates.Release))
-                    {
-                        // Eat keystroke if trigger tells us to do so
+                        // Eat original keystroke if remapped
                         return new IntPtr(1);
                     }
                 }
@@ -78,10 +81,24 @@ namespace Glue
                     LOGGER.Info("-" + (VirtualKeyCode)vkCode);
                 }
 
-                EventBus<EventKeyboard>.Instance.SendEvent(null, new EventKeyboard(vkCode, ButtonStates.Release));
+                if (BroadcastKeyboardEvent(vkCode, ButtonStates.Release))
+                {
+                    // Eat keystroke if trigger says so
+                    return new IntPtr(1);
+                }
             }
 
             return new IntPtr(0);
+        }
+
+        public static bool BroadcastKeyboardEvent(int vkCode, ButtonStates buttonState)
+        {
+            EventKeyboard broadcastEvent = new EventKeyboard(vkCode, buttonState);
+
+            EventBus<EventKeyboard>.Instance.SendEvent(null, broadcastEvent);
+            List<bool> eatInputResults = ReturningEventBus<EventKeyboard, bool>.Instance.SendEvent(null, broadcastEvent);
+
+            return eatInputResults.Contains(true);
         }
 
         private static bool KeyWasFromGlue(UIntPtr injectionId)

@@ -1,55 +1,40 @@
 ﻿using Glue.Events;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 
 namespace Glue.Triggers
 {
     [JsonObject(MemberSerialization.OptIn)]
-    public class TriggerController : Trigger
+    public abstract class TriggerController : Trigger
     {
         [JsonProperty]
         private readonly string namePart;
-        [JsonProperty]
-        private readonly int button;
-
-        public string NamePattern => namePart;
-        public int Button => button;
+        public string NamePart => namePart;
 
         [JsonConstructor]
         public TriggerController(
-            ButtonStates buttonState, 
-            List<string> macroNames, 
-            int button, 
-            string namePart) 
+            string namePart,
+            List<string> macroNames) 
                 
-            : base(buttonState, macroNames, false)
+            : base(macroNames, false)
         {
-            this.button = button;
             this.namePart = namePart;
         }
 
         public TriggerController(
-            ButtonStates buttonState, 
-            string macroName, 
-            int button, 
-            string namePart) 
+            string namePart,
+            string macroName) 
                 
-            : base(buttonState, macroName, false)
+            : base(macroName, false)
         {
-            this.button = button;
             this.namePart = namePart;
         }
 
-        internal void CheckAndFire(EventController busEvent)
+        protected override void SubscribeEvent()
         {
-            if (Button == busEvent.Button && ButtonState == busEvent.ButtonState)
-            {
-                if (busEvent.Joystick.Information.InstanceName.Contains(namePart))
-                {
-                    Fire();
-                }
-            }
+            EventBus<EventController>.Instance.EventRecieved += OnEventController;
         }
+
+        protected abstract void OnEventController(object sender, BusEventArgs<EventController> e);
     }
 }

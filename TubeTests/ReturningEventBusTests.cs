@@ -43,6 +43,17 @@ namespace Tests
             }
         }
 
+        [TestMethod]
+        public void TestNoListeners()
+        {
+            ReturningEventBus<int, int> bus = ReturningEventBus<int, int>.Instance;
+            bus.Empty();
+
+            List<int> returns = bus.SendEvent(this, 0);
+
+            Assert.AreEqual(null, returns);
+        }
+
         private int Bus_ReturningEventRecieved(object sender, int eventArg)
         {
             this.intTotalReceived += eventArg;

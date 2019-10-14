@@ -7,13 +7,20 @@ using System.Threading;
 
 namespace Glue
 {
+    /// <summary>
+    /// Friendly translation for JoystickUpdate values when JoystickOffset is a button
+    /// </summary>
     public enum ButtonValues
     {
+        Unknown = -1,
         Release = 0,
         Press =  128,
     }
 
-    public enum HatValues
+    /// <summary>
+    /// Friendly translation for POV values when JoystickOffset is a POV hat or d-pad
+    /// </summary>
+    public enum POVStates
     {
         Release = -1,
         Up = 0,
@@ -26,6 +33,9 @@ namespace Glue
         Upleft = 31500,
     }
 
+    /// <summary>
+    /// Fired via EventBus when an update is generated from a controller
+    /// </summary>
     public class ControllerEventArgs : EventArgs
     {
         public JoystickUpdate Update => update;
@@ -43,9 +53,9 @@ namespace Glue
 
     /// <summary>
     /// 
-    /// Gets button presses from DirectInput via SharpDX. See https://github.com/sharpdx/sharpdx
+    /// Gets input from DirectInput via SharpDX. See https://github.com/sharpdx/sharpdx
     ///
-    /// Note: according to DirectX nomenclature, anything that isn't a keyboard is a joystick
+    /// Note: according to DirectX nomenclature, anything that isn't a keyboard or mouse is a joystick
     /// 
     /// </summary>
     public class DirectInputManager : IDisposable
@@ -59,10 +69,12 @@ namespace Glue
         private Thread threadPolling;                   // Polls and disconnects devices that are connected
         private Thread threadDeviceConnector;           // Adds Joysticks to collection periodically
 
-        private static readonly HashSet<JoystickOffset> s_offsetsHat = new HashSet<JoystickOffset>();
+        private static readonly HashSet<JoystickOffset> s_offsetsPOV = new HashSet<JoystickOffset>();
         private static readonly HashSet<JoystickOffset> s_offsetsAxis = new HashSet<JoystickOffset>();
         private static readonly HashSet<JoystickOffset> s_offsetsForceFeedback = new HashSet<JoystickOffset>();
 
+        // Sleep interval between checking for newly connected devices
+        private const int DEVICE_CONNECTION_INTERVAL_MS = 1000;
         private const int POLLING_INTERVAL_HZ = 30;     // Polling interval in polls per second
         private const int DEVICE_BUFFER_SIZE = 128;     // Magic number from an example 
 
@@ -71,6 +83,10 @@ namespace Glue
 
         private static readonly object s_initLock = new object();
 
+        /// <summary>
+        /// These DeviceType constants are the sub-set used when enumerating 
+        /// and connecting to devices.
+        /// </summary>
         private static readonly DeviceType[] DEVICE_TYPES = 
         { 
             DeviceType.Gamepad, 
@@ -122,7 +138,7 @@ namespace Glue
             JoystickOffset.ForceSliders1,
         };
 
-        private static readonly JoystickOffset[] OFFSETS_HAT =
+        private static readonly JoystickOffset[] OFFSETS_POV =
         {
             JoystickOffset.PointOfViewControllers0,
             JoystickOffset.PointOfViewControllers1,
@@ -130,14 +146,20 @@ namespace Glue
             JoystickOffset.PointOfViewControllers3,
         };
 
-        public event OnControllerHat ControllerHatEvent;
-        public delegate void OnControllerHat(ControllerEventArgs eventArgs);
+        /// <summary>
+        /// JoystickOffset constants that are POV hats or directional pads.
+        /// </summary>
+        public static HashSet<JoystickOffset> OffsetsPOV => s_offsetsPOV;
 
-        public event OnControllerAxis ControllerAxisEvent;
-        public delegate void OnControllerAxis(ControllerEventArgs eventArgs);
-
-        public static HashSet<JoystickOffset> OffsetsHat => s_offsetsHat;
+        /// <summary>
+        /// JoystickOffset constants that are joystick axes such as sticks or 
+        /// sliders.
+        /// </summary>
         public static HashSet<JoystickOffset> OffsetsAxis => s_offsetsAxis;
+
+        /// <summary>
+        /// Set of JoystickOffset offsets used for force-feedback.
+        /// </summary>
         public static HashSet<JoystickOffset> OffsetsForceFeedback => s_offsetsForceFeedback;
 
         public DirectInputManager()
@@ -156,7 +178,7 @@ namespace Glue
 
         private void InitializeOffsetFilters()
         {
-            InitializeOffsets(OFFSETS_HAT, s_offsetsHat);
+            InitializeOffsets(OFFSETS_POV, s_offsetsPOV);
             InitializeOffsets(OFFSETS_AXIS, s_offsetsAxis);
             InitializeOffsets(OFFSETS_FORCE_FEEDBACK, s_offsetsForceFeedback);
         }
@@ -177,7 +199,6 @@ namespace Glue
 
         /// <summary>
         /// Enumerates devices and adds them to Joysticks if not already present.
-        /// 
         /// Joysticks are removed when disconnection exceptions are thrown while polling them.
         /// </summary>
         private void InitJoysticks()
@@ -306,8 +327,6 @@ namespace Glue
             }
         }
 
-        private const int DEVICE_CONNECTION_INTERVAL_MS = 1000;
-
         public void DeviceConnectorThreadProc()
         {
             while (true)
@@ -374,6 +393,7 @@ namespace Glue
             foreach (Joystick joystickUnplugged in joysticksUnplugged)
             {
                 joysticks.Remove(joystickUnplugged);
+                joystickUnplugged.Unacquire();
                 joystickUnplugged.Dispose();
             }
         }
@@ -391,6 +411,7 @@ namespace Glue
             directInput.Dispose();
             foreach (Joystick joystick in joysticks)
             {
+                joystick.Unacquire();
                 joystick.Dispose();
             }
             joysticks.Clear();

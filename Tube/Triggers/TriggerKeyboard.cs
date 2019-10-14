@@ -1,7 +1,6 @@
 ﻿using Glue.Events;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
@@ -10,10 +9,12 @@ namespace Glue.Triggers
     public class TriggerKeyboard : Trigger
     {
         public Keys TriggerKey => triggerKey;
-
+        public ButtonStates ButtonState => this.buttonState;
         public List<Keys> ModKeys => modKeys;
 
-        private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        [JsonProperty]
+        [JsonConverter(typeof(StringEnumConverter))]
+        private readonly ButtonStates buttonState;
 
         [JsonProperty]
         [JsonConverter(typeof(StringEnumConverter))]
@@ -28,23 +29,51 @@ namespace Glue.Triggers
             ButtonStates buttonState, 
             List<string> macroNames, 
             bool eatInput
-            ) : base(buttonState, macroNames, eatInput)
+            ) : base(macroNames, eatInput)
         {
+            this.Type = TriggerType.Keyboard;
             this.triggerKey = triggerKey;
+            this.buttonState = buttonState;
+        }
+
+        protected override void SubscribeEvent()
+        {
+            ReturningEventBus<EventKeyboard, bool>.Instance.ReturningEventRecieved += OnEventKeyboard;
+        }
+
+        private bool OnEventKeyboard(object sender, EventKeyboard e)
+        {
+            if (
+                TriggerKey == (Keys) e.VirtualKeyCode && 
+                    (ButtonState == ButtonStates.Both || 
+                    ButtonState == e.ButtonState))
+            {
+                if (AreModKeysActive())
+                {
+                    Fire();
+                    return EatInput;
+                }
+            }
+
+            return false;
         }
 
         public TriggerKeyboard(
             Keys triggerKey, 
-            List<string> macroNames) : base(ButtonStates.Press, macroNames, false)
+            List<string> macroNames) : base(macroNames, false)
         {
+            this.Type = TriggerType.Keyboard;
             this.triggerKey = triggerKey;
+            this.buttonState = ButtonStates.Press;
         }
 
         public TriggerKeyboard(
             Keys triggerKey,
-            string macroName) : base (ButtonStates.Press, macroName, false)
+            string macroName) : base (macroName, false)
         {
+            this.Type = TriggerType.Keyboard;
             this.triggerKey = triggerKey;
+            this.buttonState = ButtonStates.Press;
         }
 
         public Trigger AddModifier(Keys modKey)
@@ -67,18 +96,6 @@ namespace Glue.Triggers
             }
 
             return modKeysAreActive;
-        }
-
-        public bool CheckAndFire()
-        {
-            if (!AreModKeysActive())
-            {
-                return false;
-            }
-
-            Fire();
-
-            return EatInput;
         }
     }
 }
