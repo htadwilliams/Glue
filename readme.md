@@ -71,7 +71,7 @@ In Glue, a Trigger detects inputs and fires Macros, which are collections of Act
 ## GUI:
 
 * Logging of keys and macro events (useful for creating new macros).
-* View -> Button States displays set of currently pressed keys.
+* View -> Button States displays set of currently pressed keys and mouse buttons.
 * View -> Queued Actions shows queued actions, updated as they are scheduled or canceled. 
 * Closes to system tray for unobtrusive operation. See https://github.com/htadwilliams/TrayTemplate for re-usable code.
 * Status bar display of mouse coordinates and click logging, in native or normalized coordinates (useful for building resolution-independent mouse control macros).
