@@ -2,9 +2,11 @@
 
 WARNING: This globally hooks keyboard/mouse input and logs to file if DEBUG mode is enabled. Don't run in DEBUG mode if you don't want your keys logged!
 
-Originally written in C++ and used to play EverQuest for over 10 years, this a rewrite in C# including low-level keyboard and mouse hooks (with lots of native windows API calls). 
+Originally written in C++ around 1999 and used to play EverQuest for over 10 years. This a total rewrite in C# just for fun including low-level keyboard and mouse hooks (with lots of native windows API calls). 
 
 Better than placing a stack of nickels on keys, or using an oscillating desk fan to hit a button repeatedly.
+
+Unless you're a developer that wants a tool written in C# you can modify or get code / ideas from, you should use AutoHotkey instead of this. But you probably won't find this anyway.
 
 # Usage
 
