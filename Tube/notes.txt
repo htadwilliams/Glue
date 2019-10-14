@@ -1,10 +1,16 @@
-Random developer notes
+#Random developer notes
 
-Code snippets
+##Related projects 
 
-* Get iterator on an enum:
+https://github.com/sharpdx/SharpDX/issues/979
+https://github.com/evilC/IOWrapper  (evilc@evilc.com)
 
-  VirtualKeyCode.GetValues(typeof(VirtualKeyCode)))
-  
-Keyboard driver author does exactly what we want!
+##Keyboard Interceptor driver
+http://www.oblita.com/interception.html
+https://github.com/oblitum/Interception
 https://github.com/jasonpang/Interceptor
+
+##Other interesting links
+
+Seeking advice on best way to gracefully handle device unplug / replug in DirectInput #979 
+https://github.com/sharpdx/SharpDX/issues/979 
