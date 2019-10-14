@@ -32,12 +32,12 @@ In Glue, a Trigger detects inputs and fires Macros, which are collections of Act
 * Ctrl-L toggles mouse pointer lock. 
 * Warthog Throttle controller EAC Arm/Off toggle switch (button 23) controls mouse lock. The button number and controller name are easily tweakable after the file is created. This is ideal for controllers with toggle switches.
 
-## Examplse of key remapping:
+## Examples of key remapping:
 * V and B are swapped if typing into notepad. Note that this is applied to any .exe with "notepad" in the name, so this includes things like Notepad++. Insert evil laugh here.
 * LEFT SHIFT types an A if input window process name contains "skies.exe" so it can be mapped in Sunless Skies (and easily change for other games where SHIFT can't be remapped).
 * WASD is EVIL! WASD and typical rotation keys Q/E are remapped to ESDF W/R (R/F slide to left over Q/A to make room) for "fallout4.exe". Change to your .exe name to use.
 
-# DEPENDENCIES
+# Dependencies
 
 ## NuGet managed dependencies:
 
