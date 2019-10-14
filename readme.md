@@ -15,11 +15,13 @@ Glue.exe [macros.glue]
 If optionally specified file does not exist, one will be created with examples of Glue's features.
 Default file name if not specified is "macros.glue".
 
-# EXAMPLE CONTENT
+# Example Content
 
 The application by default attempts to read MACROS.GLUE from its working directory. The file name / path may be optionally specified as a command-line parameter. If this file isn't found one will be created with example macros, triggers, and remapping entries.
 
-## EXAMPLE MACROS AND TRIGGERS:
+In Glue, a Trigger detects inputs and fires Macros, which are collections of Actions. Actions may control keyboard keys or other input devices, play sounds, invoke other macros in order to loop or cancel them, and more.
+
+## Example content Macros and Triggers:
 * Ctrl-C cancels all queued actions, loops, etc.
 * Ctrl-Z will play a sound and type a key after a delay.
 * Ctrl-S "ripple fire" example that alternates between playing two sounds. If a sound is already playing it will be stopped and the next one played / restarted.
@@ -30,7 +32,7 @@ The application by default attempts to read MACROS.GLUE from its working directo
 * Ctrl-L toggles mouse pointer lock. 
 * Warthog Throttle controller EAC Arm/Off toggle switch (button 23) controls mouse lock. The button number and controller name are easily tweakable after the file is created. This is ideal for controllers with toggle switches.
 
-## EXAMPLE KEY REMAPPING:
+## Examplse of key remapping:
 * V and B are swapped if typing into notepad. Note that this is applied to any .exe with "notepad" in the name, so this includes things like Notepad++. Insert evil laugh here.
 * LEFT SHIFT types an A if input window process name contains "skies.exe" so it can be mapped in Sunless Skies (and easily change for other games where SHIFT can't be remapped).
 * WASD is EVIL! WASD and typical rotation keys Q/E are remapped to ESDF W/R (R/F slide to left over Q/A to make room) for "fallout4.exe". Change to your .exe name to use.
