@@ -238,6 +238,7 @@
             // 
             // statusStrip1
             // 
+            this.statusStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Visible;
             this.statusStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMousePos,
@@ -245,6 +246,7 @@
             this.statusStrip1.Location = new System.Drawing.Point(0, 952);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(1478, 42);
+            this.statusStrip1.SizingGrip = false;
             this.statusStrip1.TabIndex = 5;
             this.statusStrip1.Text = "statusStrip";
             // 

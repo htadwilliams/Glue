@@ -396,5 +396,10 @@ namespace Glue.Forms
             // This prevents keyboard INFO logging from keyboard handler and elsewhere
             SaveSettings();
         }
+
+        private void ViewMain_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }
