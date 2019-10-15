@@ -42,7 +42,7 @@ namespace Glue.Forms
             this.rawKeyNames = Properties.Settings.Default.RawKeyNames;
             this.normalizeMouseCoords = Properties.Settings.Default.NormalizeMouseCoords;
 
-            this.checkBoxLogDisplay.DataBindings.Add("Checked", this, "logInput", true, DataSourceUpdateMode.OnPropertyChanged);
+            this.checkBoxLogInput.DataBindings.Add("Checked", this, "logInput", true, DataSourceUpdateMode.OnPropertyChanged);
             this.checkBoxRawKeyNames.DataBindings.Add("Checked", this, "rawKeyNames", true, DataSourceUpdateMode.OnPropertyChanged);
             this.checkBoxNormalizeMouseCoords.DataBindings.Add("Checked", this, "normalizeMouseCoords", true, DataSourceUpdateMode.OnPropertyChanged);
 
@@ -121,15 +121,19 @@ namespace Glue.Forms
 
         protected override void OnDeactivate(EventArgs e)
         {
-            Properties.Settings.Default.LogInput = this.logInput;
-            Properties.Settings.Default.RawKeyNames = this.RawKeyNames;
+            SaveSettings();
+            base.OnDeactivate(e);
+        }
+
+        private void SaveSettings()
+        {
+            Properties.Settings.Default.LogInput = this.checkBoxLogInput.Checked;
+            Properties.Settings.Default.RawKeyNames = this.checkBoxRawKeyNames.Checked;
             Properties.Settings.Default.ViewButtons = this.menuItemViewButtons.Checked;
-            Properties.Settings.Default.NormalizeMouseCoords = this.NormalizeMouseCoords;
+            Properties.Settings.Default.NormalizeMouseCoords = this.checkBoxNormalizeMouseCoords.Checked;
 
             LOGGER.Info("Saving settings (Properties.Settings.Default.Save())");
             Properties.Settings.Default.Save();
-
-            base.OnDeactivate(e);
         }
 
         private void MenuItemFileOpen_Click(object sender, EventArgs e)
@@ -389,6 +393,13 @@ namespace Glue.Forms
             }
 
             return output;
+        }
+
+        private void CheckBoxLogDisplay_CheckedChanged(object sender, EventArgs e)
+        {
+            // Save when checked to publish this setting
+            // This prevents keyboard INFO logging from keyboard handler and elsewhere
+            SaveSettings();
         }
     }
 }

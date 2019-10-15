@@ -38,7 +38,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ViewMain));
             this.textBoxInputStream = new System.Windows.Forms.TextBox();
             this.buttonClear = new System.Windows.Forms.Button();
-            this.checkBoxLogDisplay = new System.Windows.Forms.CheckBox();
+            this.checkBoxLogInput = new System.Windows.Forms.CheckBox();
             this.checkBoxRawKeyNames = new System.Windows.Forms.CheckBox();
             this.menuStripMain = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -93,15 +93,16 @@
             // 
             // checkBoxLogDisplay
             // 
-            this.checkBoxLogDisplay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.checkBoxLogDisplay.AutoSize = true;
-            this.checkBoxLogDisplay.Location = new System.Drawing.Point(171, 920);
-            this.checkBoxLogDisplay.Margin = new System.Windows.Forms.Padding(4);
-            this.checkBoxLogDisplay.Name = "checkBoxLogDisplay";
-            this.checkBoxLogDisplay.Size = new System.Drawing.Size(133, 29);
-            this.checkBoxLogDisplay.TabIndex = 2;
-            this.checkBoxLogDisplay.Text = "&Log input";
-            this.checkBoxLogDisplay.UseVisualStyleBackColor = true;
+            this.checkBoxLogInput.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.checkBoxLogInput.AutoSize = true;
+            this.checkBoxLogInput.Location = new System.Drawing.Point(171, 920);
+            this.checkBoxLogInput.Margin = new System.Windows.Forms.Padding(4);
+            this.checkBoxLogInput.Name = "checkBoxLogDisplay";
+            this.checkBoxLogInput.Size = new System.Drawing.Size(133, 29);
+            this.checkBoxLogInput.TabIndex = 2;
+            this.checkBoxLogInput.Text = "&Log input";
+            this.checkBoxLogInput.UseVisualStyleBackColor = true;
+            this.checkBoxLogInput.CheckedChanged += new System.EventHandler(this.CheckBoxLogDisplay_CheckedChanged);
             // 
             // checkBoxRawKeyNames
             // 
@@ -208,7 +209,7 @@
             this.menuItemViewButtons.CheckOnClick = true;
             this.menuItemViewButtons.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.menuItemViewButtons.Name = "menuItemViewButtons";
-            this.menuItemViewButtons.Size = new System.Drawing.Size(359, 44);
+            this.menuItemViewButtons.Size = new System.Drawing.Size(320, 44);
             this.menuItemViewButtons.Text = "&Button States";
             this.menuItemViewButtons.Click += new System.EventHandler(this.MenuItemViewButtons_Click);
             // 
@@ -216,7 +217,7 @@
             // 
             this.menuItemViewQueue.CheckOnClick = true;
             this.menuItemViewQueue.Name = "menuItemViewQueue";
-            this.menuItemViewQueue.Size = new System.Drawing.Size(359, 44);
+            this.menuItemViewQueue.Size = new System.Drawing.Size(320, 44);
             this.menuItemViewQueue.Text = "&Queued Actions";
             this.menuItemViewQueue.Click += new System.EventHandler(this.MenuItemViewQueue_Click);
             // 
@@ -250,7 +251,7 @@
             // toolStripMousePos
             // 
             this.toolStripMousePos.Name = "toolStripMousePos";
-            this.toolStripMousePos.Size = new System.Drawing.Size(1190, 32);
+            this.toolStripMousePos.Size = new System.Drawing.Size(1252, 32);
             this.toolStripMousePos.Spring = true;
             this.toolStripMousePos.Text = "No mouse movement detected";
             this.toolStripMousePos.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -282,7 +283,7 @@
             this.Controls.Add(this.checkBoxNormalizeMouseCoords);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.checkBoxRawKeyNames);
-            this.Controls.Add(this.checkBoxLogDisplay);
+            this.Controls.Add(this.checkBoxLogInput);
             this.Controls.Add(this.buttonClear);
             this.Controls.Add(this.textBoxInputStream);
             this.Controls.Add(this.menuStripMain);
@@ -305,7 +306,7 @@
 
         private System.Windows.Forms.TextBox textBoxInputStream;
         private System.Windows.Forms.Button buttonClear;
-        private System.Windows.Forms.CheckBox checkBoxLogDisplay;
+        private System.Windows.Forms.CheckBox checkBoxLogInput;
         private System.Windows.Forms.CheckBox checkBoxRawKeyNames;
         private System.Windows.Forms.MenuStrip menuStripMain;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
