@@ -91,13 +91,13 @@
             this.buttonClear.UseVisualStyleBackColor = true;
             this.buttonClear.Click += new System.EventHandler(this.ButtonClear_Click);
             // 
-            // checkBoxLogDisplay
+            // checkBoxLogInput
             // 
             this.checkBoxLogInput.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBoxLogInput.AutoSize = true;
             this.checkBoxLogInput.Location = new System.Drawing.Point(171, 920);
             this.checkBoxLogInput.Margin = new System.Windows.Forms.Padding(4);
-            this.checkBoxLogInput.Name = "checkBoxLogDisplay";
+            this.checkBoxLogInput.Name = "checkBoxLogInput";
             this.checkBoxLogInput.Size = new System.Drawing.Size(133, 29);
             this.checkBoxLogInput.TabIndex = 2;
             this.checkBoxLogInput.Text = "&Log input";
@@ -246,12 +246,12 @@
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(1478, 42);
             this.statusStrip1.TabIndex = 5;
-            this.statusStrip1.Text = "statusStrip1";
+            this.statusStrip1.Text = "statusStrip";
             // 
             // toolStripMousePos
             // 
             this.toolStripMousePos.Name = "toolStripMousePos";
-            this.toolStripMousePos.Size = new System.Drawing.Size(1252, 32);
+            this.toolStripMousePos.Size = new System.Drawing.Size(1190, 32);
             this.toolStripMousePos.Spring = true;
             this.toolStripMousePos.Text = "No mouse movement detected";
             this.toolStripMousePos.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;

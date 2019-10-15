@@ -295,15 +295,10 @@ namespace Glue.Forms
             // Always update status bar when mouse moves
             DisplayMouseMove(eventMouse.X, eventMouse.Y);
 
-            // Only display click locations though if specified
-            if (LogInput)
+            if (eventMouse.MouseButton != MouseButtons.None && 
+                eventMouse.ButtonState == ButtonStates.Press)
             {
-
-                if (eventMouse.MouseButton != MouseButtons.None && 
-                    eventMouse.ButtonState == ButtonStates.Press)
-                {
-                    DisplayMouseClick(eventMouse.MouseButton, eventMouse.X, eventMouse.Y);
-                }
+                DisplayMouseClick(eventMouse.MouseButton, eventMouse.X, eventMouse.Y);
             }
         }
 
