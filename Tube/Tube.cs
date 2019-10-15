@@ -73,7 +73,7 @@ namespace Glue
 
                 // TODO Make mouse hook a toggle-able option in GUI
                 // TODO Mouse hook should release when windows are being sized / dragged
-                // MouseInterceptor.Initialize(MouseHandler.HookCallback);
+                MouseInterceptor.Initialize(MouseHandler.HookCallback);
 
                 // Starts thread for timed queue of actions such as pressing keys,
                 // activating game controller buttons, playing sounds, etc.
