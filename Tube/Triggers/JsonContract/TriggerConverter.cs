@@ -30,8 +30,19 @@ namespace Glue.Triggers.JsonContract
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            JObject jo = JObject.Load(reader);
-            string typeString = jo["type"].Value<string>();
+            string typeString;
+            JObject jo;
+
+            try
+            {
+                jo = JObject.Load(reader);
+                typeString = jo["type"].Value<string>();
+            }
+            catch (JsonReaderException jre)
+            {
+                LOGGER.Error("Error reading Glue file: ", jre);
+                return null;
+            }
 
             try
             {
@@ -47,6 +58,8 @@ namespace Glue.Triggers.JsonContract
                         return JsonConvert.DeserializeObject<TriggerControllerPOV>(jo.ToString(), SpecifiedSubclassConversion);
                     case TriggerType.MouseWheel:
                         return JsonConvert.DeserializeObject<TriggerMouseWheel>(jo.ToString(), SpecifiedSubclassConversion);
+                    case TriggerType.ControllerAxis:
+                        return JsonConvert.DeserializeObject<TriggerControllerAxis>(jo.ToString(), SpecifiedSubclassConversion);
 
                     default:
                         string message = "Unknown type [" + type + "] encountered during deserialization";

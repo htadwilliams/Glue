@@ -98,7 +98,11 @@ namespace Glue
             EventBus<EventKeyboard>.Instance.SendEvent(null, broadcastEvent);
             List<bool> eatInputResults = ReturningEventBus<EventKeyboard, bool>.Instance.SendEvent(null, broadcastEvent);
 
-            return eatInputResults.Contains(true);
+            if (null != eatInputResults)
+            {
+                return eatInputResults.Contains(true);
+            }
+            else return false;
         }
 
         private static bool KeyWasFromGlue(UIntPtr injectionId)

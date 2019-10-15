@@ -25,6 +25,12 @@ namespace Glue
 
         public static void Generate()
         {
+            GenerateMacros();
+            GenerateKeyRemaps();
+        }
+
+        public static void GenerateMacros()
+        {
             string macroName;
             //
             // Create macro with several actions bound to CTRL-Z
@@ -243,6 +249,21 @@ namespace Glue
             triggerController = new TriggerControllerPOV(NAME_CONTROLLER, POVStates.Down, macroName);
             Tube.Triggers.Add(triggerController);
 
+            TriggerControllerAxis triggerAxis = new TriggerControllerAxis(
+                NAME_CONTROLLER, 
+                ControllerAxis.RotationZ,
+                3,          // Number of bands
+                1,          // Deadzone band index
+                12000,      // Deadzone size
+                new List<Keys>(new Keys[] {Keys.E, Keys.None, Keys.D}),
+                new List<string>(new string[] { "sound-servomotor", "sound-dice", "sound-estop"})
+                );
+
+            Tube.Triggers.Add(triggerAxis);
+        }
+
+        public static void GenerateKeyRemaps()
+        {
             // Sunless skies (and other games) won't allow binding to shift key
             // Mapping A to Shift allows binding game functions to that instead.
             AddRemap(VirtualKeyCode.LSHIFT, VirtualKeyCode.VK_A, "skies.exe");

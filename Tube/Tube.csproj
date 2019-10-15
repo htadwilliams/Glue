@@ -158,6 +158,7 @@
     <Compile Include="Triggers\JsonContract\TriggerContractResolver.cs" />
     <Compile Include="Triggers\JsonContract\TriggerConverter.cs" />
     <Compile Include="Triggers\TriggerController.cs" />
+    <Compile Include="Triggers\TriggerControllerAxis.cs" />
     <Compile Include="Triggers\TriggerControllerPOV.cs" />
     <Compile Include="Triggers\TriggerControllerButton.cs" />
     <Compile Include="Triggers\TriggerMouseWheel.cs" />

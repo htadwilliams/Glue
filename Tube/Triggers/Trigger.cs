@@ -11,6 +11,7 @@ namespace Glue.Triggers
         MouseWheel,
         ControllerButton,
         ControllerPOV,
+        ControllerAxis,
      }
 
     [JsonObject(MemberSerialization.OptIn)]
@@ -57,6 +58,16 @@ namespace Glue.Triggers
         protected virtual void SubscribeEvent()
         {
             // Do nothing by default - subclasses must opt in
+        }
+
+        protected virtual void Fire(int macroIndex)
+        {
+            string macroName = MacroNames[macroIndex];
+
+            if (null != macroName)
+            {
+                Tube.PlayMacro(macroName);
+            }
         }
 
         protected virtual void Fire()
