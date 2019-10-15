@@ -58,10 +58,6 @@ namespace Glue
         [STAThread]
         static void Main(string[] args)
         {
-            FileName = args.Length > 0
-                ? args[0]
-                : FILENAME_DEFAULT;
-
             if (Thread.CurrentThread.Name == null)
             {
                 Thread.CurrentThread.Name = "Main";
@@ -77,16 +73,19 @@ namespace Glue
 
                 // TODO Make mouse hook a toggle-able option in GUI
                 // TODO Mouse hook should release when windows are being sized / dragged
-                MouseInterceptor.Initialize(MouseHandler.HookCallback);
+                // MouseInterceptor.Initialize(MouseHandler.HookCallback);
 
                 // Starts thread for timed queue of actions such as pressing keys,
                 // activating game controller buttons, playing sounds, etc.
                 s_actionScheduler.Start();
 
-                if (!FileName.Contains("EMPTY"))
-                {
-                    LoadFile(FileName);
-                }
+                InitData();
+
+                string fileName = args.Length > 0
+                    ? args[0]
+                    : FILENAME_DEFAULT;
+
+                ProcessFileArg(fileName);
 
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
@@ -113,6 +112,49 @@ namespace Glue
             }
 
             LOGGER.Info("Exiting");
+        }
+
+        internal static void ProcessFileArg(String fileName)
+        {
+            // Developer mode 
+            if (fileName.Contains("DEFAULT"))
+            {
+                LOGGER.Info("Started with DEFAULT flag. Generating default content.");
+                FileName = FILENAME_DEFAULT;
+                DefaultContent.Generate();
+
+                if (!File.Exists(FileName)) 
+                {
+                    s_writeOnExit = true;
+                }
+            }
+            // Developer mode
+            else if (fileName.Contains("EMPTY"))
+            {
+                FileName = FILENAME_DEFAULT;
+                LOGGER.Info("Starting EMPTY!");
+
+                if (!File.Exists(FileName)) 
+                {
+                    s_writeOnExit = true;
+                }
+            }
+            // Normal operation
+            else 
+            {
+                if (!File.Exists(fileName))
+                {
+                    LOGGER.Info("File [" + FileName + "] does not exist - creating example content");
+                    DefaultContent.Generate();
+                    s_writeOnExit = true;
+                }
+                else
+                {
+                    LoadFile(fileName);
+                    s_writeOnExit = false;
+                }
+                FileName = fileName;;
+            }
         }
 
         internal static void PlayMacro(string macroName)
@@ -187,69 +229,65 @@ namespace Glue
             Triggers = new List<Trigger>();
         }
 
-        public static void LoadFile(string fileName)
+        public static bool LoadFile(string fileName)
         {
-            InitData();
-
             LOGGER.Info("Loading file [" + fileName + "]");
 
-            if (File.Exists(fileName))
+            if (!File.Exists(fileName))
             {
-                JsonSerializer serializer = new JsonSerializer
-                {
-                    DefaultValueHandling = DefaultValueHandling.Populate
-                };
+                return false;
+            }
 
-                try
+            JsonSerializer serializer = new JsonSerializer
+            {
+                DefaultValueHandling = DefaultValueHandling.Populate
+            };
+
+            try
+            {
+                using (StreamReader sr = new StreamReader(fileName))
                 {
-                    using (StreamReader sr = new StreamReader(fileName))
+                    using (JsonReader reader = new JsonTextReader(sr))
                     {
-                        using (JsonReader reader = new JsonTextReader(sr))
-                        {
-                            reader.SupportMultipleContent = true;
-                            reader.Read();
+                        reader.SupportMultipleContent = true;
+                        reader.Read();
 
-                            JsonWrapper jsonWrapper = serializer.Deserialize<JsonWrapper>(reader);
+                        JsonWrapper jsonWrapper = serializer.Deserialize<JsonWrapper>(reader);
 
-                            Macros = jsonWrapper.GetMacroMap();
-                            KeyMap = jsonWrapper.GetKeyboardMap();
-                            Triggers = jsonWrapper.Triggers;
-                        }
+                        Macros = jsonWrapper.GetMacroMap();
+                        KeyMap = jsonWrapper.GetKeyboardMap();
+                        Triggers = jsonWrapper.Triggers;
                     }
                 }
-                catch (JsonReaderException e)
-                {
-                    string message = 
-                        "Failed to load " + fileName + ".\r\n\r\n" +
-                        e.Message;
-
-                    MessageBox.Show(message, "Glue - File Load Error");
-                    LOGGER.Error(message, e);
-                         
-                    return;
-                }
-
-                if (null != Macros && Macros.Count != 0)
-                {
-                    LOGGER.Info(String.Format("    Loaded {0} macros", Macros.Count));
-                }
-                if (null != Triggers && Triggers.Count != 0)
-                {
-                    LOGGER.Info(String.Format("    Loaded {0} triggers", Triggers.Count));
-                }
-                if (null != KeyMap && KeyMap.Count != 0)
-                {
-                    LOGGER.Info(String.Format("    Loaded {0} remapped keys", KeyMap.Count));
-                }
-
-                FileName = fileName;
             }
-            else
+            catch (JsonSerializationException e)
             {
-                LOGGER.Info("File not found - creating example content");
-                DefaultContent.Generate();
-                SaveFile(fileName);
+                HandleJsonException(fileName, e);
+                return false;
             }
+            catch (JsonReaderException e)
+            {
+                HandleJsonException(fileName, e);
+                return false;
+            }
+
+            LOGGER.Info(String.Format("    Loaded {0} macros", Macros.Count));
+            LOGGER.Info(String.Format("    Loaded {0} triggers", Triggers.Count));
+            LOGGER.Info(String.Format("    Loaded {0} remapped keys", KeyMap?.Count));
+
+            return true;
+        }
+
+        internal static void HandleJsonException(string fileName, Exception e)
+        {
+            string output = 
+                "Failed to load " + fileName + ".\r\n\r\n" +
+                e.Message;
+
+            MessageBox.Show(output, "Glue - File Load Error");
+            LOGGER.Error(output, e);
+                         
+            return;
         }
 
         internal static void ActivateMouseLock(LockAction lockAction)
