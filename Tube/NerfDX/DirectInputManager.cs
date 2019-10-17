@@ -6,52 +6,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
 
-namespace Glue
+namespace NerfDX
 {
-    /// <summary>
-    /// Friendly translation for JoystickUpdate values when JoystickOffset is a button
-    /// </summary>
-    public enum ButtonValues
-    {
-        Unknown = -1,
-        Release = 0,
-        Press =  128,
-    }
-
-    /// <summary>
-    /// Friendly translation for POV values when JoystickOffset is a POV hat or d-pad
-    /// </summary>
-    public enum POVStates
-    {
-        Release = -1,
-        Up = 0,
-        Upright = 4500,
-        Right = 9000,
-        Downright = 13500,
-        Down = 18000,
-        Downleft = 22500,
-        Left = 27000,
-        Upleft = 31500,
-    }
-
-    /// <summary>
-    /// Fired via EventBus when an update is generated from a controller
-    /// </summary>
-    public class ControllerEventArgs : EventArgs
-    {
-        public JoystickUpdate Update => update;
-        public Joystick Joystick => joystick;
-
-        private readonly JoystickUpdate update;
-        private readonly Joystick joystick;
-
-        public ControllerEventArgs(Joystick joystick, JoystickUpdate update)
-        {
-            this.update = update;
-            this.joystick = joystick;
-        }
-    }
-
     /// <summary>
     /// 
     /// Gets input from DirectInput via SharpDX. See https://github.com/sharpdx/sharpdx
@@ -61,7 +17,6 @@ namespace Glue
     /// </summary>
     public class DirectInputManager : IDisposable
     {
-        private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private readonly DirectInput directInput;
 
         // List of Joystick instances currently created and aquired via Joystick.Aquire() 
@@ -75,22 +30,26 @@ namespace Glue
         private static readonly HashSet<JoystickOffset> s_offsetsForceFeedback = new HashSet<JoystickOffset>();
 
         // Sleep interval between checking for newly connected devices
-        private const int DEVICE_CONNECTION_INTERVAL_MS = 1000;
-        private const int POLLING_INTERVAL_HZ = 30;     // Polling interval in polls per second
+        private const int DEVICE_CONNECTION_INTERVAL_MS = 500;
+        private const int POLLING_INTERVAL_HZ = 60;     // Polling interval in polls per second
         private const int DEVICE_BUFFER_SIZE = 128;     // Magic number from an example 
 
         private const string THREAD_NAME_POLLING = "DirectX.Polling";
         private const string THREAD_NAME_CONNECTOR = "DirectX.Connector";
 
-        private static readonly object s_initLock = new object();
+        private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly object s_lock = new object();
+
+        // So the ugly tables can be easily hidden in the IDE
+        #region Tables (static arrays of JoystickOffset and DeviceType)
 
         /// <summary>
         /// These DeviceType constants are the sub-set used when enumerating 
         /// and connecting to devices.
         /// </summary>
-        private static readonly DeviceType[] DEVICE_TYPES = 
-        { 
-            DeviceType.Gamepad, 
+        private static readonly DeviceType[] DEVICE_TYPES =
+        {
+            DeviceType.Gamepad,
             DeviceType.Joystick,
             DeviceType.Remote,
             DeviceType.Flight,
@@ -147,6 +106,8 @@ namespace Glue
             JoystickOffset.PointOfViewControllers3,
         };
 
+        #endregion // tables
+
         /// <summary>
         /// JoystickOffset constants that are POV hats or directional pads.
         /// </summary>
@@ -165,16 +126,15 @@ namespace Glue
 
         public DirectInputManager()
         {
-            this.directInput = new DirectInput();
+            directInput = new DirectInput();
         }
 
         internal void Initialize()
         {
             InitializeOffsetGroups();
-            UpdateConnectedDevices();
 
-            StartDeviceConnector();
-            StartPolling();
+            StartConnectorThread();
+            StartPollingThread();
         }
 
         private void InitializeOffsetGroups()
@@ -186,7 +146,7 @@ namespace Glue
 
         private void InitializeOffsetGroup(JoystickOffset[] offsetArray, HashSet<JoystickOffset> offsetGroup)
         {
-            lock (s_initLock)
+            lock (s_lock)
             {
                 if (offsetGroup.Count < 1)
                 {
@@ -198,6 +158,35 @@ namespace Glue
             }
         }
 
+        private void StartConnectorThread()
+        {
+            UpdateConnectedDevices();
+
+            if (null == threadDeviceConnector)
+            {
+                threadDeviceConnector = new Thread(new ThreadStart(ConnectorThreadProc))
+                {
+                    Name = THREAD_NAME_CONNECTOR,
+                    IsBackground = true
+                };
+
+            }
+            threadDeviceConnector.Start();
+        }
+
+        private void StartPollingThread()
+        {
+            if (null == threadPolling)
+            {
+                threadPolling = new Thread(new ThreadStart(PollingThreadProc))
+                {
+                    Name = THREAD_NAME_POLLING,
+                    IsBackground = true
+                };
+            }
+            threadPolling.Start();
+        }
+
         /// <summary>
         /// Enumerates devices and adds them to Joysticks if not already present.
         /// Joysticks are removed when disconnection exceptions are thrown while polling them.
@@ -206,11 +195,11 @@ namespace Glue
         {
             List<DeviceInstance> devices = GetDevices();
 
-            if (devices.Count != this.joysticks.Count)
+            if (devices.Count != joysticks.Count)
             {
-                foreach (DeviceInstance device in devices)
+                lock (joysticks)
                 {
-                    lock (this.joysticks)
+                    foreach (DeviceInstance device in devices)
                     {
                         if (null == FindJoystick(device))
                         {
@@ -218,9 +207,9 @@ namespace Glue
 
                             if (null != joystick)
                             {
-                                this.joysticks.Add(joystick);
-                                PublishControllerListChanged();
+                                joysticks.Add(joystick);
 
+                                PublishControllerListChanged();
                                 LOGGER.Info("Connected " + joystick.Information.Type + ": " + joystick.Information.InstanceName);
                             }
                         }
@@ -231,7 +220,7 @@ namespace Glue
 
         private Joystick FindJoystick(DeviceInstance device)
         {
-            foreach (Joystick joystick in this.joysticks)
+            foreach (Joystick joystick in joysticks)
             {
                 if (joystick.Information.InstanceGuid == device.InstanceGuid)
                 {
@@ -242,48 +231,18 @@ namespace Glue
             return null;
         }
 
-        private void StartDeviceConnector()
-        {
-            if (null == threadDeviceConnector)
-            {
-                threadDeviceConnector = new Thread(new ThreadStart(DeviceConnectorThreadProc))
-                {
-                    Name = THREAD_NAME_CONNECTOR,
-                    IsBackground = true
-                };
-
-                threadDeviceConnector.Start();
-            }
-        }
-
         private List<DeviceInstance> GetDevices()
         {
             List<DeviceInstance> devices = new List<DeviceInstance>();
 
             try
             {
-                // foreach (DeviceType deviceType in Enum.GetValues(typeof(DeviceType)))
                 foreach (DeviceType deviceType in DEVICE_TYPES)
                 {
-                    IList<DeviceInstance> foundDevices = this.directInput.GetDevices(deviceType, DeviceEnumerationFlags.AllDevices);
-
-                    //if (LOGGER.IsDebugEnabled && foundDevices.Count > 0)
-                    //{
-                    //    LOGGER.Debug("    Devices of type [" + deviceType.ToString() + "]:");
-                    //}
+                    IList<DeviceInstance> foundDevices = directInput.GetDevices(deviceType, DeviceEnumerationFlags.AllDevices);
 
                     foreach (DeviceInstance device in foundDevices)
                     {
-                        //if (LOGGER.IsDebugEnabled)
-                        //{
-                        //    string message = String.Format(
-                        //        "        {0} : GUID=[{1}]",
-                        //        device.InstanceName,
-                        //        device.ProductGuid.ToString());
-
-                        //    LOGGER.Debug(message);
-                        //}
-
                         devices.Add(device);
                     }
                 }
@@ -302,7 +261,7 @@ namespace Glue
 
             try
             {
-                joystick = new Joystick(this.directInput, device.InstanceGuid);
+                joystick = new Joystick(directInput, device.InstanceGuid);
 
                 joystick.Properties.BufferSize = DEVICE_BUFFER_SIZE;
                 joystick.Acquire();
@@ -313,82 +272,6 @@ namespace Glue
             }
 
             return joystick;
-        }
-
-        private void StartPolling()
-        {
-            if (null == threadPolling)
-            {
-                threadPolling = new Thread(new ThreadStart(PollingThreadProc))
-                {
-                    Name = THREAD_NAME_POLLING,
-                    IsBackground = true
-                };
-
-                threadPolling.Start();
-            }
-        }
-
-        public void DeviceConnectorThreadProc()
-        {
-            while (true)
-            {
-                Thread.Sleep(DEVICE_CONNECTION_INTERVAL_MS);
-                UpdateConnectedDevices();
-            }
-        }
-        public void PollingThreadProc()
-        {
-            int sleepDurationMS = 1000 / POLLING_INTERVAL_HZ;
-            List<Joystick> joysticksUnplugged = new List<Joystick>();
-
-            LOGGER.Info(String.Format(
-                "DirectInput polling thread started POLLING_INTERVAL_HZ = {0:n0} sleep duration = {1:n0}", 
-                POLLING_INTERVAL_HZ, 
-                sleepDurationMS));
-
-            while (true)
-            {
-                Thread.Sleep(sleepDurationMS);
-
-                lock (this.joysticks)
-                {
-                    foreach (Joystick joystick in joysticks)
-                    {
-                        JoystickUpdate[] joystickUpdates = null;
-
-                        try
-                        {
-                            joystick.Poll();
-                            joystickUpdates = joystick.GetBufferedData();
-                        }
-                        catch (SharpDXException dxException)
-                        {
-                            // Expected case when controllers are unplugged
-                            if (dxException.Descriptor == ResultCode.InputLost)
-                            {
-                                // Add to list for removal after iterating
-                                joysticksUnplugged.Add(joystick);
-                                LOGGER.Info("Disconnected " + joystick.Information.Type.ToString() + ": " + joystick.Information.InstanceName);
-                            }
-                            else
-                            {
-                                LOGGER.Error("SharpDXException thrown while polling: ", dxException);
-                            }
-                        }
-
-                        if (null != joystickUpdates)
-                        {
-                            PublishControllerEvents(joystick, joystickUpdates);
-                        }
-                    }
-
-                    if (RemoveJoysticks(joysticksUnplugged))
-                    {
-                        PublishControllerListChanged();
-                    }
-                }
-            }
         }
 
         private bool RemoveJoysticks(List<Joystick> joysticksUnplugged)
@@ -425,6 +308,77 @@ namespace Glue
         public ReadOnlyCollection<Joystick> GetConnectedJoysticks()
         {
             return joysticks.AsReadOnly();
+        }
+
+        public void ConnectorThreadProc()
+        {
+            LOGGER.Info(string.Format(
+                "Thread started with re/connection interval = {0:n0} MS",
+                DEVICE_CONNECTION_INTERVAL_MS));
+
+            while (true)
+            {
+                Thread.Sleep(DEVICE_CONNECTION_INTERVAL_MS);
+                UpdateConnectedDevices();
+            }
+        }
+
+        public void PollingThreadProc()
+        {
+            int sleepDurationMS = 1000 / POLLING_INTERVAL_HZ;
+            List<Joystick> joysticksUnplugged = new List<Joystick>();
+
+            LOGGER.Info(string.Format(
+                "Thread started POLLING_INTERVAL_HZ = {0:n0} sleep duration = {1:n0} MS",
+                POLLING_INTERVAL_HZ,
+                sleepDurationMS));
+
+            while (true)
+            {
+                Thread.Sleep(sleepDurationMS);
+                PollSticks(joysticksUnplugged);
+            }
+        }
+
+        private void PollSticks(List<Joystick> joysticksUnplugged)
+        {
+            lock (joysticks)
+            {
+                foreach (Joystick joystick in joysticks)
+                {
+                    JoystickUpdate[] joystickUpdates = null;
+
+                    try
+                    {
+                        joystick.Poll();
+                        joystickUpdates = joystick.GetBufferedData();
+                    }
+                    catch (SharpDXException dxException)
+                    {
+                        // Expected case when controllers are unplugged
+                        if (dxException.Descriptor == ResultCode.InputLost)
+                        {
+                            // Add to list for removal after iterating
+                            joysticksUnplugged.Add(joystick);
+                            LOGGER.Info("Disconnected " + joystick.Information.Type.ToString() + ": " + joystick.Information.InstanceName);
+                        }
+                        else
+                        {
+                            LOGGER.Error("SharpDXException thrown while polling: ", dxException);
+                        }
+                    }
+
+                    if (null != joystickUpdates)
+                    {
+                        PublishControllerEvents(joystick, joystickUpdates);
+                    }
+                }
+
+                if (RemoveJoysticks(joysticksUnplugged))
+                {
+                    PublishControllerListChanged();
+                }
+            }
         }
 
         public void Dispose()

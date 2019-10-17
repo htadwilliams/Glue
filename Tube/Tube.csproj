@@ -85,7 +85,8 @@
     <Compile Include="Actions\JsonContract\ActionContractResolver.cs" />
     <Compile Include="Actions\JsonContract\ActionConverter.cs" />
     <Compile Include="DefaultContent.cs" />
-    <Compile Include="DirectInputManager.cs" />
+    <Compile Include="NerfDX\ControllerEventArgs.cs" />
+    <Compile Include="NerfDX\DirectInputManager.cs" />
     <Compile Include="Events\Event.cs" />
     <Compile Include="Events\EventControllerPlug.cs" />
     <Compile Include="Events\ReturningEventBus.cs" />
@@ -161,6 +162,7 @@
     <Compile Include="Keyboard.cs" />
     <Compile Include="Native\WindowHandleUtils.cs" />
     <Compile Include="Native\TimeProvider.cs" />
+    <Compile Include="NerfDX\Enums.cs" />
     <Compile Include="Priority_Queue\GenericPriorityQueue.cs" />
     <Compile Include="Priority_Queue\GenericPriorityQueueNode.cs" />
     <Compile Include="Priority_Queue\IFixedSizePriorityQueue.cs" />

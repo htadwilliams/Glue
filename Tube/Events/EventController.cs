@@ -1,4 +1,5 @@
 ﻿using System;
+using NerfDX;
 using SharpDX.DirectInput;
 
 namespace Glue.Events
@@ -40,6 +41,7 @@ namespace Glue.Events
         {
             Joystick = joystick;
             JoystickUpdate = joystickUpdate;
+
             Type = GetEventType();
             POVState = GetPOVState();
             Button = GetButton();
