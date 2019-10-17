@@ -50,12 +50,15 @@ namespace Glue.Forms
             BaseCaptionText = this.Text;
             SetCaption(Tube.FileName);
 
+            checkBoxRawKeyNames.Enabled = logInput;
+        }
+
+        private void ViewMain_Load(object sender, EventArgs e)
+        {
             EventBus<EventKeyboard>.Instance.EventRecieved += EventKeyboard_Recieved;
             EventBus<EventMouse>.Instance.EventRecieved += EventMouse_Received;
             EventBus<EventMacro>.Instance.EventRecieved += EventMacro_Received;
             EventBus<EventController>.Instance.EventRecieved += EventController_Received;
-
-            checkBoxRawKeyNames.Enabled = logInput;
         }
 
         private void EventController_Received(object sender, BusEventArgs<EventController> e)
@@ -99,8 +102,8 @@ namespace Glue.Forms
                 }
                 else
                 {
-                        textBoxInputStream.AppendText(text);
-                        WindowHandleUtils.HideCaret(this.textBoxInputStream.Handle);
+                    textBoxInputStream.AppendText(text);
+                    WindowHandleUtils.HideCaret(this.textBoxInputStream.Handle);
                 }
             }
         }
@@ -327,7 +330,7 @@ namespace Glue.Forms
         {
             if (LogInput)
             {
-                Tube.MainForm.AppendText(" [" + e.BusEvent.MacroName + "]");
+                AppendText(" [" + e.BusEvent.MacroName + "]");
             }
         }
 
