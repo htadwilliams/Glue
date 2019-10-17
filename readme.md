@@ -85,7 +85,7 @@ In Glue, a Trigger detects inputs and fires Macros, which are collections of Act
  - [ ] Game controller triggers support chording (with combinations of other controller or mouse buttons and keyboard keys.
  - [X] Game controller hat triggers (with inherited chording support).
  - [ ] Game controller force feedback events.
- - [ ] Game controller axis movement triggers.
+ - [X] Game controller axis movement triggers.
  - [ ] Game controller button remapping.
  - [x] Queue view should update every second if nothing else is happening.
  - [ ] Remote control - trigger events via network client (most likely REST interface).
@@ -95,6 +95,7 @@ In Glue, a Trigger detects inputs and fires Macros, which are collections of Act
 
 ## GUI TODO
  - [X] Add mouse button state to buttons view.
+ - [X] New view for controller plugged state and controller info.
  - [ ] New view for controller buttons pressed.
  - [ ] View / edit keyboard remapping.
  - [ ] View / edit triggers.
