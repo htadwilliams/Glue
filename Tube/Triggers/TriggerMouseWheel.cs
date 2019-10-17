@@ -39,6 +39,11 @@ namespace Glue.Triggers
             ReturningEventBus<EventMouse, bool>.Instance.ReturningEventRecieved += OnEventMouse;
         }
 
+        protected override void UnsubscribeEvent()
+        {
+            ReturningEventBus<EventMouse, bool>.Instance.ReturningEventRecieved -= OnEventMouse;
+        }
+
         private bool OnEventMouse(object sender, EventMouse e)
         {
             if (e.WheelMove == WheelMove)

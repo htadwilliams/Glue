@@ -1,7 +1,6 @@
 ﻿using Glue.Triggers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Windows.Forms;
 using WindowsInput.Native;
 
 namespace Glue
@@ -70,6 +69,16 @@ namespace Glue
             }
 
             return keyboardMap;
+        }
+
+        internal List<Trigger> GetTriggers()
+        {
+            if (triggers == null)
+            {
+                triggers = new List<Trigger>();
+            }
+
+            return triggers;
         }
     }
 }

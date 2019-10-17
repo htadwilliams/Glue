@@ -66,7 +66,11 @@ namespace Glue
             try
             {
                 InitLogging();
-                s_directInputManager.Initialize();
+                InitData();
+
+                // Starts thread for timed queue of actions such as pressing keys,
+                // activating game controller buttons, playing sounds, etc.
+                s_actionScheduler.Start();
 
                 // Native keyboard and mouse hook initialization
                 KeyInterceptor.Initialize(KeyboardHandler.HookCallback);
@@ -75,11 +79,7 @@ namespace Glue
                 // TODO Mouse hook should release when windows are being sized / dragged
                 MouseInterceptor.Initialize(MouseHandler.HookCallback);
 
-                // Starts thread for timed queue of actions such as pressing keys,
-                // activating game controller buttons, playing sounds, etc.
-                s_actionScheduler.Start();
-
-                InitData();
+                s_directInputManager.Initialize();
 
                 string fileName = args.Length > 0
                     ? args[0]
@@ -226,11 +226,20 @@ namespace Glue
         {
             KeyMap = new Dictionary<VirtualKeyCode, KeyboardRemapEntry>();
             Macros = new Dictionary<string, Macro>();
+
+            if (null != Triggers)
+            {
+                foreach (Trigger trigger in Triggers)
+                {
+                    trigger.Dispose();
+                }
+            }
             Triggers = new List<Trigger>();
         }
 
         public static bool LoadFile(string fileName)
         {
+            InitData();
             LOGGER.Info("Loading file [" + fileName + "]");
 
             if (!File.Exists(fileName))
@@ -256,7 +265,7 @@ namespace Glue
 
                         Macros = jsonWrapper.GetMacroMap();
                         KeyMap = jsonWrapper.GetKeyboardMap();
-                        Triggers = jsonWrapper.Triggers;
+                        Triggers = jsonWrapper.GetTriggers();
                     }
                 }
             }
@@ -273,7 +282,7 @@ namespace Glue
 
             LOGGER.Info(String.Format("    Loaded {0} macros", Macros.Count));
             LOGGER.Info(String.Format("    Loaded {0} triggers", Triggers.Count));
-            LOGGER.Info(String.Format("    Loaded {0} remapped keys", KeyMap?.Count));
+            LOGGER.Info(String.Format("    Loaded {0} remapped keys", KeyMap.Count));
 
             return true;
         }
