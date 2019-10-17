@@ -129,7 +129,7 @@
             this.helpToolStripMenuItem});
             this.menuStripMain.Location = new System.Drawing.Point(0, 0);
             this.menuStripMain.Name = "menuStripMain";
-            this.menuStripMain.Size = new System.Drawing.Size(1478, 42);
+            this.menuStripMain.Size = new System.Drawing.Size(1478, 40);
             this.menuStripMain.TabIndex = 4;
             this.menuStripMain.Text = "menuStrip1";
             // 
@@ -139,7 +139,7 @@
             this.menuItemFileOpen,
             this.menuItemFileExit});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(72, 38);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(72, 36);
             this.fileToolStripMenuItem.Text = "&File";
             // 
             // menuItemFileOpen
@@ -166,7 +166,7 @@
             this.triggersToolStripMenuItem,
             this.remapKeysToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(75, 38);
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(75, 36);
             this.editToolStripMenuItem.Text = "&Edit";
             // 
             // preferencesToolStripMenuItem
@@ -207,7 +207,7 @@
             this.menuItemViewGameControllerButtons,
             this.menuItemViewGameControllerAxes});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-            this.viewToolStripMenuItem.Size = new System.Drawing.Size(86, 38);
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(86, 36);
             this.viewToolStripMenuItem.Text = "&View";
             // 
             // menuItemViewButtons
@@ -251,7 +251,7 @@
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItemHelpAbout});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(85, 38);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(85, 36);
             this.helpToolStripMenuItem.Text = "&Help";
             // 
             // menuItemHelpAbout
@@ -320,6 +320,7 @@
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "ViewMain";
             this.Text = "Glue";
+            this.Load += new System.EventHandler(this.ViewMain_Load);
             this.menuStripMain.ResumeLayout(false);
             this.menuStripMain.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
