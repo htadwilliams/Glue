@@ -77,18 +77,20 @@ namespace Glue.Forms
 
         protected void UpdateView()
         {
-            // Cross-thread calling safety 
-            // TODO move cross-thread calling delegate stuff into ActionQueueScheduler?
-            if (this.InvokeRequired)
-            { 
-                UpdateViewDelegate d = new UpdateViewDelegate(UpdateView);
-                this.Invoke(d, new object[] {});
-            }
-            else
+            if (!this.IsDisposed)
             {
-                this.SetHeadingText(actions.Count);
-                this.listViewActions.VirtualListSize = actions.Count;
-                this.listViewActions.Invalidate();
+                // Cross-thread calling safety 
+                if (this.InvokeRequired)
+                { 
+                    UpdateViewDelegate d = new UpdateViewDelegate(UpdateView);
+                    this.Invoke(d, new object[] {});
+                }
+                else
+                {
+                    this.SetHeadingText(actions.Count);
+                    this.listViewActions.VirtualListSize = actions.Count;
+                    this.listViewActions.Invalidate();
+                }
             }
         }
 

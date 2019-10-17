@@ -26,6 +26,7 @@ namespace Glue.Forms
         private string baseCaptionText = "";
         private ViewButtons viewButtons = null;
         private ViewQueue viewQueue = null;
+        private ViewControllers viewControllers = null;
         private readonly ApplicationContext context;
         private readonly FormSettingsHandler formSettingsHandler;
 
@@ -42,7 +43,7 @@ namespace Glue.Forms
             this.rawKeyNames = Properties.Settings.Default.RawKeyNames;
             this.normalizeMouseCoords = Properties.Settings.Default.NormalizeMouseCoords;
 
-            this.checkBoxLogDisplay.DataBindings.Add("Checked", this, "logInput", true, DataSourceUpdateMode.OnPropertyChanged);
+            this.checkBoxLogInput.DataBindings.Add("Checked", this, "logInput", true, DataSourceUpdateMode.OnPropertyChanged);
             this.checkBoxRawKeyNames.DataBindings.Add("Checked", this, "rawKeyNames", true, DataSourceUpdateMode.OnPropertyChanged);
             this.checkBoxNormalizeMouseCoords.DataBindings.Add("Checked", this, "normalizeMouseCoords", true, DataSourceUpdateMode.OnPropertyChanged);
 
@@ -89,17 +90,17 @@ namespace Glue.Forms
 
         private void AppendText(string text)
         {
-            if (this.InvokeRequired)
+            if (!IsDisposed)
             { 
-                AppendTextDelegate d = new AppendTextDelegate(AppendText);
-                this.Invoke(d, new object[] {text});
-            }
-            else
-            {
-                if (!IsDisposed)
+                if (this.InvokeRequired)
                 { 
-                    textBoxInputStream.AppendText(text);
-                    WindowHandleUtils.HideCaret(this.textBoxInputStream.Handle);
+                    AppendTextDelegate d = new AppendTextDelegate(AppendText);
+                    this.Invoke(d, new object[] {text});
+                }
+                else
+                {
+                        textBoxInputStream.AppendText(text);
+                        WindowHandleUtils.HideCaret(this.textBoxInputStream.Handle);
                 }
             }
         }
@@ -121,15 +122,19 @@ namespace Glue.Forms
 
         protected override void OnDeactivate(EventArgs e)
         {
-            Properties.Settings.Default.LogInput = this.logInput;
-            Properties.Settings.Default.RawKeyNames = this.RawKeyNames;
+            SaveSettings();
+            base.OnDeactivate(e);
+        }
+
+        private void SaveSettings()
+        {
+            Properties.Settings.Default.LogInput = this.checkBoxLogInput.Checked;
+            Properties.Settings.Default.RawKeyNames = this.checkBoxRawKeyNames.Checked;
             Properties.Settings.Default.ViewButtons = this.menuItemViewButtons.Checked;
-            Properties.Settings.Default.NormalizeMouseCoords = this.NormalizeMouseCoords;
+            Properties.Settings.Default.NormalizeMouseCoords = this.checkBoxNormalizeMouseCoords.Checked;
 
             LOGGER.Info("Saving settings (Properties.Settings.Default.Save())");
             Properties.Settings.Default.Save();
-
-            base.OnDeactivate(e);
         }
 
         private void MenuItemFileOpen_Click(object sender, EventArgs e)
@@ -264,22 +269,25 @@ namespace Glue.Forms
 
         internal void DisplayControllerEvent(EventController controllerEvent)
         {
-            if (this.InvokeRequired)
-            { 
-                LogControllerDelegate d = new LogControllerDelegate(DisplayControllerEvent);
-                this.Invoke(d, new object[] {controllerEvent});
-            }
-            else
+            if (!this.IsDisposed)
             {
-                if (controllerEvent.Type == EventController.EventType.Button)
-                {
-                    AppendText(" " + controllerEvent.Joystick.Information.InstanceName + 
-                        " (Button " + controllerEvent.Button + " " + controllerEvent.ButtonValue + ")");
+                if (this.InvokeRequired)
+                { 
+                    LogControllerDelegate d = new LogControllerDelegate(DisplayControllerEvent);
+                    this.Invoke(d, new object[] {controllerEvent});
                 }
-                else if (controllerEvent.Type == EventController.EventType.POV)
+                else
                 {
-                    AppendText(" " + controllerEvent.Joystick.Information.InstanceName + 
-                        " (POV " + controllerEvent.POVState + ")");
+                    if (controllerEvent.Type == EventController.EventType.Button)
+                    {
+                        AppendText(" " + controllerEvent.Joystick.Information.InstanceName + 
+                            " (Button " + controllerEvent.Button + " " + controllerEvent.ButtonValue + ")");
+                    }
+                    else if (controllerEvent.Type == EventController.EventType.POV)
+                    {
+                        AppendText(" " + controllerEvent.Joystick.Information.InstanceName + 
+                            " (POV " + controllerEvent.POVState + ")");
+                    }
                 }
             }
         }
@@ -291,15 +299,10 @@ namespace Glue.Forms
             // Always update status bar when mouse moves
             DisplayMouseMove(eventMouse.X, eventMouse.Y);
 
-            // Only display click locations though if specified
-            if (LogInput)
+            if (eventMouse.MouseButton != MouseButtons.None && 
+                eventMouse.ButtonState == ButtonStates.Press)
             {
-
-                if (eventMouse.MouseButton != MouseButtons.None && 
-                    eventMouse.ButtonState == ButtonStates.Press)
-                {
-                    DisplayMouseClick(eventMouse.MouseButton, eventMouse.X, eventMouse.Y);
-                }
+                DisplayMouseClick(eventMouse.MouseButton, eventMouse.X, eventMouse.Y);
             }
         }
 
@@ -389,6 +392,18 @@ namespace Glue.Forms
             }
 
             return output;
+        }
+
+        private void CheckBoxLogDisplay_CheckedChanged(object sender, EventArgs e)
+        {
+            // Save when checked to publish this setting
+            // This prevents keyboard INFO logging from keyboard handler and elsewhere
+            SaveSettings();
+        }
+
+        private void MenuItemViewGameControllers_Click(object sender, EventArgs e)
+        {
+            this.viewControllers = ShowView(this.viewControllers, true);
         }
     }
 }

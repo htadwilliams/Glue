@@ -3,6 +3,7 @@ using SharpDX;
 using SharpDX.DirectInput;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading;
 
 namespace Glue
@@ -169,29 +170,29 @@ namespace Glue
 
         internal void Initialize()
         {
-            InitializeOffsetFilters();
-            InitJoysticks();
+            InitializeOffsetGroups();
+            UpdateConnectedDevices();
 
             StartDeviceConnector();
             StartPolling();
         }
 
-        private void InitializeOffsetFilters()
+        private void InitializeOffsetGroups()
         {
-            InitializeOffsets(OFFSETS_POV, s_offsetsPOV);
-            InitializeOffsets(OFFSETS_AXIS, s_offsetsAxis);
-            InitializeOffsets(OFFSETS_FORCE_FEEDBACK, s_offsetsForceFeedback);
+            InitializeOffsetGroup(OFFSETS_POV, s_offsetsPOV);
+            InitializeOffsetGroup(OFFSETS_AXIS, s_offsetsAxis);
+            InitializeOffsetGroup(OFFSETS_FORCE_FEEDBACK, s_offsetsForceFeedback);
         }
 
-        private void InitializeOffsets(JoystickOffset[] offsetArray, HashSet<JoystickOffset> offsetsToInitialize)
+        private void InitializeOffsetGroup(JoystickOffset[] offsetArray, HashSet<JoystickOffset> offsetGroup)
         {
             lock (s_initLock)
             {
-                if (offsetsToInitialize.Count < 1)
+                if (offsetGroup.Count < 1)
                 {
                     foreach (JoystickOffset offset in offsetArray)
                     {
-                        offsetsToInitialize.Add(offset);
+                        offsetGroup.Add(offset);
                     }
                 }
             }
@@ -201,7 +202,7 @@ namespace Glue
         /// Enumerates devices and adds them to Joysticks if not already present.
         /// Joysticks are removed when disconnection exceptions are thrown while polling them.
         /// </summary>
-        private void InitJoysticks()
+        private void UpdateConnectedDevices()
         {
             List<DeviceInstance> devices = GetDevices();
 
@@ -218,6 +219,7 @@ namespace Glue
                             if (null != joystick)
                             {
                                 this.joysticks.Add(joystick);
+                                PublishControllerListChanged();
 
                                 LOGGER.Info("Connected " + joystick.Information.Type + ": " + joystick.Information.InstanceName);
                             }
@@ -332,8 +334,7 @@ namespace Glue
             while (true)
             {
                 Thread.Sleep(DEVICE_CONNECTION_INTERVAL_MS);
-
-                InitJoysticks();
+                UpdateConnectedDevices();
             }
         }
         public void PollingThreadProc()
@@ -378,32 +379,52 @@ namespace Glue
 
                         if (null != joystickUpdates)
                         {
-                            ProcessUpdates(joystick, joystickUpdates);
+                            PublishControllerEvents(joystick, joystickUpdates);
                         }
                     }
 
-                    RemoveJoysticks(joysticksUnplugged);
-                    joysticksUnplugged.Clear();
+                    if (RemoveJoysticks(joysticksUnplugged))
+                    {
+                        PublishControllerListChanged();
+                    }
                 }
             }
         }
 
-        private void RemoveJoysticks(List<Joystick> joysticksUnplugged)
+        private bool RemoveJoysticks(List<Joystick> joysticksUnplugged)
         {
-            foreach (Joystick joystickUnplugged in joysticksUnplugged)
+            bool stickRemoved = false;
+            if (joysticksUnplugged.Count > 0)
             {
-                joysticks.Remove(joystickUnplugged);
-                joystickUnplugged.Unacquire();
-                joystickUnplugged.Dispose();
+                foreach (Joystick joystickUnplugged in joysticksUnplugged)
+                {
+                    joysticks.Remove(joystickUnplugged);
+                    joystickUnplugged.Unacquire();
+                    joystickUnplugged.Dispose();
+
+                    stickRemoved = true;
+                }
+                joysticksUnplugged.Clear();
             }
+            return stickRemoved;
         }
 
-        private void ProcessUpdates(Joystick joystick, JoystickUpdate[] joystickUpdates)
+        private void PublishControllerEvents(Joystick joystick, JoystickUpdate[] joystickUpdates)
         {
             foreach (JoystickUpdate joystickUpdate in joystickUpdates)
             {
                 EventBus<EventController>.Instance.SendEvent(this, new EventController(joystick, joystickUpdate));
             }
+        }
+
+        private void PublishControllerListChanged()
+        {
+            EventBus<EventControllersChanged>.Instance.SendEvent(this, new EventControllersChanged(GetConnectedJoysticks()));
+        }
+
+        public ReadOnlyCollection<Joystick> GetConnectedJoysticks()
+        {
+            return joysticks.AsReadOnly();
         }
 
         public void Dispose()

@@ -38,7 +38,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ViewMain));
             this.textBoxInputStream = new System.Windows.Forms.TextBox();
             this.buttonClear = new System.Windows.Forms.Button();
-            this.checkBoxLogDisplay = new System.Windows.Forms.CheckBox();
+            this.checkBoxLogInput = new System.Windows.Forms.CheckBox();
             this.checkBoxRawKeyNames = new System.Windows.Forms.CheckBox();
             this.menuStripMain = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -52,6 +52,9 @@
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemViewButtons = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemViewQueue = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemViewGameControllers = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemViewGameControllerButtons = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemViewGameControllerAxes = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemHelpAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
@@ -91,17 +94,18 @@
             this.buttonClear.UseVisualStyleBackColor = true;
             this.buttonClear.Click += new System.EventHandler(this.ButtonClear_Click);
             // 
-            // checkBoxLogDisplay
+            // checkBoxLogInput
             // 
-            this.checkBoxLogDisplay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.checkBoxLogDisplay.AutoSize = true;
-            this.checkBoxLogDisplay.Location = new System.Drawing.Point(171, 920);
-            this.checkBoxLogDisplay.Margin = new System.Windows.Forms.Padding(4);
-            this.checkBoxLogDisplay.Name = "checkBoxLogDisplay";
-            this.checkBoxLogDisplay.Size = new System.Drawing.Size(133, 29);
-            this.checkBoxLogDisplay.TabIndex = 2;
-            this.checkBoxLogDisplay.Text = "&Log input";
-            this.checkBoxLogDisplay.UseVisualStyleBackColor = true;
+            this.checkBoxLogInput.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.checkBoxLogInput.AutoSize = true;
+            this.checkBoxLogInput.Location = new System.Drawing.Point(171, 920);
+            this.checkBoxLogInput.Margin = new System.Windows.Forms.Padding(4);
+            this.checkBoxLogInput.Name = "checkBoxLogInput";
+            this.checkBoxLogInput.Size = new System.Drawing.Size(133, 29);
+            this.checkBoxLogInput.TabIndex = 2;
+            this.checkBoxLogInput.Text = "&Log input";
+            this.checkBoxLogInput.UseVisualStyleBackColor = true;
+            this.checkBoxLogInput.CheckedChanged += new System.EventHandler(this.CheckBoxLogDisplay_CheckedChanged);
             // 
             // checkBoxRawKeyNames
             // 
@@ -125,7 +129,7 @@
             this.helpToolStripMenuItem});
             this.menuStripMain.Location = new System.Drawing.Point(0, 0);
             this.menuStripMain.Name = "menuStripMain";
-            this.menuStripMain.Size = new System.Drawing.Size(1478, 40);
+            this.menuStripMain.Size = new System.Drawing.Size(1478, 42);
             this.menuStripMain.TabIndex = 4;
             this.menuStripMain.Text = "menuStrip1";
             // 
@@ -135,7 +139,7 @@
             this.menuItemFileOpen,
             this.menuItemFileExit});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(72, 36);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(72, 38);
             this.fileToolStripMenuItem.Text = "&File";
             // 
             // menuItemFileOpen
@@ -162,7 +166,7 @@
             this.triggersToolStripMenuItem,
             this.remapKeysToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(75, 36);
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(75, 38);
             this.editToolStripMenuItem.Text = "&Edit";
             // 
             // preferencesToolStripMenuItem
@@ -198,9 +202,12 @@
             this.viewToolStripMenuItem.CheckOnClick = true;
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItemViewButtons,
-            this.menuItemViewQueue});
+            this.menuItemViewQueue,
+            this.menuItemViewGameControllers,
+            this.menuItemViewGameControllerButtons,
+            this.menuItemViewGameControllerAxes});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-            this.viewToolStripMenuItem.Size = new System.Drawing.Size(86, 36);
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(86, 38);
             this.viewToolStripMenuItem.Text = "&View";
             // 
             // menuItemViewButtons
@@ -208,7 +215,7 @@
             this.menuItemViewButtons.CheckOnClick = true;
             this.menuItemViewButtons.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.menuItemViewButtons.Name = "menuItemViewButtons";
-            this.menuItemViewButtons.Size = new System.Drawing.Size(359, 44);
+            this.menuItemViewButtons.Size = new System.Drawing.Size(413, 44);
             this.menuItemViewButtons.Text = "&Button States";
             this.menuItemViewButtons.Click += new System.EventHandler(this.MenuItemViewButtons_Click);
             // 
@@ -216,16 +223,35 @@
             // 
             this.menuItemViewQueue.CheckOnClick = true;
             this.menuItemViewQueue.Name = "menuItemViewQueue";
-            this.menuItemViewQueue.Size = new System.Drawing.Size(359, 44);
+            this.menuItemViewQueue.Size = new System.Drawing.Size(413, 44);
             this.menuItemViewQueue.Text = "&Queued Actions";
             this.menuItemViewQueue.Click += new System.EventHandler(this.MenuItemViewQueue_Click);
+            // 
+            // menuItemViewGameControllers
+            // 
+            this.menuItemViewGameControllers.Name = "menuItemViewGameControllers";
+            this.menuItemViewGameControllers.Size = new System.Drawing.Size(413, 44);
+            this.menuItemViewGameControllers.Text = "&Game Controllers";
+            this.menuItemViewGameControllers.Click += new System.EventHandler(this.MenuItemViewGameControllers_Click);
+            // 
+            // menuItemViewGameControllerButtons
+            // 
+            this.menuItemViewGameControllerButtons.Name = "menuItemViewGameControllerButtons";
+            this.menuItemViewGameControllerButtons.Size = new System.Drawing.Size(413, 44);
+            this.menuItemViewGameControllerButtons.Text = "Game &Controller Buttons";
+            // 
+            // menuItemViewGameControllerAxes
+            // 
+            this.menuItemViewGameControllerAxes.Name = "menuItemViewGameControllerAxes";
+            this.menuItemViewGameControllerAxes.Size = new System.Drawing.Size(413, 44);
+            this.menuItemViewGameControllerAxes.Text = "Game Controller &Axes";
             // 
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItemHelpAbout});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(85, 36);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(85, 38);
             this.helpToolStripMenuItem.Text = "&Help";
             // 
             // menuItemHelpAbout
@@ -237,6 +263,7 @@
             // 
             // statusStrip1
             // 
+            this.statusStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Visible;
             this.statusStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMousePos,
@@ -244,13 +271,14 @@
             this.statusStrip1.Location = new System.Drawing.Point(0, 952);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(1478, 42);
+            this.statusStrip1.SizingGrip = false;
             this.statusStrip1.TabIndex = 5;
-            this.statusStrip1.Text = "statusStrip1";
+            this.statusStrip1.Text = "statusStrip";
             // 
             // toolStripMousePos
             // 
             this.toolStripMousePos.Name = "toolStripMousePos";
-            this.toolStripMousePos.Size = new System.Drawing.Size(1190, 32);
+            this.toolStripMousePos.Size = new System.Drawing.Size(1252, 32);
             this.toolStripMousePos.Spring = true;
             this.toolStripMousePos.Text = "No mouse movement detected";
             this.toolStripMousePos.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -282,7 +310,7 @@
             this.Controls.Add(this.checkBoxNormalizeMouseCoords);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.checkBoxRawKeyNames);
-            this.Controls.Add(this.checkBoxLogDisplay);
+            this.Controls.Add(this.checkBoxLogInput);
             this.Controls.Add(this.buttonClear);
             this.Controls.Add(this.textBoxInputStream);
             this.Controls.Add(this.menuStripMain);
@@ -305,7 +333,7 @@
 
         private System.Windows.Forms.TextBox textBoxInputStream;
         private System.Windows.Forms.Button buttonClear;
-        private System.Windows.Forms.CheckBox checkBoxLogDisplay;
+        private System.Windows.Forms.CheckBox checkBoxLogInput;
         private System.Windows.Forms.CheckBox checkBoxRawKeyNames;
         private System.Windows.Forms.MenuStrip menuStripMain;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
@@ -325,6 +353,9 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripMousePos;
         private System.Windows.Forms.ToolStripStatusLabel toolStripMousePosLastClick;
         private System.Windows.Forms.CheckBox checkBoxNormalizeMouseCoords;
+        private System.Windows.Forms.ToolStripMenuItem menuItemViewGameControllers;
+        private System.Windows.Forms.ToolStripMenuItem menuItemViewGameControllerButtons;
+        private System.Windows.Forms.ToolStripMenuItem menuItemViewGameControllerAxes;
     }
 }
 
