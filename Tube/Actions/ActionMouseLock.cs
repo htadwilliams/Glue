@@ -33,7 +33,7 @@ namespace Glue.Actions
 
         public override string ToString()
         {
-            return base.ToString() + "(" + this.lockAction + ")";
+            return base.ToString() + " (" + this.lockAction + ")";
         }
     }
 }
