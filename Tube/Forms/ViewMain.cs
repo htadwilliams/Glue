@@ -26,6 +26,7 @@ namespace Glue.Forms
         private string baseCaptionText = "";
         private ViewButtons viewButtons = null;
         private ViewQueue viewQueue = null;
+        private ViewControllers viewControllers = null;
         private readonly ApplicationContext context;
         private readonly FormSettingsHandler formSettingsHandler;
 
@@ -268,7 +269,7 @@ namespace Glue.Forms
 
         internal void DisplayControllerEvent(EventController controllerEvent)
         {
-            if (this.InvokeRequired)
+            if (this.InvokeRequired && !this.IsDisposed)
             { 
                 LogControllerDelegate d = new LogControllerDelegate(DisplayControllerEvent);
                 this.Invoke(d, new object[] {controllerEvent});
@@ -397,9 +398,9 @@ namespace Glue.Forms
             SaveSettings();
         }
 
-        private void ViewMain_Load(object sender, EventArgs e)
+        private void MenuItemViewGameControllers_Click(object sender, EventArgs e)
         {
-
+            this.viewControllers = ShowView(this.viewControllers, true);
         }
     }
 }

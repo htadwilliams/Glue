@@ -52,6 +52,9 @@
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemViewButtons = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemViewQueue = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemViewGameControllers = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemViewGameControllerButtons = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemViewGameControllerAxes = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemHelpAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
@@ -126,7 +129,7 @@
             this.helpToolStripMenuItem});
             this.menuStripMain.Location = new System.Drawing.Point(0, 0);
             this.menuStripMain.Name = "menuStripMain";
-            this.menuStripMain.Size = new System.Drawing.Size(1478, 40);
+            this.menuStripMain.Size = new System.Drawing.Size(1478, 42);
             this.menuStripMain.TabIndex = 4;
             this.menuStripMain.Text = "menuStrip1";
             // 
@@ -136,7 +139,7 @@
             this.menuItemFileOpen,
             this.menuItemFileExit});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(72, 36);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(72, 38);
             this.fileToolStripMenuItem.Text = "&File";
             // 
             // menuItemFileOpen
@@ -163,7 +166,7 @@
             this.triggersToolStripMenuItem,
             this.remapKeysToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(75, 36);
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(75, 38);
             this.editToolStripMenuItem.Text = "&Edit";
             // 
             // preferencesToolStripMenuItem
@@ -199,9 +202,12 @@
             this.viewToolStripMenuItem.CheckOnClick = true;
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItemViewButtons,
-            this.menuItemViewQueue});
+            this.menuItemViewQueue,
+            this.menuItemViewGameControllers,
+            this.menuItemViewGameControllerButtons,
+            this.menuItemViewGameControllerAxes});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-            this.viewToolStripMenuItem.Size = new System.Drawing.Size(86, 36);
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(86, 38);
             this.viewToolStripMenuItem.Text = "&View";
             // 
             // menuItemViewButtons
@@ -209,7 +215,7 @@
             this.menuItemViewButtons.CheckOnClick = true;
             this.menuItemViewButtons.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.menuItemViewButtons.Name = "menuItemViewButtons";
-            this.menuItemViewButtons.Size = new System.Drawing.Size(320, 44);
+            this.menuItemViewButtons.Size = new System.Drawing.Size(413, 44);
             this.menuItemViewButtons.Text = "&Button States";
             this.menuItemViewButtons.Click += new System.EventHandler(this.MenuItemViewButtons_Click);
             // 
@@ -217,16 +223,35 @@
             // 
             this.menuItemViewQueue.CheckOnClick = true;
             this.menuItemViewQueue.Name = "menuItemViewQueue";
-            this.menuItemViewQueue.Size = new System.Drawing.Size(320, 44);
+            this.menuItemViewQueue.Size = new System.Drawing.Size(413, 44);
             this.menuItemViewQueue.Text = "&Queued Actions";
             this.menuItemViewQueue.Click += new System.EventHandler(this.MenuItemViewQueue_Click);
+            // 
+            // menuItemViewGameControllers
+            // 
+            this.menuItemViewGameControllers.Name = "menuItemViewGameControllers";
+            this.menuItemViewGameControllers.Size = new System.Drawing.Size(413, 44);
+            this.menuItemViewGameControllers.Text = "&Game Controllers";
+            this.menuItemViewGameControllers.Click += new System.EventHandler(this.MenuItemViewGameControllers_Click);
+            // 
+            // menuItemViewGameControllerButtons
+            // 
+            this.menuItemViewGameControllerButtons.Name = "menuItemViewGameControllerButtons";
+            this.menuItemViewGameControllerButtons.Size = new System.Drawing.Size(413, 44);
+            this.menuItemViewGameControllerButtons.Text = "Game &Controller Buttons";
+            // 
+            // menuItemViewGameControllerAxes
+            // 
+            this.menuItemViewGameControllerAxes.Name = "menuItemViewGameControllerAxes";
+            this.menuItemViewGameControllerAxes.Size = new System.Drawing.Size(413, 44);
+            this.menuItemViewGameControllerAxes.Text = "Game Controller &Axes";
             // 
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItemHelpAbout});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(85, 36);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(85, 38);
             this.helpToolStripMenuItem.Text = "&Help";
             // 
             // menuItemHelpAbout
@@ -253,7 +278,7 @@
             // toolStripMousePos
             // 
             this.toolStripMousePos.Name = "toolStripMousePos";
-            this.toolStripMousePos.Size = new System.Drawing.Size(1190, 32);
+            this.toolStripMousePos.Size = new System.Drawing.Size(1252, 32);
             this.toolStripMousePos.Spring = true;
             this.toolStripMousePos.Text = "No mouse movement detected";
             this.toolStripMousePos.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -328,6 +353,9 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripMousePos;
         private System.Windows.Forms.ToolStripStatusLabel toolStripMousePosLastClick;
         private System.Windows.Forms.CheckBox checkBoxNormalizeMouseCoords;
+        private System.Windows.Forms.ToolStripMenuItem menuItemViewGameControllers;
+        private System.Windows.Forms.ToolStripMenuItem menuItemViewGameControllerButtons;
+        private System.Windows.Forms.ToolStripMenuItem menuItemViewGameControllerAxes;
     }
 }
 

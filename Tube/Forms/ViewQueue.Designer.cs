@@ -61,7 +61,7 @@
             this.listViewActions.MultiSelect = false;
             this.listViewActions.Name = "listViewActions";
             this.listViewActions.ShowGroups = false;
-            this.listViewActions.Size = new System.Drawing.Size(482, 957);
+            this.listViewActions.Size = new System.Drawing.Size(482, 991);
             this.listViewActions.TabIndex = 6;
             this.listViewActions.UseCompatibleStateImageBehavior = false;
             this.listViewActions.View = System.Windows.Forms.View.Details;
