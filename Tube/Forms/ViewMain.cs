@@ -90,17 +90,17 @@ namespace Glue.Forms
 
         private void AppendText(string text)
         {
-            if (this.InvokeRequired)
+            if (!IsDisposed)
             { 
-                AppendTextDelegate d = new AppendTextDelegate(AppendText);
-                this.Invoke(d, new object[] {text});
-            }
-            else
-            {
-                if (!IsDisposed)
+                if (this.InvokeRequired)
                 { 
-                    textBoxInputStream.AppendText(text);
-                    WindowHandleUtils.HideCaret(this.textBoxInputStream.Handle);
+                    AppendTextDelegate d = new AppendTextDelegate(AppendText);
+                    this.Invoke(d, new object[] {text});
+                }
+                else
+                {
+                        textBoxInputStream.AppendText(text);
+                        WindowHandleUtils.HideCaret(this.textBoxInputStream.Handle);
                 }
             }
         }
@@ -269,22 +269,25 @@ namespace Glue.Forms
 
         internal void DisplayControllerEvent(EventController controllerEvent)
         {
-            if (this.InvokeRequired && !this.IsDisposed)
-            { 
-                LogControllerDelegate d = new LogControllerDelegate(DisplayControllerEvent);
-                this.Invoke(d, new object[] {controllerEvent});
-            }
-            else
+            if (!this.IsDisposed)
             {
-                if (controllerEvent.Type == EventController.EventType.Button)
-                {
-                    AppendText(" " + controllerEvent.Joystick.Information.InstanceName + 
-                        " (Button " + controllerEvent.Button + " " + controllerEvent.ButtonValue + ")");
+                if (this.InvokeRequired)
+                { 
+                    LogControllerDelegate d = new LogControllerDelegate(DisplayControllerEvent);
+                    this.Invoke(d, new object[] {controllerEvent});
                 }
-                else if (controllerEvent.Type == EventController.EventType.POV)
+                else
                 {
-                    AppendText(" " + controllerEvent.Joystick.Information.InstanceName + 
-                        " (POV " + controllerEvent.POVState + ")");
+                    if (controllerEvent.Type == EventController.EventType.Button)
+                    {
+                        AppendText(" " + controllerEvent.Joystick.Information.InstanceName + 
+                            " (Button " + controllerEvent.Button + " " + controllerEvent.ButtonValue + ")");
+                    }
+                    else if (controllerEvent.Type == EventController.EventType.POV)
+                    {
+                        AppendText(" " + controllerEvent.Joystick.Information.InstanceName + 
+                            " (POV " + controllerEvent.POVState + ")");
+                    }
                 }
             }
         }

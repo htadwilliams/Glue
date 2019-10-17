@@ -31,18 +31,21 @@ namespace Glue.Forms
 
         private void UpdateListView()
         {
-            // Cross-thread calling safety 
-            if (this.InvokeRequired && !this.IsDisposed)
-            { 
-                UpdateViewDelegate d = new UpdateViewDelegate(UpdateListView);
-                this.Invoke(d, new object[] {});
-            }
-            else
+            if (!this.IsDisposed)
             {
-                if (null != joysticks && this.listViewControllers.VirtualListSize != joysticks.Count)
+                // Cross-thread calling safety 
+                if (this.InvokeRequired)
+                { 
+                    UpdateViewDelegate d = new UpdateViewDelegate(UpdateListView);
+                    this.Invoke(d, new object[] {});
+                }
+                else
                 {
-                    this.listViewControllers.VirtualListSize = joysticks.Count;
-                    this.listViewControllers.Invalidate();
+                    if (null != joysticks && this.listViewControllers.VirtualListSize != joysticks.Count)
+                    {
+                        this.listViewControllers.VirtualListSize = joysticks.Count;
+                        this.listViewControllers.Invalidate();
+                    }
                 }
             }
         }
