@@ -1,6 +1,7 @@
 ﻿using Glue.Triggers.JsonContract;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
 using System.Collections.Generic;
 
 namespace Glue.Triggers
@@ -16,7 +17,7 @@ namespace Glue.Triggers
 
     [JsonObject(MemberSerialization.OptIn)]
     [JsonConverter(typeof(TriggerConverter))]
-    public abstract class Trigger
+    public abstract class Trigger : IDisposable
     {
         public bool EatInput => this.eatInput;
         public List<string> MacroNames => macroNames;
@@ -60,6 +61,10 @@ namespace Glue.Triggers
             // Do nothing by default - subclasses must opt in
         }
 
+        protected virtual void UnsubscribeEvent()
+        {
+        }
+
         protected virtual void Fire(int macroIndex)
         {
             string macroName = MacroNames[macroIndex];
@@ -86,6 +91,11 @@ namespace Glue.Triggers
                 Tube.PlayMacro(macroName);
             }
             this.indexMacroCurrent++;
+        }
+
+        public void Dispose()
+        {
+            UnsubscribeEvent();
         }
     }
 }

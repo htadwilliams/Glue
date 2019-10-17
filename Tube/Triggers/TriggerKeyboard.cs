@@ -41,6 +41,11 @@ namespace Glue.Triggers
             ReturningEventBus<EventKeyboard, bool>.Instance.ReturningEventRecieved += OnEventKeyboard;
         }
 
+        protected override void UnsubscribeEvent()
+        {
+            ReturningEventBus<EventKeyboard, bool>.Instance.ReturningEventRecieved -= OnEventKeyboard;
+        }
+
         private bool OnEventKeyboard(object sender, EventKeyboard e)
         {
             if (

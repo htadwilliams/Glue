@@ -35,6 +35,11 @@ namespace Glue.Triggers
             EventBus<EventController>.Instance.EventRecieved += OnEventController;
         }
 
+        protected override void UnsubscribeEvent()
+        {
+            EventBus<EventController>.Instance.EventRecieved -= OnEventController;
+        }
+
         protected abstract void OnEventController(object sender, BusEventArgs<EventController> e);
     }
 }
