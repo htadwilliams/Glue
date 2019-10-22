@@ -1,4 +1,4 @@
-# Keyboard remapping and macroing tool for Windows.
+# Input remapping and macroing tool for Windows.
 
 WARNING: This globally hooks keyboard/mouse input and logs to file if DEBUG mode is enabled. Don't run in DEBUG mode if you don't want your keys logged!
 
@@ -42,7 +42,7 @@ In Glue, a Trigger detects inputs and fires Macros, which are collections of Act
 ## NuGet managed dependencies:
 
 * SharpDX and SharpDX.DirectInput used for DirectX manipulation of gaming input devices: http://sharpdx.org/ 
-* NewtonSoft.Json for serialization of macros, triggers, etc (except user preferences).
+* NewtonSoft.Json for serialization of macros, triggers, etc.
 
 ## Other dependencies:
 
@@ -86,11 +86,9 @@ In Glue, a Trigger detects inputs and fires Macros, which are collections of Act
  - [X] Game controller hat triggers (with inherited chording support).
  - [ ] Game controller force feedback events.
  - [X] Game controller axis movement triggers.
- - [ ] Game controller button remapping.
  - [x] Queue view should update every second if nothing else is happening.
  - [ ] Remote control - trigger events via network client (most likely REST interface).
  - [ ] Triggers and actions may be filtered by target process name the same way keyboard remapping does. 
- - [ ] Game controller axis remapping.
  - [x] Mouse "safety" - freeze mouse cursor position (but not buttons)
 
 ## GUI TODO
