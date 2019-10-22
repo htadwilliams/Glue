@@ -163,6 +163,7 @@
     <Compile Include="Native\WindowHandleUtils.cs" />
     <Compile Include="Native\TimeProvider.cs" />
     <Compile Include="NerfDX\Enums.cs" />
+    <Compile Include="NerfDX\WaitableJoystick.cs" />
     <Compile Include="Priority_Queue\GenericPriorityQueue.cs" />
     <Compile Include="Priority_Queue\GenericPriorityQueueNode.cs" />
     <Compile Include="Priority_Queue\IFixedSizePriorityQueue.cs" />

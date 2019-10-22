@@ -19,10 +19,14 @@ namespace NerfDX
     {
         private readonly DirectInput directInput;
 
-        // List of Joystick instances currently created and aquired via Joystick.Aquire() 
-        private readonly List<Joystick> joysticks = new List<Joystick>();
+        // Lists of Joystick instances currently created and aquired via Joystick.Aquire() 
+        private readonly List<Joystick> joysticksPolled = new List<Joystick>();
+        private readonly List<Joystick> joysticksWaitable = new List<Joystick>();
 
-        private Thread threadPolling;                   // Polls and disconnects devices that are connected
+        private readonly EventWaitHandle eventNewJoystick = new AutoResetEvent (false);
+
+        private Thread threadPolling;                   // Polls and disconnects devices 
+        private Thread threadWaiting;                   // Waits for notification on waitable devices
         private Thread threadDeviceConnector;           // Adds Joysticks to collection periodically
 
         private static readonly HashSet<JoystickOffset> s_offsetsPOV = new HashSet<JoystickOffset>();
@@ -31,11 +35,13 @@ namespace NerfDX
 
         // Sleep interval between checking for newly connected devices
         private const int DEVICE_CONNECTION_INTERVAL_MS = 500;
+ 
         private const int POLLING_INTERVAL_HZ = 60;     // Polling interval in polls per second
         private const int DEVICE_BUFFER_SIZE = 128;     // Magic number from an example 
 
-        private const string THREAD_NAME_POLLING = "DirectX.Polling";
-        private const string THREAD_NAME_CONNECTOR = "DirectX.Connector";
+        private const string THREAD_NAME_POLLING = "NerfDX.Polling";
+        private const string THREAD_NAME_WAITING = "NerfDX.Waiting";
+        private const string THREAD_NAME_CONNECTOR = "NerfDX.Connector";
 
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private static readonly object s_lock = new object();
@@ -129,12 +135,17 @@ namespace NerfDX
             directInput = new DirectInput();
         }
 
-        internal void Initialize()
+        public void Initialize()
         {
             InitializeOffsetGroups();
 
-            StartConnectorThread();
-            StartPollingThread();
+            // Creates connected Joysticks and prepares them for data acquisition
+            // This is also what threadDeviceConnector does periodically
+            UpdateConnectedDeviceList();
+            
+            threadDeviceConnector = StartThread(threadDeviceConnector, THREAD_NAME_CONNECTOR, new ThreadStart(ConnectorThreadProc));
+            threadPolling = StartThread(threadPolling, THREAD_NAME_POLLING, new ThreadStart(PollingThreadProc));
+            threadWaiting = StartThread(threadWaiting, THREAD_NAME_WAITING, new ThreadStart(WaitingThreadProc));
         }
 
         private void InitializeOffsetGroups()
@@ -158,59 +169,63 @@ namespace NerfDX
             }
         }
 
-        private void StartConnectorThread()
+        private Thread StartThread(Thread thread, string threadName, ThreadStart threadstart)
         {
-            UpdateConnectedDevices();
-
-            if (null == threadDeviceConnector)
+            if (null == thread)
             {
-                threadDeviceConnector = new Thread(new ThreadStart(ConnectorThreadProc))
+                thread = new Thread(threadstart)
                 {
-                    Name = THREAD_NAME_CONNECTOR,
+                    Name = threadName,
                     IsBackground = true
                 };
 
             }
-            threadDeviceConnector.Start();
-        }
+            thread.Start();
 
-        private void StartPollingThread()
-        {
-            if (null == threadPolling)
-            {
-                threadPolling = new Thread(new ThreadStart(PollingThreadProc))
-                {
-                    Name = THREAD_NAME_POLLING,
-                    IsBackground = true
-                };
-            }
-            threadPolling.Start();
+            return thread;
         }
 
         /// <summary>
         /// Enumerates devices and adds them to Joysticks if not already present.
-        /// Joysticks are removed when disconnection exceptions are thrown while polling them.
         /// </summary>
-        private void UpdateConnectedDevices()
+        private void UpdateConnectedDeviceList()
         {
+            // TODO UpdateConnectedDeviceList() should manage lifecycle of the 
+            // other threads, starting and stopping them as needed.
+
             List<DeviceInstance> devices = GetDevices();
 
-            if (devices.Count != joysticks.Count)
+            if (devices.Count != (joysticksPolled.Count + joysticksWaitable.Count))
             {
-                lock (joysticks)
+                foreach (DeviceInstance device in devices)
                 {
-                    foreach (DeviceInstance device in devices)
+                    if (!IsDeviceConnected(device))
                     {
-                        if (null == FindJoystick(device))
+                        bool connectFlag = false;
+                        WaitableJoystick joystick = null;
                         {
-                            Joystick joystick = CreateJoystick(device);
-
-                            if (null != joystick)
+                            try
                             {
-                                joysticks.Add(joystick);
-
-                                PublishControllerListChanged();
-                                LOGGER.Info("Connected " + joystick.Information.Type + ": " + joystick.Information.InstanceName);
+#pragma warning disable IDE0068 // Use recommended dispose pattern: Can't be disposed until enclosing DirectInputManager is disposed.
+                                joystick = CreateJoystick(device);
+#pragma warning restore IDE0068 // Use recommended dispose pattern
+                                if (null != joystick)
+                                {
+                                    if (joystick.Connect())
+                                    {
+                                        AddJoystick(joystick);
+                                        PublishControllerListChanged();
+                                        connectFlag = true;
+                                        LOGGER.Info("Connected " + joystick.Information.Type + ": " + joystick.Information.InstanceName);
+                                    }
+                                }
+                            }
+                            finally
+                            {
+                                if (!connectFlag && joystick != null)
+                                {
+                                    joystick.Dispose();
+                                }
                             }
                         }
                     }
@@ -218,7 +233,15 @@ namespace NerfDX
             }
         }
 
-        private Joystick FindJoystick(DeviceInstance device)
+        private bool IsDeviceConnected(DeviceInstance device)
+        {
+            return 
+                (null != FindJoystick(joysticksPolled, device)) 
+                || 
+                (null != FindJoystick(joysticksWaitable, device));
+        }
+
+        private Joystick FindJoystick(List<Joystick> joysticks, DeviceInstance device)
         {
             foreach (Joystick joystick in joysticks)
             {
@@ -255,16 +278,14 @@ namespace NerfDX
             return devices;
         }
 
-        private Joystick CreateJoystick(DeviceInstance device)
+        private WaitableJoystick CreateJoystick(DeviceInstance device)
         {
-            Joystick joystick = null;
+            WaitableJoystick joystick = null;
 
             try
             {
-                joystick = new Joystick(directInput, device.InstanceGuid);
-
+                joystick = new WaitableJoystick(directInput, device.InstanceGuid);
                 joystick.Properties.BufferSize = DEVICE_BUFFER_SIZE;
-                joystick.Acquire();
             }
             catch (SharpDXException dxException)
             {
@@ -274,21 +295,32 @@ namespace NerfDX
             return joystick;
         }
 
-        private bool RemoveJoysticks(List<Joystick> joysticksUnplugged)
+        private void AddJoystick(WaitableJoystick joystick)
+        {
+            if (joystick.IsWaitable)
+            {
+                joysticksWaitable.Add(joystick);
+                // Signal waiting thread that there are new Joysticks to wait on
+                eventNewJoystick.Set();
+            }
+            else
+            {
+                joysticksPolled.Add(joystick);
+            }
+        }
+
+        private bool RemoveJoystick(Joystick joystickUnplugged)
         {
             bool stickRemoved = false;
-            if (joysticksUnplugged.Count > 0)
-            {
-                foreach (Joystick joystickUnplugged in joysticksUnplugged)
-                {
-                    joysticks.Remove(joystickUnplugged);
-                    joystickUnplugged.Unacquire();
-                    joystickUnplugged.Dispose();
 
-                    stickRemoved = true;
-                }
-                joysticksUnplugged.Clear();
+            if (joysticksPolled.Remove(joystickUnplugged) || joysticksWaitable.Remove(joystickUnplugged))
+            {
+                joystickUnplugged.Unacquire();
+                joystickUnplugged.Dispose();
+                
+                stickRemoved = true;
             }
+
             return stickRemoved;
         }
 
@@ -307,10 +339,16 @@ namespace NerfDX
 
         public ReadOnlyCollection<Joystick> GetConnectedJoysticks()
         {
-            return joysticks.AsReadOnly();
+            // TODO BUGBUG need to allocate and return copies of info structs
+            // or this will most likely leak disposable Joystick instances.
+            List<Joystick> connectedJoysticks = new List<Joystick>();
+            connectedJoysticks.AddRange(joysticksPolled);
+            connectedJoysticks.AddRange(joysticksWaitable);
+
+            return connectedJoysticks.AsReadOnly();
         }
 
-        public void ConnectorThreadProc()
+        private void ConnectorThreadProc()
         {
             LOGGER.Info(string.Format(
                 "Thread started with re/connection interval = {0:n0} MS",
@@ -319,14 +357,59 @@ namespace NerfDX
             while (true)
             {
                 Thread.Sleep(DEVICE_CONNECTION_INTERVAL_MS);
-                UpdateConnectedDevices();
+                UpdateConnectedDeviceList();
+            }
+        }
+
+        private void WaitingThreadProc()
+        {
+            LOGGER.Info("Thread started");
+            List<WaitHandle> waitHandleList = new List<WaitHandle> ();
+ 
+            UpdateWaitHandles(waitHandleList);
+
+            while (true)
+            {
+                int indexEvent = WaitHandle.WaitAny(waitHandleList.ToArray());
+
+                // New device has been added
+                if (0 == indexEvent)
+                {
+                    UpdateWaitHandles(waitHandleList);
+                }
+                // All other events are for Joysticks
+                else
+                {
+                    Joystick joystick = joysticksWaitable[indexEvent - 1];
+
+                    if (false == ReadJoystick(joystick, false))
+                    {
+                        RemoveJoystick(joystick);
+                        UpdateWaitHandles(waitHandleList);
+                        PublishControllerListChanged();
+                    }
+                }
+            }
+        }
+
+        private void UpdateWaitHandles(List<WaitHandle> waitHandleList)
+        {
+            waitHandleList.Clear();
+            waitHandleList.Add(eventNewJoystick);
+            GetJoystickWaitHandles(joysticksWaitable, waitHandleList);
+        }
+
+        private void GetJoystickWaitHandles(List<Joystick> joystickList, List<WaitHandle> waitHandleList)
+        {
+            foreach (WaitableJoystick joystick in joystickList)
+            {
+                waitHandleList.Add(joystick.WaitEvent);
             }
         }
 
         public void PollingThreadProc()
         {
             int sleepDurationMS = 1000 / POLLING_INTERVAL_HZ;
-            List<Joystick> joysticksUnplugged = new List<Joystick>();
 
             LOGGER.Info(string.Format(
                 "Thread started POLLING_INTERVAL_HZ = {0:n0} sleep duration = {1:n0} MS",
@@ -336,45 +419,72 @@ namespace NerfDX
             while (true)
             {
                 Thread.Sleep(sleepDurationMS);
-                PollSticks(joysticksUnplugged);
+                UpdateJoysticksPolled();
             }
         }
 
-        private void PollSticks(List<Joystick> joysticksUnplugged)
+        /// <summary>
+        /// Shared code to update Joysticks from both polled and waiting
+        /// threads. The only difference is the one call to Poll().
+        /// </summary>
+        /// <param name="joystick"></param>
+        /// <param name="poll"></param>
+        /// <returns></returns>
+        private bool ReadJoystick(Joystick joystick, bool poll)
         {
-            lock (joysticks)
+            JoystickUpdate[] joystickUpdates = null;
+            bool joystickUnplugged = false;
+
+            // TODO most of this method could be moved into WritableJoystick 
+
+            try
             {
-                foreach (Joystick joystick in joysticks)
+                if (poll)
                 {
-                    JoystickUpdate[] joystickUpdates = null;
+                    joystick.Poll();
+                }
+                joystickUpdates = joystick.GetBufferedData();
+            }
+            catch (SharpDXException dxException)
+            {
+                // Expected case when controllers are unplugged
+                if (dxException.Descriptor == ResultCode.InputLost)
+                {
+                    LOGGER.Info("Disconnected " + joystick.Information.Type.ToString() + ": " + joystick.Information.InstanceName);
+                    joystickUnplugged = true;
+                }
+                else
+                {
+                    LOGGER.Error("SharpDXException thrown while polling: ", dxException);
+                }
+            }
+            if (null != joystickUpdates)
+            {
+                PublishControllerEvents(joystick, joystickUpdates);
+            }
 
-                    try
-                    {
-                        joystick.Poll();
-                        joystickUpdates = joystick.GetBufferedData();
-                    }
-                    catch (SharpDXException dxException)
-                    {
-                        // Expected case when controllers are unplugged
-                        if (dxException.Descriptor == ResultCode.InputLost)
-                        {
-                            // Add to list for removal after iterating
-                            joysticksUnplugged.Add(joystick);
-                            LOGGER.Info("Disconnected " + joystick.Information.Type.ToString() + ": " + joystick.Information.InstanceName);
-                        }
-                        else
-                        {
-                            LOGGER.Error("SharpDXException thrown while polling: ", dxException);
-                        }
-                    }
+             return !joystickUnplugged;
+        }
 
-                    if (null != joystickUpdates)
+        private void UpdateJoysticksPolled()
+        {
+            lock (joysticksPolled)
+            {
+                Joystick joystick;
+                bool controllerListChanged = false;
+
+                 // Iterating backward for removal while iterating
+                for (int indexJoystick = joysticksPolled.Count - 1; indexJoystick >= 0; indexJoystick--)
+                {
+                    joystick = joysticksPolled[indexJoystick];
+                    if (!ReadJoystick(joystick, true))
                     {
-                        PublishControllerEvents(joystick, joystickUpdates);
+                        RemoveJoystick(joystick);
+                        controllerListChanged = true;
                     }
                 }
 
-                if (RemoveJoysticks(joysticksUnplugged))
+                if (controllerListChanged)
                 {
                     PublishControllerListChanged();
                 }
@@ -384,12 +494,19 @@ namespace NerfDX
         public void Dispose()
         {
             directInput.Dispose();
+            eventNewJoystick.Dispose();
+
+            DisposeJoysticks(this.joysticksPolled);
+            DisposeJoysticks(this.joysticksWaitable);
+        }
+
+        private void DisposeJoysticks(List<Joystick> joysticks)
+        {
             foreach (Joystick joystick in joysticks)
             {
                 joystick.Unacquire();
                 joystick.Dispose();
             }
-            joysticks.Clear();
         }
     }
 }
