@@ -1,6 +1,7 @@
 ﻿using Glue.Actions;
 using Glue.Events;
 using Glue.Triggers;
+using NerfDX;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using WindowsInput;

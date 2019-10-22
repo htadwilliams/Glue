@@ -4,6 +4,7 @@ using Glue.Forms;
 using Glue.Native;
 using Glue.Triggers;
 using log4net.Config;
+using NerfDX;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
