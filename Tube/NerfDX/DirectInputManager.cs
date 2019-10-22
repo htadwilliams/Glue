@@ -144,7 +144,15 @@ namespace NerfDX
             UpdateConnectedDeviceList();
             
             threadDeviceConnector = StartThread(threadDeviceConnector, THREAD_NAME_CONNECTOR, new ThreadStart(ConnectorThreadProc));
+        }
+
+        private void StartThreadPolling()
+        {
             threadPolling = StartThread(threadPolling, THREAD_NAME_POLLING, new ThreadStart(PollingThreadProc));
+        }
+
+        private void StartThreadWaiting()
+        {
             threadWaiting = StartThread(threadWaiting, THREAD_NAME_WAITING, new ThreadStart(WaitingThreadProc));
         }
 
@@ -171,16 +179,19 @@ namespace NerfDX
 
         private Thread StartThread(Thread thread, string threadName, ThreadStart threadstart)
         {
-            if (null == thread)
+            if (null != thread && thread.IsAlive)
+            {
+                LOGGER.Error("Thread [" + threadName + "] is already running.");
+            }
+            else
             {
                 thread = new Thread(threadstart)
                 {
                     Name = threadName,
                     IsBackground = true
                 };
-
+                thread.Start();
             }
-            thread.Start();
 
             return thread;
         }
@@ -358,17 +369,27 @@ namespace NerfDX
             {
                 Thread.Sleep(DEVICE_CONNECTION_INTERVAL_MS);
                 UpdateConnectedDeviceList();
+
+                if (joysticksPolled.Count > 0 && (threadPolling == null || !threadPolling.IsAlive))
+                {
+                    StartThreadPolling();
+                }
+
+                if (joysticksWaitable.Count > 0 && (threadWaiting == null || !threadWaiting.IsAlive))
+                {
+                    StartThreadWaiting();
+                }
             }
         }
 
         private void WaitingThreadProc()
         {
-            LOGGER.Info("Thread started");
+            LOGGER.Info(THREAD_NAME_WAITING + " thread started");
             List<WaitHandle> waitHandleList = new List<WaitHandle> ();
  
             UpdateWaitHandles(waitHandleList);
 
-            while (true)
+            while (joysticksWaitable.Count > 0)
             {
                 int indexEvent = WaitHandle.WaitAny(waitHandleList.ToArray());
 
@@ -390,6 +411,8 @@ namespace NerfDX
                     }
                 }
             }
+
+            LOGGER.Info(THREAD_NAME_WAITING + " thread exiting: no joysticks to wait for");
         }
 
         private void UpdateWaitHandles(List<WaitHandle> waitHandleList)
@@ -412,15 +435,17 @@ namespace NerfDX
             int sleepDurationMS = 1000 / POLLING_INTERVAL_HZ;
 
             LOGGER.Info(string.Format(
-                "Thread started POLLING_INTERVAL_HZ = {0:n0} sleep duration = {1:n0} MS",
+                THREAD_NAME_POLLING + " thread started POLLING_INTERVAL_HZ = {0:n0} sleep duration = {1:n0} MS",
                 POLLING_INTERVAL_HZ,
                 sleepDurationMS));
 
-            while (true)
+            while (joysticksPolled.Count > 0)
             {
                 Thread.Sleep(sleepDurationMS);
                 UpdateJoysticksPolled();
             }
+
+            LOGGER.Info(THREAD_NAME_POLLING + " thread exiting: no joysticks to poll");
         }
 
         /// <summary>
