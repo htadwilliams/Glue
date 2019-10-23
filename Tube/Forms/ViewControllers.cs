@@ -1,4 +1,5 @@
 ﻿using Glue.Events;
+using NerfDX;
 using SharpDX.DirectInput;
 using System.Collections.ObjectModel;
 using System.Windows.Forms;
@@ -9,7 +10,7 @@ namespace Glue.Forms
     public partial class ViewControllers : Form
     {
         private readonly FormSettingsHandler formSettingsHandler;
-        private ReadOnlyCollection<Joystick> joysticks;
+        private ReadOnlyCollection<ConnectedDeviceInfo> connectedDeviceInfos;
         private delegate void UpdateViewDelegate();
 
         public ViewControllers()
@@ -19,13 +20,13 @@ namespace Glue.Forms
             formSettingsHandler = new FormSettingsHandler(this);
             EventBus<EventControllersChanged>.Instance.EventRecieved += OnControllerPlugEvent;
             
-            this.joysticks = Tube.DirectInputManager.GetConnectedJoysticks();
+            this.connectedDeviceInfos = Tube.DirectInputManager.GetConnectedDeviceInfos();
             UpdateListView();
         }
 
         private void OnControllerPlugEvent(object sender, BusEventArgs<EventControllersChanged> e)
         {
-            joysticks = e.BusEvent.Joysticks;
+            connectedDeviceInfos = e.BusEvent.ConnectedDeviceInfos;
             UpdateListView();
         }
 
@@ -41,9 +42,9 @@ namespace Glue.Forms
                 }
                 else
                 {
-                    if (null != joysticks && this.listViewControllers.VirtualListSize != joysticks.Count)
+                    if (null != connectedDeviceInfos && this.listViewControllers.VirtualListSize != connectedDeviceInfos.Count)
                     {
-                        this.listViewControllers.VirtualListSize = joysticks.Count;
+                        this.listViewControllers.VirtualListSize = connectedDeviceInfos.Count;
                         this.listViewControllers.Invalidate();
                     }
                 }
@@ -52,17 +53,17 @@ namespace Glue.Forms
 
         private void ListViewActions_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
-            Joystick joystick = joysticks[e.ItemIndex];
+            ConnectedDeviceInfo connectedDeviceInfo = connectedDeviceInfos[e.ItemIndex];
 
             ListViewItem listViewItem = new ListViewItem();
-            listViewItem.Text = joystick.Information.InstanceName;
+            listViewItem.Text = connectedDeviceInfo.Information.InstanceName;
 
             ListViewSubItem listViewSubItem = new ListViewSubItem();
-            listViewSubItem.Text = joystick.Information.Type.ToString();
+            listViewSubItem.Text = connectedDeviceInfo.Information.Type.ToString();
             listViewItem.SubItems.Add(listViewSubItem);
 
             listViewSubItem = new ListViewSubItem();
-            listViewSubItem.Text = joystick.Information.InstanceGuid.ToString();
+            listViewSubItem.Text = connectedDeviceInfo.Information.InstanceGuid.ToString();
             listViewItem.SubItems.Add(listViewSubItem);
 
             e.Item = listViewItem;

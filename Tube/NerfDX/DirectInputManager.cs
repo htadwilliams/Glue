@@ -196,6 +196,11 @@ namespace NerfDX
             return thread;
         }
 
+        private int GetConnectedCount()
+        {
+            return joysticksPolled.Count + joysticksWaitable.Count;
+        }
+
         /// <summary>
         /// Enumerates devices and adds them to Joysticks if not already present.
         /// </summary>
@@ -206,7 +211,7 @@ namespace NerfDX
 
             List<DeviceInstance> devices = GetDevices();
 
-            if (devices.Count != (joysticksPolled.Count + joysticksWaitable.Count))
+            if (devices.Count > (GetConnectedCount()))
             {
                 foreach (DeviceInstance device in devices)
                 {
@@ -345,18 +350,24 @@ namespace NerfDX
 
         private void PublishControllerListChanged()
         {
-            EventBus<EventControllersChanged>.Instance.SendEvent(this, new EventControllersChanged(GetConnectedJoysticks()));
+            EventBus<EventControllersChanged>.Instance.SendEvent(this, new EventControllersChanged(GetConnectedDeviceInfos()));
         }
 
-        public ReadOnlyCollection<Joystick> GetConnectedJoysticks()
+        public ReadOnlyCollection<ConnectedDeviceInfo> GetConnectedDeviceInfos()
         {
-            // TODO BUGBUG need to allocate and return copies of info structs
-            // or this will most likely leak disposable Joystick instances.
-            List<Joystick> connectedJoysticks = new List<Joystick>();
-            connectedJoysticks.AddRange(joysticksPolled);
-            connectedJoysticks.AddRange(joysticksWaitable);
+            List<ConnectedDeviceInfo> connectedDevices = new List<ConnectedDeviceInfo>(GetConnectedCount());
 
-            return connectedJoysticks.AsReadOnly();
+            foreach (WaitableJoystick joystick in joysticksPolled)
+            {
+                connectedDevices.Add(new ConnectedDeviceInfo(joystick));
+            }
+
+            foreach (WaitableJoystick joystick in joysticksWaitable)
+            {
+                connectedDevices.Add(new ConnectedDeviceInfo(joystick));
+            }
+
+            return connectedDevices.AsReadOnly();
         }
 
         private void ConnectorThreadProc()
