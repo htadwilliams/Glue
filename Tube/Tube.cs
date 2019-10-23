@@ -73,6 +73,14 @@ namespace Glue
                 // activating game controller buttons, playing sounds, etc.
                 s_actionScheduler.Start();
 
+                // Initialization of forms and context should be done before anything
+                // that can generate input Events.
+                FormSettings.FileName = FORM_SETTINGS_FILENAME;
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                s_context = new TrayApplicationContext();
+                MainForm = (ViewMain) s_context.MainForm;
+
                 // Native keyboard and mouse hook initialization
                 KeyInterceptor.Initialize(KeyboardHandler.HookCallback);
 
@@ -87,14 +95,6 @@ namespace Glue
                     : FILENAME_DEFAULT;
 
                 ProcessFileArg(fileName);
-
-                Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
-
-                FormSettings.FileName = FORM_SETTINGS_FILENAME;
-
-                s_context = new TrayApplicationContext();
-                MainForm = (ViewMain) s_context.MainForm;
 
                 LOGGER.Debug("Entering Application.Run()...");
                 Application.Run(s_context);
