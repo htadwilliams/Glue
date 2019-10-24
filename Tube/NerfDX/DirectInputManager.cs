@@ -59,6 +59,7 @@ namespace NerfDX
             DeviceType.Joystick,
             DeviceType.Remote,
             DeviceType.Flight,
+            DeviceType.Driving,
         };
 
         private static readonly JoystickOffset[] OFFSETS_AXIS =
