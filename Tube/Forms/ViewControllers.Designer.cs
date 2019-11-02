@@ -55,7 +55,7 @@
             this.listViewControllers.UseCompatibleStateImageBehavior = false;
             this.listViewControllers.View = System.Windows.Forms.View.Details;
             this.listViewControllers.VirtualMode = true;
-            this.listViewControllers.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.ListViewActions_RetrieveVirtualItem);
+            this.listViewControllers.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.ListViewControllers_RetrieveVirtualItem);
             // 
             // columnName
             // 

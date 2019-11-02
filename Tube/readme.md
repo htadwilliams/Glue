@@ -32,16 +32,17 @@ Default file name if not specified is "macros.glue".
 # Dependencies
 
 ## NuGet managed dependencies
-* SharpDX and SharpDX.DirectInput used for DirectX manipulation of gaming input devices: http://sharpdx.org/ 
-* NewtonSoft.Json for serialization of macros, triggers, etc (except user preferences).
+* SharpDX and SharpDX.DirectInput http://sharpdx.org/ 
+* NerfDX facade for SharpDX.DirectInput https://github.com/htadwilliams/NerfDX 
+* NewtonSoft.Json for de/serialization of content https://www.newtonsoft.com/json
 
-##Other dependencies
+## Other code forked directly into project
 * Priority queue implementation is courtesy of BlueRaja.admin@gmail.com (https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp). The application creates a thread that monitors a queue of scheduled macro action events to fire (See EventQueue class).
 * Windows Input simulator to wrap Windows API SendInput https://archive.codeplex.com/?p=inputsimulator and provide all the native constants needed. See https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-sendinput.
 
 # Completed features
 
-##Core
+## Core
 
 * Macros may be triggered by multiple key and key chording combinations.
 * Macros may be looped or canceled.
@@ -58,7 +59,7 @@ Default file name if not specified is "macros.glue".
   - repeating other macros
   - cancelling actions by name (or all actions)
 
-##GUI
+## GUI
 
 * Logging of keys and macro events (useful for creating new macros).
 * View -> Button States shows queued actions, updated as they are scheduled or canceled.

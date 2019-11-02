@@ -59,6 +59,9 @@
     <Reference Include="log4net">
       <HintPath>..\bin\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="NerfDX, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NerfDX.0.1.0\lib\netstandard2.0\NerfDX.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -85,12 +88,7 @@
     <Compile Include="Actions\JsonContract\ActionContractResolver.cs" />
     <Compile Include="Actions\JsonContract\ActionConverter.cs" />
     <Compile Include="DefaultContent.cs" />
-    <Compile Include="NerfDX\ConnectedDeviceInfo.cs" />
-    <Compile Include="NerfDX\DirectInputManager.cs" />
     <Compile Include="Events\Event.cs" />
-    <Compile Include="Events\EventControllersChanged.cs" />
-    <Compile Include="Events\ReturningEventBus.cs" />
-    <Compile Include="Events\EventController.cs" />
     <Compile Include="Events\EventMacro.cs" />
     <Compile Include="Events\EventKeyboard.cs" />
     <Compile Include="Events\EventMouse.cs" />
@@ -160,10 +158,9 @@
     <Compile Include="JsonWrapper.cs" />
     <Compile Include="Key.cs" />
     <Compile Include="Keyboard.cs" />
+    <Compile Include="Logger4net.cs" />
     <Compile Include="Native\WindowHandleUtils.cs" />
     <Compile Include="Native\TimeProvider.cs" />
-    <Compile Include="NerfDX\Enums.cs" />
-    <Compile Include="NerfDX\WaitableJoystick.cs" />
     <Compile Include="Priority_Queue\GenericPriorityQueue.cs" />
     <Compile Include="Priority_Queue\GenericPriorityQueueNode.cs" />
     <Compile Include="Priority_Queue\IFixedSizePriorityQueue.cs" />
@@ -176,7 +173,6 @@
     <Compile Include="PropertyIO\PropertyString.cs" />
     <Compile Include="TrayApplicationContext.cs" />
     <Compile Include="PropertyIO\FormatDuration.cs" />
-    <Compile Include="Events\EventBus.cs" />
     <Compile Include="Triggers\JsonContract\TriggerContractResolver.cs" />
     <Compile Include="Triggers\JsonContract\TriggerConverter.cs" />
     <Compile Include="Triggers\TriggerController.cs" />

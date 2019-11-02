@@ -1,6 +1,7 @@
 ﻿using Glue.Actions;
 using Glue.Events;
 using Glue.Native;
+using NerfDX.Events;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;

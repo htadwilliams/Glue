@@ -1,5 +1,7 @@
 ﻿using Glue.Events;
 using NerfDX;
+using NerfDX.DirectInput;
+using NerfDX.Events;
 using SharpDX.DirectInput;
 using System.Collections.ObjectModel;
 using System.Windows.Forms;
@@ -51,7 +53,7 @@ namespace Glue.Forms
             }
         }
 
-        private void ListViewActions_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
+        private void ListViewControllers_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
             ConnectedDeviceInfo connectedDeviceInfo = connectedDeviceInfos[e.ItemIndex];
 

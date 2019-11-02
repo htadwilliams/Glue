@@ -1,5 +1,6 @@
 ﻿using Glue.Events;
 using Glue.Native;
+using NerfDX.Events;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
