@@ -39,13 +39,12 @@ In Glue, a Trigger detects inputs and fires Macros, which are collections of Act
 
 # Dependencies
 
-## NuGet managed dependencies:
+## NuGet managed dependencies
+* SharpDX and SharpDX.DirectInput http://sharpdx.org/ 
+* NerfDX facade for SharpDX.DirectInput https://github.com/htadwilliams/NerfDX 
+* NewtonSoft.Json for de/serialization of content https://www.newtonsoft.com/json
 
-* SharpDX and SharpDX.DirectInput used for DirectX manipulation of gaming input devices: http://sharpdx.org/ 
-* NewtonSoft.Json for serialization of macros, triggers, etc.
-
-## Other dependencies:
-
+## Other code forked directly into project
 * Priority queue implementation is courtesy of BlueRaja.admin@gmail.com (https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp). The application creates a thread that monitors a queue of scheduled macro action events to fire (See EventQueue class).
 * Windows Input simulator to wrap Windows API SendInput https://archive.codeplex.com/?p=inputsimulator and provide all the native constants needed. See https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-sendinput.
 
