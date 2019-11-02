@@ -4,7 +4,8 @@ using Glue.Forms;
 using Glue.Native;
 using Glue.Triggers;
 using log4net.Config;
-using NerfDX;
+using NerfDX.DirectInput;
+using NerfDX.Events;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -39,7 +40,7 @@ namespace Glue
         // Core sub-systems 
         private static readonly Scheduler s_actionScheduler = new Scheduler();
         private static bool s_lockMouse = false;
-        private static readonly DirectInputManager s_directInputManager = new DirectInputManager();
+        private static DirectInputManager s_directInputManager;
 
         // GUI objects
         private static ViewMain s_mainForm;
@@ -88,6 +89,7 @@ namespace Glue
                 // TODO Mouse hook should release when windows are being sized / dragged
                 MouseInterceptor.Initialize(MouseHandler.HookCallback);
 
+                s_directInputManager = new DirectInputManager(new Logger4net(typeof(DirectInputManager).Name));
                 s_directInputManager.Initialize();
 
                 string fileName = args.Length > 0

@@ -1,5 +1,5 @@
-﻿using Glue.Events;
-using NerfDX;
+﻿using NerfDX.DirectInput;
+using NerfDX.Events;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
