@@ -14,3 +14,18 @@ https://github.com/jasonpang/Interceptor
 
 Seeking advice on best way to gracefully handle device unplug / replug in DirectInput #979 
 https://github.com/sharpdx/SharpDX/issues/979 
+
+##Github 
+
+https://stackoverflow.com/questions/9524933/renaming-a-branch-in-github
+
+###Rename local branch
+'''
+git branch -m oldname newname
+'''
+
+###Push branch with new name while deleting old branch
+'''
+git push origin :oldname newname
+'''
+
