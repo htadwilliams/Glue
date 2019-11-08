@@ -24,8 +24,6 @@ https://github.com/sharpdx/SharpDX/issues/979
 
 ### Renaming a branch
 
-Stack overflow "renaming a branch in github"
-
 https://stackoverflow.com/questions/9524933/renaming-a-branch-in-github
 
 #### Rename local branch
