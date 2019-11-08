@@ -44,7 +44,7 @@ namespace Glue
 
         // GUI objects
         private static ViewMain s_mainForm;
-        private static TrayApplicationContext s_context;
+        private static TrayApplicationContext<ViewMain> s_context;
 
         // GUI state
         private const string FILENAME_DEFAULT = "macros.glue";
@@ -79,7 +79,7 @@ namespace Glue
                 FormSettings.FileName = FORM_SETTINGS_FILENAME;
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-                s_context = new TrayApplicationContext();
+                s_context = new TrayApplicationContext<ViewMain>();
                 MainForm = (ViewMain) s_context.MainForm;
 
                 // Native keyboard and mouse hook initialization

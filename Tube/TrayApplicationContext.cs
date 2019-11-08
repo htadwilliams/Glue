@@ -5,19 +5,17 @@ using System.Windows.Forms;
 
 namespace Glue
 {
-    class TrayApplicationContext : ApplicationContext
+    class TrayApplicationContext<T> : ApplicationContext where T : Form, new()
     {
-        public Container Container { get => this.container; set => this.container = value; }
-        public NotifyIcon NotifyIcon { get => this.notifyIcon; set => this.notifyIcon = value; }
-
-        private Container container;
-        private NotifyIcon notifyIcon;
+        public Container Container { get; set; }
+        public NotifyIcon NotifyIcon { get; set; }
 
         internal void ShowForm()
         {
             if (null == MainForm || MainForm.IsDisposed)
             {
-                MainForm = new ViewMain(this);
+                MainForm = new T();
+                 
             }
             MainForm.Show();
         }
@@ -30,7 +28,7 @@ namespace Glue
         private void InitializeContext()
         {
             Container = new Container();
-            NotifyIcon = new NotifyIcon(container)
+            NotifyIcon = new NotifyIcon(Container)
             {
                 ContextMenuStrip = new ContextMenuStrip(),
                 Icon = Properties.Resources.glue,
@@ -41,10 +39,10 @@ namespace Glue
             NotifyIcon.ContextMenuStrip.Opening += ContextMenuStrip_Opening;
             NotifyIcon.DoubleClick += NotifyIcon_DoubleClick;
 
-            notifyIcon.ContextMenuStrip.Items.Add(new ToolStripMenuItem("&Show Window", null, Show_Click));
-            notifyIcon.ContextMenuStrip.Items.Add(new ToolStripMenuItem("&About Glue", null, HelpAbout_Click));
-            notifyIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
-            notifyIcon.ContextMenuStrip.Items.Add(new ToolStripMenuItem("E&xit", null, Exit_Click));
+            NotifyIcon.ContextMenuStrip.Items.Add(new ToolStripMenuItem("&Show Window", null, Show_Click));
+            NotifyIcon.ContextMenuStrip.Items.Add(new ToolStripMenuItem("&About Glue", null, HelpAbout_Click));
+            NotifyIcon.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+            NotifyIcon.ContextMenuStrip.Items.Add(new ToolStripMenuItem("E&xit", null, Exit_Click));
 
             ShowForm();
         }
@@ -61,9 +59,9 @@ namespace Glue
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing && container != null) 
+            if (disposing && Container != null) 
             { 
-                container.Dispose(); 
+                Container.Dispose(); 
             }
         }
 
@@ -75,7 +73,7 @@ namespace Glue
             }
 
             // should remove lingering tray icon
-            notifyIcon.Visible = false; 
+            NotifyIcon.Visible = false; 
 
             base.ExitThreadCore();
         }
