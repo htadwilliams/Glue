@@ -16,14 +16,16 @@ https://github.com/jasonpang/Interceptor
 
 ## Github 
 
+### Renaming a branch
+
 [Stack overflow "renaming a branch in github"](https://stackoverflow.com/questions/9524933/renaming-a-branch-in-github)
 
-### Rename local branch
+#### Rename local branch
 ```
 git branch -m oldname newname
 ```
 
-### Push branch with new name while deleting old branch
+#### Push branch with new name while deleting old branch
 ```
 git push origin :oldname newname
 ```
