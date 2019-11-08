@@ -282,6 +282,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="key.ico" />
+    <None Include="notes.md" />
     <Content Include="resources\glue.ico" />
     <Content Include="resources\key.ico" />
   </ItemGroup>
