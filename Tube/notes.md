@@ -12,12 +12,11 @@ https://github.com/jasonpang/Interceptor
 
 ## Other interesting links
 
-Seeking advice on best way to gracefully handle device unplug / replug in DirectInput #979 
-https://github.com/sharpdx/SharpDX/issues/979 
+[Seeking advice on best way to gracefully handle device unplug / replug in DirectInput #979](https://github.com/sharpdx/SharpDX/issues/979)
 
 ## Github 
 
-[Stack overflow post!](https://stackoverflow.com/questions/9524933/renaming-a-branch-in-github)
+[Stack overflow "renaming a branch in github"](https://stackoverflow.com/questions/9524933/renaming-a-branch-in-github)
 
 ### Rename local branch
 ```
