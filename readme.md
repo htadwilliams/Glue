@@ -52,11 +52,13 @@ In Glue, a Trigger detects inputs and fires Macros, which are collections of Act
 
 ## Core macroing:
 
+* All macros, triggers, and remapping persist via JSon de/serialization.
 * Macros may be triggered by multiple key and key chording combinations.
 * Macros may be looped or canceled.
 * Keys may be remapped, with optional filtering by process (running .exe) name.
+* Macros may be triggered by a variety of keyboard, mouse, or game controller input combinations, with optional filtering by process name.
 * Keys and buttons may be toggled - held until released.
-* Multiple macros may be "ripple fired" from a single trigger.
+* Multiple macros may be "ripple fired" by repeating a single trigger.
 * Mouse movement and clicking supports multiple coordinate modes (relative, absolute, and normalized 0-65,535).
 * Macro actions include:
   - keyboarding
@@ -65,8 +67,8 @@ In Glue, a Trigger detects inputs and fires Macros, which are collections of Act
   - playing sounds
   - repeating other macros
   - cancelling queued actions by name (or all actions)
-  - toggle mouse input lock
-
+  - toggle mouse input lock e.g. don't move while I sip (spill) this <insert liquid here>
+ 
 ## GUI:
 
 * Logging of keys and macro events (useful for creating new macros).
