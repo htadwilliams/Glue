@@ -24,6 +24,11 @@ namespace Glue
         private const int TIME_DWELL_GLOBAL_MS              = 250;            // Pressed keys are held this long
         private const int TIME_DELAY_ACTION                 = 8 * 1000;       // Bound to trigger for single delayed action
 
+        public static void AddRemap(VirtualKeyCode keyOld, VirtualKeyCode keyNew, string procName)
+        {
+            Tube.KeyMap.Add(keyOld, new KeyboardRemapEntry(keyOld, keyNew, procName));
+        }
+
         public static void Generate()
         {
             GenerateMacros();
