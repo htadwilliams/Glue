@@ -1,0 +1,380 @@
+/*
+
+Glue macro tool file
+
+Json containing the following elements
+
+    macros     Actions to be performed such as pressing a key or playing a sound.
+    triggers   Bind keys or key combinations to macros.
+    keyMap     Each entry remaps a key on the keyboard.
+
+*/
+
+{
+  "macros": [
+    {
+      "name": "mouse-lock",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "lockAction": "Lock",
+          "delayMS": 0,
+          "type": "MouseLock"
+        },
+        {
+          "delayMS": 0,
+          "type": "Sound",
+          "SoundPath": "sound_click_latch.wav"
+        }
+      ]
+    },
+    {
+      "name": "mouse-unlock",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "delayMS": 0,
+          "type": "Sound",
+          "SoundPath": "sound_click_latch.wav"
+        },
+        {
+          "lockAction": "Unlock",
+          "delayMS": 0,
+          "type": "MouseLock"
+        },
+		
+		/* release any held keys just in case */
+
+        {
+          "movement": "RELEASE",
+          "key": "VK_D",
+          "timeClickMS": 0,
+          "delayMS": 0,
+          "type": "Keyboard"
+        },
+        {
+          "movement": "RELEASE",
+          "key": "VK_G",
+          "timeClickMS": 0,
+          "delayMS": 0,
+          "type": "Keyboard"
+        },
+        {
+          "clickType": "RELEASE",
+          "mode": "NONE",
+          "button": "LeftButton",
+          "xMove": 0,
+          "yMove": 0,
+          "xButtonId": -1,
+          "delayMS": 0,
+          "type": "Mouse"
+        }
+      ]
+    },
+	
+	/*  for digging (or anything where a tool button must be held) */
+    {
+      "name": "auto-tool-begin",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "clickType": "PRESS",
+          "mode": "NONE",
+          "button": "LeftButton",
+          "xMove": 0,
+          "yMove": 0,
+          "xButtonId": -1,
+          "delayMS": 0,
+          "type": "Mouse"
+        },
+        {
+          "movement": "PRESS",
+          "key": "VK_D",
+          "timeClickMS": 0,
+          "delayMS": 0,
+          "type": "Keyboard"
+        },
+        {
+          "delayMS": 0,
+          "type": "Sound",
+          "SoundPath": "elev_start.wav"
+        }
+      ]
+    },
+    {
+      "name": "auto-tool-end",
+      "delayTimeMS": 0,
+      "actions": [
+	  
+	    /* if the mouse was locked the macro input would be ignored, so unlock first just in case */
+        {
+          "lockAction": "Unlock",
+          "delayMS": 0,
+          "type": "MouseLock"
+        },
+        {
+          "clickType": "RELEASE",
+          "mode": "NONE",
+          "button": "LeftButton",
+          "xMove": 0,
+          "yMove": 0,
+          "xButtonId": -1,
+          "delayMS": 0,
+          "type": "Mouse"
+        },
+        {
+          "movement": "RELEASE",
+          "key": "VK_D",
+          "timeClickMS": 0,
+          "delayMS": 0,
+          "type": "Keyboard"
+        },
+        {
+          "delayMS": 0,
+          "type": "Sound",
+          "SoundPath": "elev_stop.wav"
+        }
+      ]
+    },
+	
+	/* tool with grapple repeater */
+    {
+      "name": "toolgrapple-begin",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "delayMS": 0,
+          "type": "Sound",
+          "SoundPath": "sound_servomotor.wav"
+        },
+        {
+          "clickType": "PRESS",
+          "mode": "NONE",
+          "button": "LeftButton",
+          "xMove": 0,
+          "yMove": 0,
+          "xButtonId": -1,
+          "delayMS": 0,
+          "type": "Mouse"
+        },
+        {
+          "macroRepeater": "grapple-repeater",
+          "macro": "grapple",
+          "delayMS": 100,
+          "type": "Repeat"
+        }
+      ]
+    },
+	
+    {
+      "name": "grapple-repeater",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "macroRepeater": "grapple-repeater",
+          "macro": "grapple",
+          "delayMS": 100,
+          "type": "Repeat"
+        }
+      ]
+    },
+
+    {
+      "name": "grapple",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "movement": "Both",
+          "key": "VK_G",
+          "timeClickMS": 50,
+          "delayMS": 50,
+          "type": "Keyboard"
+        }
+      ]
+    },
+
+    {
+      "name": "toolgrapple-end",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "delayMS": 0,
+          "type": "Sound",
+          "SoundPath": "metalGlint.wav"
+        },
+		
+		/* cancel repeaters (actually cancel everything) */
+        {
+          "macroName": "*",
+          "delayMS": 1,
+          "type": "Cancel"
+        },
+		
+		/* unlock just in case... */
+        {
+          "lockAction": "Unlock",
+          "delayMS": 0,
+          "type": "MouseLock"
+        },
+
+		/* release ALL the keys */
+        {
+          "clickType": "RELEASE",
+          "mode": "NONE",
+          "button": "LeftButton",
+          "xMove": 0,
+          "yMove": 0,
+          "xButtonId": -1,
+          "delayMS": 0,
+          "type": "Mouse"
+        },
+        {
+          "movement": "RELEASE",
+          "key": "VK_D",
+          "timeClickMS": 50,
+          "delayMS": 50,
+          "type": "Keyboard"
+        },
+        {
+          "movement": "RELEASE",
+          "key": "VK_G",
+          "timeClickMS": 0,
+          "delayMS": 0,
+          "type": "Keyboard"
+        }
+      ]
+    },
+	
+	/* click left mouse button - made for mouse with keyboard when mouse hand is busy, 
+	   or when clicking needs to be very precise */
+	
+    {
+      "name": "click-left",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "delayMS": 0,
+          "type": "Sound",
+          "SoundPath": "dice_roll.wav"
+        },
+        {
+          "clickType": "PRESS",
+          "mode": "NONE",
+          "button": "LeftButton",
+          "xMove": 0,
+          "yMove": 0,
+          "xButtonId": -1,
+          "delayMS": 0,
+          "type": "Mouse"
+        },
+        {
+          "clickType": "RELEASE",
+          "mode": "NONE",
+          "button": "LeftButton",
+          "xMove": 0,
+          "yMove": 0,
+          "xButtonId": -1,
+          "delayMS": 50,
+          "type": "Mouse"
+        }
+      ]
+    }	
+  ],
+  
+  "triggers": [
+
+    {
+      "buttonState": "Press",
+      "triggerKey": "HOME",
+      "type": "Keyboard",
+      "macroNames": [
+        "mouse-lock"
+      ],
+      "eatInput": true
+    },
+    {
+      "buttonState": "Press",
+      "triggerKey": "END",
+      "type": "Keyboard",
+      "macroNames": [
+        "mouse-unlock"
+      ],
+      "eatInput": true
+    },
+	
+    {
+      "type": "Keyboard",
+      "triggerKey": "INSERT",
+      "buttonState": "Press",
+      "macroNames": [
+		"auto-tool-begin"
+      ],
+      "eatInput": true
+    },
+    {
+      "type": "Keyboard",
+      "triggerKey": "DELETE",
+      "buttonState": "Press",
+      "macroNames": [
+		"auto-tool-end"
+      ],
+      "eatInput": true
+    },
+	
+    {
+      "type": "Keyboard",
+      "triggerKey": "PRIOR",
+      "buttonState": "Press",
+      "macroNames": [
+        "toolgrapple-begin",
+      ],
+      "eatInput": true
+    },
+    {
+      "type": "Keyboard",
+      "triggerKey": "NEXT",
+      "buttonState": "Press",
+      "macroNames": [
+        "toolgrapple-end",
+      ],
+      "eatInput": true
+    },
+	
+	/* fishing quick slap keys */
+	/* need to add support for multiple keys per trigger */
+	
+	{
+      "type": "Keyboard",
+      "triggerKey": "NUMPAD0",
+      "buttonState": "Press",
+      "macroNames": [
+        "click-left",
+      ],
+      "eatInput": true
+    },
+    {
+      "type": "Keyboard",
+      "triggerKey": "DECIMAL",
+      "buttonState": "Press",
+      "macroNames": [
+        "click-left",
+	  ],
+      "eatInput": true
+    }
+	/* return means no renaming chests ;( 
+	,
+    {
+      "type": "Keyboard",
+      "triggerKey": "RETURN",
+      "buttonState": "Press",
+      "macroNames": [
+        "click-left",
+	  ],
+      "eatInput": true
+    }
+	*/
+  ],
+  
+  "remapKeys": [
+  ]
+}
