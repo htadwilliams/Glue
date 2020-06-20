@@ -102,7 +102,7 @@ namespace Glue.Forms
             return settings;
         }
 
-        internal static void Set(string name, FormSettings settings)
+        internal static void Save(string name, FormSettings settings)
         {
             s_collectedSettings[name] = settings;
             Save();

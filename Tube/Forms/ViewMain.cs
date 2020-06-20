@@ -4,6 +4,7 @@ using Glue.Native;
 using NerfDX.Events;
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Windows.Forms;
 using WindowsInput.Native;
 
@@ -11,24 +12,24 @@ namespace Glue.Forms
 {
     public partial class ViewMain : Form
     {
-        public bool LogInput { get => logInput; set { logInput = value; checkBoxRawKeyNames.Enabled = value; } }
-        public bool RawKeyNames { get => rawKeyNames; set => rawKeyNames = value; }
-        public bool NormalizeMouseCoords { get => normalizeMouseCoords; set => normalizeMouseCoords = value; }
-        private string BaseCaptionText { get => this.baseCaptionText; set => this.baseCaptionText = value; }
-
-        private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
+        // For cross-thread event handling
         private delegate void LogControllerDelegate(EventController eventController);
         private delegate void AppendTextDelegate(string text);
 
-        private bool logInput = true;
-        private bool rawKeyNames = false;
-        private bool normalizeMouseCoords;
-        private string baseCaptionText = "";
+        // Views controlled by this form
         private ViewButtons viewButtons = null;
         private ViewQueue viewQueue = null;
         private ViewControllers viewControllers = null;
+
+        private readonly string baseCaptionText = "";
         private readonly FormSettingsHandler formSettingsHandler;
+
+        private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        // Properties are required for control DataBindings.Add()
+        public bool LogInput { get; set; } = true;
+        public bool NormalizeMouseCoords { get; set; } = false;
+        public bool RawKeyNames { get; set; } = false;
 
         public ViewMain()
         {
@@ -37,18 +38,18 @@ namespace Glue.Forms
             // Attach for form settings persistence
             formSettingsHandler = new FormSettingsHandler(this);
 
-            this.logInput = Properties.Settings.Default.LogInput;
-            this.rawKeyNames = Properties.Settings.Default.RawKeyNames;
-            this.normalizeMouseCoords = Properties.Settings.Default.NormalizeMouseCoords;
+            LogInput = Properties.Settings.Default.LogInput;
+            RawKeyNames = Properties.Settings.Default.RawKeyNames;
+            NormalizeMouseCoords = Properties.Settings.Default.NormalizeMouseCoords;
 
-            this.checkBoxLogInput.DataBindings.Add("Checked", this, "logInput", true, DataSourceUpdateMode.OnPropertyChanged);
-            this.checkBoxRawKeyNames.DataBindings.Add("Checked", this, "rawKeyNames", true, DataSourceUpdateMode.OnPropertyChanged);
-            this.checkBoxNormalizeMouseCoords.DataBindings.Add("Checked", this, "normalizeMouseCoords", true, DataSourceUpdateMode.OnPropertyChanged);
+            checkBoxLogInput.DataBindings.Add("Checked", this, "logInput", true, DataSourceUpdateMode.OnPropertyChanged);
+            checkBoxRawKeyNames.DataBindings.Add("Checked", this, "rawKeyNames", true, DataSourceUpdateMode.OnPropertyChanged);
+            checkBoxNormalizeMouseCoords.DataBindings.Add("Checked", this, "normalizeMouseCoords", true, DataSourceUpdateMode.OnPropertyChanged);
 
-            BaseCaptionText = this.Text;
+            // Cache contents of form caption Text for later output formatting 
+            // via SetCaption() to display opened file name
+            baseCaptionText = Text;
             SetCaption(Tube.FileName);
-
-            checkBoxRawKeyNames.Enabled = logInput;
         }
 
         private void ViewMain_Load(object sender, EventArgs e)
@@ -77,48 +78,49 @@ namespace Glue.Forms
                 e.Cancel = true;
 
                 Hide();
-                this.viewButtons = ShowView(this.viewButtons, false);
-                this.viewQueue = ShowView(this.viewQueue, false);
+                viewButtons = ShowView(viewButtons, false);
+                viewQueue = ShowView(viewQueue, false);
+                viewControllers = ShowView(viewControllers, false);
 
                 base.OnFormClosing(e);
             }
         }
 
-        private void SetCaption(string fileName)
+        public void SetCaption(string fileName)
         {
-            this.Text = BaseCaptionText + " - " + fileName;
+            Text = baseCaptionText + " - " + fileName;
         }
 
         private void AppendText(string text)
         {
             if (!IsDisposed)
             { 
-                if (this.InvokeRequired)
+                if (InvokeRequired)
                 { 
                     AppendTextDelegate d = new AppendTextDelegate(AppendText);
-                    this.Invoke(d, new object[] {text});
+                    Invoke(d, new object[] {text});
                 }
                 else
                 {
                     textBoxInputStream.AppendText(text);
-                    WindowHandleUtils.HideCaret(this.textBoxInputStream.Handle);
+                    WindowHandleUtils.HideCaret(textBoxInputStream.Handle);
                 }
             }
         }
 
         protected override void OnShown(EventArgs e)
         {
-            this.menuItemViewButtons.Checked = Properties.Settings.Default.ViewButtons;
-            this.viewButtons = ShowView(this.viewButtons, Properties.Settings.Default.ViewButtons);
+            menuItemViewButtons.Checked = Properties.Settings.Default.ViewButtons;
+            viewButtons = ShowView(viewButtons, Properties.Settings.Default.ViewButtons);
 
-            this.menuItemViewQueue.Checked = Properties.Settings.Default.ViewQueue;
-            this.viewQueue = ShowView(this.viewQueue, Properties.Settings.Default.ViewQueue);
+            menuItemViewQueue.Checked = Properties.Settings.Default.ViewQueue;
+            viewQueue = ShowView(viewQueue, Properties.Settings.Default.ViewQueue);
         }
 
         private void ButtonClear_Click(object sender, EventArgs e)
         {
             textBoxInputStream.Clear();
-            WindowHandleUtils.HideCaret(this.textBoxInputStream.Handle);
+            WindowHandleUtils.HideCaret(textBoxInputStream.Handle);
         }
 
         protected override void OnDeactivate(EventArgs e)
@@ -129,10 +131,12 @@ namespace Glue.Forms
 
         private void SaveSettings()
         {
-            Properties.Settings.Default.LogInput = this.checkBoxLogInput.Checked;
-            Properties.Settings.Default.RawKeyNames = this.checkBoxRawKeyNames.Checked;
-            Properties.Settings.Default.ViewButtons = this.menuItemViewButtons.Checked;
-            Properties.Settings.Default.NormalizeMouseCoords = this.checkBoxNormalizeMouseCoords.Checked;
+            Properties.Settings.Default.LogInput = checkBoxLogInput.Checked;
+            Properties.Settings.Default.RawKeyNames = checkBoxRawKeyNames.Checked;
+            Properties.Settings.Default.NormalizeMouseCoords = checkBoxNormalizeMouseCoords.Checked;
+
+            Properties.Settings.Default.ViewButtons = menuItemViewButtons.Checked;
+            Properties.Settings.Default.ViewQueue = menuItemViewQueue.Checked;
 
             LOGGER.Info("Saving settings (Properties.Settings.Default.Save())");
             Properties.Settings.Default.Save();
@@ -142,6 +146,7 @@ namespace Glue.Forms
         {
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
+                openFileDialog.InitialDirectory = Directory.GetCurrentDirectory(); ;
                 if(openFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     Tube.LoadFile(openFileDialog.FileName);
@@ -152,7 +157,7 @@ namespace Glue.Forms
 
         private void MenuItemFileExit_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void MenuItemHelpAbout_Click(object sender, EventArgs e)
@@ -186,13 +191,13 @@ namespace Glue.Forms
 
         protected override void OnActivated(EventArgs e)
         {
-            this.menuItemViewButtons.Checked = Properties.Settings.Default.ViewButtons;
-            this.viewButtons = ShowView(this.viewButtons, Properties.Settings.Default.ViewButtons);
+            menuItemViewButtons.Checked = Properties.Settings.Default.ViewButtons;
+            viewButtons = ShowView(viewButtons, Properties.Settings.Default.ViewButtons);
 
-            this.menuItemViewQueue.Checked = Properties.Settings.Default.ViewQueue;
-            this.viewQueue = ShowView(this.viewQueue, Properties.Settings.Default.ViewQueue);
+            menuItemViewQueue.Checked = Properties.Settings.Default.ViewQueue;
+            viewQueue = ShowView(viewQueue, Properties.Settings.Default.ViewQueue);
 
-            WindowHandleUtils.HideCaret(this.textBoxInputStream.Handle);
+            WindowHandleUtils.HideCaret(textBoxInputStream.Handle);
 
             base.OnActivated(e);
         }
@@ -201,16 +206,16 @@ namespace Glue.Forms
         {
             Properties.Settings.Default.ViewButtons = !Properties.Settings.Default.ViewButtons;
 
-            this.viewButtons = ShowView(this.viewButtons, Properties.Settings.Default.ViewButtons);
-            this.menuItemViewButtons.Checked = Properties.Settings.Default.ViewButtons;
+            viewButtons = ShowView(viewButtons, Properties.Settings.Default.ViewButtons);
+            menuItemViewButtons.Checked = Properties.Settings.Default.ViewButtons;
         }
 
         private void MenuItemViewQueue_Click(object sender, EventArgs e)
         {
             Properties.Settings.Default.ViewQueue = !Properties.Settings.Default.ViewQueue;
 
-            this.viewQueue = ShowView(this.viewQueue, Properties.Settings.Default.ViewQueue);
-            this.menuItemViewQueue.Checked = Properties.Settings.Default.ViewQueue;
+            viewQueue = ShowView(viewQueue, Properties.Settings.Default.ViewQueue);
+            menuItemViewQueue.Checked = Properties.Settings.Default.ViewQueue;
         }
 
         private void MenuItemEditMacros_Click(object sender, EventArgs e)
@@ -223,10 +228,12 @@ namespace Glue.Forms
 
         private void MenuItemEditTriggers_Click(object sender, EventArgs e)
         {
+            // TODO
         }
 
         private void MenuItemEditRemaps_Click(object sender, EventArgs e)
         {
+            // TODO
         }
 
         internal void DisplayMouseMove(int xPos, int yPos)
@@ -234,13 +241,13 @@ namespace Glue.Forms
             int xOut = xPos;
             int yOut = yPos;
 
-            if (this.NormalizeMouseCoords)
+            if (NormalizeMouseCoords)
             {
                 xOut = ActionMouse.NormalizeX(xPos);
                 yOut = ActionMouse.NormalizeY(yPos);
             }
 
-            this.toolStripMousePos.Text = String.Format("Mouse: ({0:n0}, {1:n0})", xOut, yOut);
+            toolStripMousePos.Text = String.Format("Mouse: ({0:n0}, {1:n0})", xOut, yOut);
         }
 
         internal void DisplayMouseClick(MouseButtons mouseButton, int xPos, int yPos)
@@ -255,7 +262,7 @@ namespace Glue.Forms
             }
 
             string message;
-            if (rawKeyNames)
+            if (RawKeyNames)
             {
                 message = String.Format("-click({0}, {1})", xOut, yOut);
             }
@@ -265,17 +272,17 @@ namespace Glue.Forms
             }
             AppendText(" " + mouseButton.ToString() + message);
 
-            this.toolStripMousePosLastClick.Text = String.Format("Last click: ({0:n0}, {1:n0})", xOut, yOut);
+            toolStripMousePosLastClick.Text = String.Format("Last click: ({0:n0}, {1:n0})", xOut, yOut);
         }
 
         internal void DisplayControllerEvent(EventController controllerEvent)
         {
-            if (!this.IsDisposed)
+            if (!IsDisposed)
             {
-                if (this.InvokeRequired)
+                if (InvokeRequired)
                 { 
                     LogControllerDelegate d = new LogControllerDelegate(DisplayControllerEvent);
-                    this.Invoke(d, new object[] {controllerEvent});
+                    Invoke(d, new object[] {controllerEvent});
                 }
                 else
                 {
@@ -404,7 +411,7 @@ namespace Glue.Forms
 
         private void MenuItemViewGameControllers_Click(object sender, EventArgs e)
         {
-            this.viewControllers = ShowView(this.viewControllers, true);
+            viewControllers = ShowView(viewControllers, true);
         }
     }
 }

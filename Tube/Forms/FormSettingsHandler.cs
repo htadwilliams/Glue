@@ -43,7 +43,7 @@ namespace Glue.Forms
                 form.Name, 
                 form.DesktopBounds, 
                 form.WindowState == FormWindowState.Maximized);
-            FormSettings.Set(form.Name, settings);
+            FormSettings.Save(form.Name, settings);
         }
     }
 }

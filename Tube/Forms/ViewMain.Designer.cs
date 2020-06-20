@@ -1,4 +1,7 @@
-﻿namespace Glue.Forms
+﻿using System;
+using System.Windows.Forms;
+
+namespace Glue.Forms
 {
     partial class ViewMain
     {
@@ -19,12 +22,20 @@
             }
             if (disposing)
             {
-                if (null != viewButtons && !viewButtons.IsDisposed)
-                {
-                    viewButtons.Close();
-                }
+                DisposeView(viewButtons);
+                DisposeView(viewQueue);
+                DisposeView(viewControllers);
             }
             base.Dispose(disposing);
+        }
+
+        private void DisposeView(Form view)
+        {
+            if (null != view && !view.IsDisposed)
+            {
+                view.Close();
+                view.Dispose();
+            }
         }
 
         #region Windows Form Designer generated code

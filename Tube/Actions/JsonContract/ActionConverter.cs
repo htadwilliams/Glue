@@ -30,11 +30,10 @@ namespace Glue.Actions.JsonContract
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            JObject jo = JObject.Load(reader);
-            string typeString = jo["type"].Value<string>();
-
             try
             {
+                JObject jo = JObject.Load(reader);
+                string typeString = jo["type"].Value<string>();
                 ActionType type = (ActionType) Enum.Parse(typeof(ActionType), typeString, true);
 
                 switch (type)
@@ -63,6 +62,7 @@ namespace Glue.Actions.JsonContract
             catch (Exception e)
             {
                 LOGGER.Error(e);
+                // caller will report error to user
                 return null;
             }
         }
