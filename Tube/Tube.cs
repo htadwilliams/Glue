@@ -21,39 +21,29 @@ namespace Glue
 {
     internal static class Tube
     {
-        internal static Dictionary<VirtualKeyCode, KeyboardRemapEntry> KeyMap { get => s_keyMap; set => s_keyMap = value; }
-        public static Dictionary<string, Macro> Macros { get => s_macros; set => s_macros = value; }
-        public static ViewMain MainForm { get => s_mainForm; set => s_mainForm = value; }
-        public static string FileName { get => s_fileName; set => s_fileName = value; }
-        public static Scheduler Scheduler { get => s_actionScheduler; }
-        public static bool MouseLocked { get => s_lockMouse; set => s_lockMouse = value; }
-        public static DirectInputManager DirectInputManager => s_directInputManager;
-        public static List<Trigger> Triggers { get => s_triggers; set => s_triggers = value; }
+        #region Automatic properties
+        internal static Dictionary<VirtualKeyCode, KeyboardRemapEntry> KeyMap { get; set; }
+        public static Dictionary<string, Macro> Macros { get; set; }
+        public static ViewMain MainForm { get; set; }
+        public static string FileName { get; set; } = FILENAME_DEFAULT;
+        public static Scheduler Scheduler { get; } = new Scheduler();
+        public static bool MouseLocked { get; set; } = false;
+        public static DirectInputManager DirectInputManager { get; private set; }
+        public static List<Trigger> Triggers { get; set; }
+        #endregion
 
+        #region Private static fields
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-        // Core data structures for macros, triggers, and keyboard remapping
-        private static Dictionary<string, Macro> s_macros;
-        private static List<Trigger> s_triggers;
-        private static Dictionary<VirtualKeyCode, KeyboardRemapEntry> s_keyMap;
-
-        // Core sub-systems 
-        private static readonly Scheduler s_actionScheduler = new Scheduler();
-        private static bool s_lockMouse = false;
-        private static DirectInputManager s_directInputManager;
-
-        // GUI objects
-        private static ViewMain s_mainForm;
-        private static TrayApplicationContext<ViewMain> s_context;
-
-        // GUI state
-        private const string FILENAME_DEFAULT = "macros.glue";
         private static bool s_writeOnExit = false;
-        private static string s_fileName = FILENAME_DEFAULT;
+        #endregion
+
+        #region Constants
+        private const string FILENAME_DEFAULT = "macros.glue";
 
         // Override file used for form persistence
         private const string FORM_SETTINGS_FILENAME = "Glue.form-settings.json";
-
+        #endregion
+        
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -72,25 +62,25 @@ namespace Glue
 
                 // Starts thread for timed queue of actions such as pressing keys,
                 // activating game controller buttons, playing sounds, etc.
-                s_actionScheduler.Start();
+                Scheduler.Start();
 
                 // Initialization of forms and context should be done before anything
                 // that can generate input Events.
                 FormSettings.FileName = FORM_SETTINGS_FILENAME;
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-                s_context = new TrayApplicationContext<ViewMain>();
-                MainForm = (ViewMain) s_context.MainForm;
+                TrayApplicationContext<ViewMain> trayApplicationContext = new TrayApplicationContext<ViewMain>();
+                MainForm = (ViewMain) trayApplicationContext.MainForm;
 
                 // Native keyboard and mouse hook initialization
                 KeyInterceptor.Initialize(KeyboardHandler.HookCallback);
 
                 // TODO Make mouse hook a toggle-able option in GUI
                 // TODO Mouse hook should release when windows are being sized / dragged
-                MouseInterceptor.Initialize(MouseHandler.HookCallback);
+                // MouseInterceptor.Initialize(MouseHandler.HookCallback);
 
-                s_directInputManager = new DirectInputManager(new Logger4net(typeof(DirectInputManager).Name));
-                s_directInputManager.Initialize();
+                DirectInputManager = new DirectInputManager(new Logger4net(typeof(DirectInputManager).Name));
+                DirectInputManager.Initialize();
 
                 string fileName = args.Length > 0
                     ? args[0]
@@ -99,7 +89,7 @@ namespace Glue
                 ProcessFileArg(fileName);
 
                 LOGGER.Debug("Entering Application.Run()...");
-                Application.Run(s_context);
+                Application.Run(trayApplicationContext);
                 LOGGER.Debug("...returned from Application.Run().");
             }
             finally
@@ -157,6 +147,7 @@ namespace Glue
                     s_writeOnExit = false;
                 }
                 FileName = fileName;;
+                MainForm.SetCaption(FileName);
             }
         }
 
@@ -191,11 +182,6 @@ namespace Glue
             }
 
             LOGGER.Info("Startup!");
-        }
-
-        public static void AddRemap(VirtualKeyCode keyOld, VirtualKeyCode keyNew, string procName)
-        {
-            Tube.KeyMap.Add(keyOld, new KeyboardRemapEntry(keyOld, keyNew, procName));
         }
 
         private static void SaveFile(string fileName)
