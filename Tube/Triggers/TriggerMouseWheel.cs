@@ -48,8 +48,9 @@ namespace Glue.Triggers
         {
             if (e.WheelMove == WheelMove)
             {
-                Fire();
-                return EatInput;
+                // Return indicates whether or not to eat input, 
+                // not whether trigger fired
+                return Fire();
             }
 
             return false;

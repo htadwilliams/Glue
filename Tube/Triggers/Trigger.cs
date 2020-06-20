@@ -1,4 +1,5 @@
-﻿using Glue.Triggers.JsonContract;
+﻿using Glue.Native;
+using Glue.Triggers.JsonContract;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
@@ -22,6 +23,8 @@ namespace Glue.Triggers
         public bool EatInput => this.eatInput;
         public List<string> MacroNames => macroNames;
         protected TriggerType Type { get => type; set => type = value; }
+        public string ProcessName { get => processName; set => processName = value; }
+        private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         // Index into ripple fire macros
         protected int indexMacroCurrent = 0;
@@ -39,7 +42,9 @@ namespace Glue.Triggers
         [JsonProperty]
         private readonly bool eatInput;
 
-        [JsonConstructor]
+        [JsonProperty]
+        private string processName;
+
         public Trigger(List<string> macroNames, bool eatInput)
         {
             this.macroNames.AddRange(macroNames);
@@ -65,18 +70,57 @@ namespace Glue.Triggers
         {
         }
 
-        protected virtual void Fire(int macroIndex)
+        private bool IsTargetProcessFocused()
         {
+            // Process name is optional - if unset trigger is global
+            if (ProcessName == null || ProcessName.Length == 0)
+            {
+                return true;
+            }
+
+            string inputFocusProcessName = ProcessInfo.GetProcessFileName(
+                ProcessInfo.GetInputFocusProcessId());
+
+            if (!inputFocusProcessName
+                .ToLower()
+                .Contains(ProcessName.ToLower())
+                )
+            {
+                LOGGER.Debug(
+                    "Trigger target process mismatch: " +
+                    "focus process = [" + inputFocusProcessName + "] " +
+                    "trigger process = [" + ProcessName + "]");
+
+                return false;
+            }
+
+            return true;
+        }
+
+        protected virtual bool Fire(int macroIndex)
+        {
+            if (!IsTargetProcessFocused())
+            {
+                return false;
+            }
+
             string macroName = MacroNames[macroIndex];
 
             if (null != macroName)
             {
                 Tube.PlayMacro(macroName);
             }
+
+            return EatInput;
         }
 
-        protected virtual void Fire()
+        protected virtual bool Fire()
         {
+            if (!IsTargetProcessFocused())
+            {
+                return false;
+            }
+
             if (this.indexMacroCurrent >= MacroNames.Count)
             {
                 indexMacroCurrent = 0;
@@ -91,6 +135,8 @@ namespace Glue.Triggers
                 Tube.PlayMacro(macroName);
             }
             this.indexMacroCurrent++;
+
+            return EatInput;
         }
 
         public void Dispose()
