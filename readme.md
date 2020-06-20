@@ -24,7 +24,7 @@ In Glue, a Trigger detects inputs and fires Macros, which are collections of Act
 ## Example content Macros and Triggers:
 * Ctrl-C cancels all queued actions, loops, etc.
 * Ctrl-Z will play a sound and type a key after a delay.
-* Ctrl-S "ripple fire" example that alternates between playing two sounds. If a sound is already playing it will be stopped and the next one played / restarted.
+* Ctrl-S "ripple fire" example that alternates between playing two sounds. If a sound is already playing it will be stopped and the next one played / restarted. This trigger will only fire if input focus is set to a process containing "notepad".
 * Ctrl-Space toggles the space bar so it's held with every other press. Doesn't cause windows key repeat messages while held down.
 * MBX1 / MBX2 (mouse side buttons) trigger a press of F10.
 * Alt-, Alt-. Alt-/ begin looping different sounds every N seconds.
@@ -87,8 +87,9 @@ In Glue, a Trigger detects inputs and fires Macros, which are collections of Act
  - [X] Game controller axis movement triggers.
  - [x] Queue view should update every second if nothing else is happening.
  - [ ] Remote control - trigger events via network client (most likely REST interface).
- - [ ] Triggers and actions may be filtered by target process name the same way keyboard remapping does. 
+ - [x] Triggers and actions may be filtered by target process name the same way keyboard remapping does. 
  - [x] Mouse "safety" - freeze mouse cursor position (but not buttons)
+ - [ ] Add Event that allows a Macro to call another Macro. Use case: unlock mouse and release a key from more than one macro. 
 
 ## GUI TODO
  - [X] Add mouse button state to buttons view.
