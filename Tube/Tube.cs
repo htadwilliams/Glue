@@ -30,6 +30,7 @@ namespace Glue
         public static bool MouseLocked { get; set; } = false;
         public static DirectInputManager DirectInputManager { get; private set; }
         public static List<Trigger> Triggers { get; set; }
+        public static bool WriteOnExit { get => s_writeOnExit; set => s_writeOnExit = value; }
         #endregion
 
         #region Private static fields
@@ -77,7 +78,7 @@ namespace Glue
 
                 // TODO Make mouse hook a toggle-able option in GUI
                 // TODO Mouse hook should release when windows are being sized / dragged
-                // MouseInterceptor.Initialize(MouseHandler.HookCallback);
+                MouseInterceptor.Initialize(MouseHandler.HookCallback);
 
                 DirectInputManager = new DirectInputManager(new Logger4net(typeof(DirectInputManager).Name));
                 DirectInputManager.Initialize();
@@ -99,7 +100,7 @@ namespace Glue
                 KeyInterceptor.Cleanup();
             }
 
-            if (s_writeOnExit)
+            if (WriteOnExit)
             {
                 SaveFile(FileName);
             }
@@ -116,10 +117,7 @@ namespace Glue
                 FileName = FILENAME_DEFAULT;
                 DefaultContent.Generate();
 
-                if (!File.Exists(FileName)) 
-                {
-                    s_writeOnExit = true;
-                }
+                WriteOnExit = true;
             }
             // Developer mode
             else if (fileName.Contains("EMPTY"))
@@ -129,7 +127,7 @@ namespace Glue
 
                 if (!File.Exists(FileName)) 
                 {
-                    s_writeOnExit = true;
+                    WriteOnExit = true;
                 }
             }
             // Normal operation
@@ -139,12 +137,17 @@ namespace Glue
                 {
                     LOGGER.Info("File [" + FileName + "] does not exist - creating example content");
                     DefaultContent.Generate();
-                    s_writeOnExit = true;
+                    WriteOnExit = true;
                 }
                 else
                 {
                     LoadFile(fileName);
-                    s_writeOnExit = false;
+
+                    // don't write over a file that's only being read 
+                    // 
+                    // write flag should be set if user takes an action that 
+                    // modifies content via GUI
+                    WriteOnExit = false;
                 }
                 FileName = fileName;;
                 MainForm.SetCaption(FileName);
