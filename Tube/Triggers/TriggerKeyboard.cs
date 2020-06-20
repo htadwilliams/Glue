@@ -55,8 +55,9 @@ namespace Glue.Triggers
             {
                 if (AreModKeysActive())
                 {
-                    Fire();
-                    return EatInput;
+                    // Return indicates whether or not to eat input, 
+                    // not whether trigger fired
+                    return Fire();
                 }
             }
 

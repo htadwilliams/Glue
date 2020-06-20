@@ -81,6 +81,7 @@ namespace Glue
 
             trigger = new TriggerKeyboard(Keys.S, new List<string> { "sound-servomotor", "sound-ahha" });
             trigger.AddModifier(Keys.LControlKey);
+            trigger.ProcessName = PROCESS_NAME_NOTEPAD;
             Tube.Triggers.Add(trigger);
 
             TriggerMouseWheel triggerMouseWheel = new TriggerMouseWheel(WheelMoves.Up, "sound-servomotor", false);

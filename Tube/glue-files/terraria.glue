@@ -290,8 +290,10 @@ Json containing the following elements
       "macroNames": [
         "mouse-lock"
       ],
-      "eatInput": true
+      "eatInput": true,
+      "processName": "terraria.exe"
     },
+
     {
       "buttonState": "Press",
       "triggerKey": "END",
@@ -299,7 +301,9 @@ Json containing the following elements
       "macroNames": [
         "mouse-unlock"
       ],
-      "eatInput": true
+      "eatInput": true,
+      // No process name for unlock because focus may have switched during lock
+      "processName": "terraria.exe"
     },
 	
     {
@@ -307,7 +311,7 @@ Json containing the following elements
       "triggerKey": "INSERT",
       "buttonState": "Press",
       "macroNames": [
-		"auto-tool-begin"
+     		"auto-tool-begin"
       ],
       "eatInput": true
     },
@@ -316,63 +320,56 @@ Json containing the following elements
       "triggerKey": "DELETE",
       "buttonState": "Press",
       "macroNames": [
-		"auto-tool-end"
+        "auto-tool-end"
       ],
-      "eatInput": true
+      "eatInput": true,
+      "processName": "terraria.exe"
     },
-	
+
     {
       "type": "Keyboard",
       "triggerKey": "PRIOR",
       "buttonState": "Press",
       "macroNames": [
-        "toolgrapple-begin",
+        "toolgrapple-begin"
       ],
-      "eatInput": true
+      "eatInput": true,
+      "processName": "terraria.exe"
     },
     {
       "type": "Keyboard",
       "triggerKey": "NEXT",
       "buttonState": "Press",
       "macroNames": [
-        "toolgrapple-end",
+        "toolgrapple-end"
       ],
-      "eatInput": true
+      "eatInput": true,
+      "processName": "terraria.exe"
     },
 	
 	/* fishing quick slap keys */
 	/* need to add support for multiple keys per trigger */
-	
-	{
+
+    {
       "type": "Keyboard",
       "triggerKey": "NUMPAD0",
       "buttonState": "Press",
       "macroNames": [
-        "click-left",
+        "click-left"
       ],
-      "eatInput": true
+      "eatInput": true,
+      "processName": "terraria.exe"
     },
     {
       "type": "Keyboard",
       "triggerKey": "DECIMAL",
       "buttonState": "Press",
       "macroNames": [
-        "click-left",
+        "click-left"
 	  ],
-      "eatInput": true
+      "eatInput": true,
+      "processName": "terraria.exe"
     }
-	/* return means no renaming chests ;( 
-	,
-    {
-      "type": "Keyboard",
-      "triggerKey": "RETURN",
-      "buttonState": "Press",
-      "macroNames": [
-        "click-left",
-	  ],
-      "eatInput": true
-    }
-	*/
   ],
   
   "remapKeys": [
