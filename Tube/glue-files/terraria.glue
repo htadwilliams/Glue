@@ -313,7 +313,8 @@ Json containing the following elements
       "macroNames": [
      		"auto-tool-begin"
       ],
-      "eatInput": true
+      "eatInput": true,
+      "processName": "terraria.exe"
     },
     {
       "type": "Keyboard",
