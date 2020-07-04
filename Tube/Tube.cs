@@ -31,6 +31,7 @@ namespace Glue
         public static DirectInputManager DirectInputManager { get; private set; }
         public static List<Trigger> Triggers { get; set; }
         public static bool WriteOnExit { get => s_writeOnExit; set => s_writeOnExit = value; }
+        public static CmdReader CmdFileReader { get; set; }
         #endregion
 
         #region Private static fields
@@ -83,6 +84,8 @@ namespace Glue
                 DirectInputManager = new DirectInputManager(new Logger4net(typeof(DirectInputManager).Name));
                 DirectInputManager.Initialize();
 
+                CmdFileReader = new CmdReader();
+
                 string fileName = args.Length > 0
                     ? args[0]
                     : FILENAME_DEFAULT;
@@ -98,6 +101,7 @@ namespace Glue
                 // Native class de-initialization
                 MouseInterceptor.Cleanup();
                 KeyInterceptor.Cleanup();
+                CmdFileReader.Dispose();
             }
 
             if (WriteOnExit)

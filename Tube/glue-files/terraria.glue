@@ -301,10 +301,9 @@ Json containing the following elements
       "macroNames": [
         "mouse-unlock"
       ],
-      "eatInput": true,
       // No process name for unlock because focus may have switched during lock
-      "processName": "terraria.exe"
-    },
+      "eatInput": false  // don't eat input because no process filter
+     },
 	
     {
       "type": "Keyboard",
@@ -313,7 +312,8 @@ Json containing the following elements
       "macroNames": [
      		"auto-tool-begin"
       ],
-      "eatInput": true
+      "eatInput": true,
+      "processName": "terraria.exe"
     },
     {
       "type": "Keyboard",

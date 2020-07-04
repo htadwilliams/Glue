@@ -146,7 +146,7 @@ namespace Glue.Forms
         {
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
-                openFileDialog.InitialDirectory = Directory.GetCurrentDirectory(); ;
+                openFileDialog.InitialDirectory = Directory.GetCurrentDirectory();
                 if(openFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     Tube.LoadFile(openFileDialog.FileName);
