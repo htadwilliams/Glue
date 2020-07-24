@@ -17,6 +17,7 @@ namespace Glue.Actions
         Repeat,
         Cancel,
         MouseLock,
+        Cmd,
      }
 
     public enum LockAction
