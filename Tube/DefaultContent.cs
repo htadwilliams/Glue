@@ -267,6 +267,18 @@ namespace Glue
                 );
 
             Tube.Triggers.Add(triggerAxis);
+
+            //
+            // Spawn DIR command
+            //
+            macro = new Macro(macroName = "dir", 0)
+                .AddAction(new ActionCmd(TIME_DELAY_GLOBAL_MS, "dir"))
+                ;
+            Macros.Add(macroName, macro);
+            // Setup trigger
+            trigger = new TriggerKeyboard(Keys.D, macroName);
+            trigger.AddModifier(Keys.LControlKey);
+            Tube.Triggers.Add(trigger);
         }
 
         public static void GenerateKeyRemaps()

@@ -52,6 +52,8 @@ namespace Glue.Actions.JsonContract
                         return JsonConvert.DeserializeObject<ActionCancel>(jo.ToString(), SpecifiedSubclassConversion);
                     case ActionType.MouseLock:
                         return JsonConvert.DeserializeObject<ActionMouseLock>(jo.ToString(), SpecifiedSubclassConversion);
+                    case ActionType.Cmd:
+                        return JsonConvert.DeserializeObject<ActionCmd>(jo.ToString(), SpecifiedSubclassConversion);
 
                     default:
                         string message = "Unknown type [" + type + "] encountered during deserialization";
