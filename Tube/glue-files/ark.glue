@@ -81,29 +81,6 @@ Json containing the following elements
   "triggers": [
 
     {
-      "buttonState": "Press",
-      "triggerKey": "HOME",
-      "type": "Keyboard",
-      "macroNames": [
-        "mouse-lock"
-      ],
-      "eatInput": true,
-	  // COMMENT OUT FOR DEBUG
-      // "processName": "ShooterGame.exe"
-    },
-
-    {
-      "buttonState": "Press",
-      "triggerKey": "END",
-      "type": "Keyboard",
-      "macroNames": [
-        "mouse-unlock"
-      ],
-      // No process name for unlock because focus may have switched during lock
-      "eatInput": false  // don't eat input because no process filter
-    },
-	
-    {
       "type": "Keyboard",
       "triggerKey": "Oemtilde",
       "modKeys": [
@@ -115,7 +92,7 @@ Json containing the following elements
       ],
       "eatInput": true,
 	  // COMMENT OUT FOR DEBUG
-      // "processName": "ShooterGame.exe"
+      "processName": "ShooterGame.exe"
     },
 	
     {
@@ -130,7 +107,7 @@ Json containing the following elements
       ],
       "eatInput": true,
 	  // COMMENT OUT FOR DEBUG
-      // "processName": "ShooterGame.exe"
+      "processName": "ShooterGame.exe"
     }
   ],
   
