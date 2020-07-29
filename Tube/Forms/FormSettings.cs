@@ -82,8 +82,11 @@ namespace Glue.Forms
                 {
                     writer.Formatting = Formatting.Indented;
 
-                    writer.WriteComment("\r\nGlue settings file\r\n");
-                    sw.Write("\r\n");
+                    writer.WriteComment(
+                        Environment.NewLine + 
+                        "Glue settings file" +
+                        Environment.NewLine);
+                    sw.Write(Environment.NewLine);
 
                     List<FormSettings> settingsList = new List<FormSettings>(s_collectedSettings.Values);
 

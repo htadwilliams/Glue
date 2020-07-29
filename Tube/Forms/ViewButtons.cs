@@ -77,7 +77,7 @@ namespace Glue.Forms
                 {
                     Key key = Keyboard.GetKey(keyCode);
                     this.textBoxButtonStates.Text += key.ToString();;
-                    this.textBoxButtonStates.Text += "\r\n";
+                    this.textBoxButtonStates.Text += Environment.NewLine;
                 }
 
                 WindowHandleUtils.HideCaret(this.textBoxButtonStates.Handle);

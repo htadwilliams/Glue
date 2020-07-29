@@ -1,11 +1,16 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Runtime.InteropServices;
+
+
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Glue")]
-[assembly: AssemblyDescription("WARNING: MAY LOG KEYS\r\nMacro tool and sticky stuff. Do not sniff. Light fuse and get away.")]
+[assembly: AssemblyDescription(
+    "WARNING: MAY LOG KEYS. " +
+    "Macro tool and sticky stuff. Do not sniff. Light fuse and get away.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Gluesoft is not a company, but it *is* soft.")]
 [assembly: AssemblyProduct("Glue")]
