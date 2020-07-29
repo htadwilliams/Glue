@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using System;
+using System.Windows.Forms;
 
 namespace Glue.Actions
 {
@@ -29,19 +31,44 @@ namespace Glue.Actions
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo
             {
                 WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
-                FileName = "cmd.exe",
-                Arguments = "/C " + Cmd,
-                RedirectStandardInput = true,
-                RedirectStandardOutput = true,
-                CreateNoWindow = true,
-                UseShellExecute = false,
+                FileName = "cmd.exe",               // see cmd.exe /? for more details on argument tweaking
+                Arguments = "/C " + Cmd,            // carries out the command and terminates process
+                RedirectStandardInput = true,       // stdin <- System.Diagnostics.Process.StandardInput
+                RedirectStandardOutput = true,      // stdout -> System.Diagnostics.Process.StandardOutput
+                RedirectStandardError = true,       // stderr -> System.Diagnostics.Process.StandardError`
+                CreateNoWindow = true,              // Operate silently - Glue handles/displays output
+                UseShellExecute = false,            // Spawned exe creates separate process
             };
 
             process.StartInfo = startInfo;
             process.Start();
 
+            // This thread will be paused while the command executes
+            // TODO Spawned process from ActionCmd could block thread in queue and needs timeout.
             process.WaitForExit();
-            LOGGER.Info("CMD.EXE returned: " + process.StandardOutput.ReadToEnd());
+
+            string stdout = process.StandardOutput.ReadToEnd();
+            string stderr = process.StandardError.ReadToEnd();
+            string newline = Environment.NewLine;
+
+            string message =
+                newline +
+                "CMD.EXE " + process.StartInfo.Arguments + " returned(" + process.ExitCode + ") " + newline +
+                stdout;
+
+            // An error was returned - not very common case as most processes 
+            // are lazy and report errors on stdout
+            if (stderr.Length > 0)
+            {
+                message += 
+                "STDEERR! : " + newline +
+                stderr + newline;
+            }
+
+            LOGGER.Info(message);
+
+            message = message.Insert(0, "ActionCmd execute ");
+            Tube.LogToGUI(message);
         }
 
         public override Action[] Schedule(long timeScheduleFrom)

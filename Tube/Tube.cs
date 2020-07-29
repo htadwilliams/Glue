@@ -204,14 +204,20 @@ namespace Glue
             using (JsonWriter writer = new JsonTextWriter(sw))
             {
                 writer.Formatting = Formatting.Indented;
+                string newline = Environment.NewLine;
 
                 writer.WriteComment(
-                    "\r\n\r\nGlue macro tool file\r\n\r\n" + 
-                    "Json containing the following elements\r\n\r\n" + 
-                    "    macros     Actions to be performed such as pressing a key or playing a sound.\r\n" + 
-                    "    triggers   Bind keys or key combinations to macros.\r\n" + 
-                    "    keyMap     Each entry remaps a key on the keyboard.\r\n\r\n");
-                sw.Write("\r\n");
+                    newline + 
+                    newline + 
+                    "Glue macro tool file" + newline + 
+                    newline +
+                    "Json containing the following elements" + newline +
+                    newline +
+                    "    macros     Actions to be performed such as pressing a key or playing a sound." + newline + 
+                    "    triggers   Bind keys or key combinations to macros." + newline + 
+                    "    keyMap     Each entry remaps a key on the keyboard." + newline +
+                         newline);
+                sw.Write(newline);
 
                 JsonWrapper jsonWrapper = new JsonWrapper(Triggers, KeyMap, Macros);
                 serializer.Serialize(writer, jsonWrapper);
@@ -286,7 +292,8 @@ namespace Glue
         internal static void HandleJsonException(string fileName, Exception e)
         {
             string output = 
-                "Failed to load " + fileName + ".\r\n\r\n" +
+                "Failed to load " + fileName + Environment.NewLine +
+                Environment.NewLine +
                 e.Message;
 
             MessageBox.Show(output, "Glue - File Load Error");
@@ -313,6 +320,11 @@ namespace Glue
             }
 
             LOGGER.Info("Activated mouse lock: action = " + lockAction + " lock = " + MouseLocked);
+        }
+
+        public static void LogToGUI(string message)
+        {
+            MainForm.AppendText(message);
         }
     }
 }
