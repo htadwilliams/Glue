@@ -1,0 +1,139 @@
+/*
+
+Glue macro tool file
+
+Json containing the following elements
+
+    macros     Actions to be performed such as pressing a key or playing a sound.
+    triggers   Bind keys or key combinations to macros.
+    keyMap     Each entry remaps a key on the keyboard.
+
+*/
+
+{
+  "macros": [
+    {
+      "name": "mouse-lock",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "lockAction": "Lock",
+          "delayMS": 0,
+          "type": "MouseLock"
+        },
+        {
+          "delayMS": 0,
+          "type": "Sound",
+          "SoundPath": "sound_click_latch.wav"
+        }
+      ]
+    },
+    {
+      "name": "mouse-unlock",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "delayMS": 0,
+          "type": "Sound",
+          "SoundPath": "sound_click_latch.wav"
+        },
+        {
+          "lockAction": "Unlock",
+          "delayMS": 0,
+          "type": "MouseLock"
+        }
+      ]
+    },
+    {
+      "name": "savescum-save",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "delayMS": 0,
+          "type": "Sound",
+          "SoundPath": "sound_click_latch.wav"
+        },
+        {
+          "Cmd": "G:\\source\\git\\Savescum\\bin\\Debug\\netcoreapp3.1\\SaveScum.exe save",
+          "delayMS": 0,
+          "type": "Cmd"
+        }
+      ]
+    },
+    {
+      "name": "savescum-load",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "delayMS": 0,
+          "type": "Sound",
+          "SoundPath": "sound_click_latch.wav"
+        },
+        {
+          "Cmd": "G:\\source\\git\\Savescum\\bin\\Debug\\netcoreapp3.1\\SaveScum.exe load",
+          "delayMS": 0,
+          "type": "Cmd"
+        }
+      ]
+    }
+  ],
+  
+  "triggers": [
+
+    {
+      "buttonState": "Press",
+      "triggerKey": "HOME",
+      "type": "Keyboard",
+      "macroNames": [
+        "mouse-lock"
+      ],
+      "eatInput": true,
+	  // COMMENT OUT FOR DEBUG
+      // "processName": "ShooterGame.exe"
+    },
+
+    {
+      "buttonState": "Press",
+      "triggerKey": "END",
+      "type": "Keyboard",
+      "macroNames": [
+        "mouse-unlock"
+      ],
+      // No process name for unlock because focus may have switched during lock
+      "eatInput": false  // don't eat input because no process filter
+    },
+	
+    {
+      "type": "Keyboard",
+      "triggerKey": "Oemtilde",
+      "modKeys": [
+        "LShiftKey"
+      ],
+      "buttonState": "Press",
+      "macroNames": [
+        "savescum-save"
+      ],
+      "eatInput": true,
+	  // COMMENT OUT FOR DEBUG
+      // "processName": "ShooterGame.exe"
+    },
+	
+    {
+      "type": "Keyboard",
+      "triggerKey": "PRIOR",
+      "modKeys": [
+        "LShiftKey"
+      ],
+      "buttonState": "Press",
+      "macroNames": [
+        "savescum-load"
+      ],
+      "eatInput": true,
+	  // COMMENT OUT FOR DEBUG
+      // "processName": "ShooterGame.exe"
+    }
+  ],
+  
+  "remapKeys": [
+  ]
+}
