@@ -54,7 +54,8 @@ Json containing the following elements
           "SoundPath": "sound_click_latch.wav"
         },
         {
-          "Cmd": "G:\\source\\git\\Savescum\\bin\\Debug\\netcoreapp3.1\\SaveScum.exe save",
+		  "FinishedSoundPath": "sound_servomotor.wav",
+          "Cmd": "G:\\source\\git\\Savescum\\bin\\Release\\netcoreapp3.1\\SaveScum.exe operation=save gamePath=G:\\games\\steam\\steamapps\\common\\ARK\\ShooterGame\\Saved\\SavedArksLocal backupPath=G:\\games\\steam\\steamapps\\common\\ARK\\ShooterGame\\Saved\\BackupArksLocal backupPrefix=BackupArk protectPrefix=OverwrittenArk",
           "delayMS": 0,
           "type": "Cmd"
         }
@@ -67,10 +68,11 @@ Json containing the following elements
         {
           "delayMS": 0,
           "type": "Sound",
-          "SoundPath": "sound_click_latch.wav"
+          "SoundPath": "van_door.wav"
         },
         {
-          "Cmd": "G:\\source\\git\\Savescum\\bin\\Debug\\netcoreapp3.1\\SaveScum.exe load",
+		  "FinishedSoundPath": "sound_servomotor.wav",
+          "Cmd": "G:\\source\\git\\Savescum\\bin\\Release\\netcoreapp3.1\\SaveScum.exe operation=load gamePath=G:\\games\\steam\\steamapps\\common\\ARK\\ShooterGame\\Saved\\SavedArksLocal backupPath=G:\\games\\steam\\steamapps\\common\\ARK\\ShooterGame\\Saved\\BackupArksLocal backupPrefix=BackupArk protectPrefix=OverwrittenArk",
           "delayMS": 0,
           "type": "Cmd"
         }
@@ -92,7 +94,7 @@ Json containing the following elements
       ],
       "eatInput": true,
 	  // COMMENT OUT FOR DEBUG
-      "processName": "ShooterGame.exe"
+      // "processName": "ShooterGame.exe"
     },
 	
     {
@@ -107,7 +109,7 @@ Json containing the following elements
       ],
       "eatInput": true,
 	  // COMMENT OUT FOR DEBUG
-      "processName": "ShooterGame.exe"
+      // "processName": "ShooterGame.exe"
     }
   ],
   

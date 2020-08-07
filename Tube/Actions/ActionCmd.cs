@@ -9,6 +9,7 @@ namespace Glue.Actions
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private string cmd;
+        private string finishedSoundPath;
 
         [JsonProperty]
         public string Cmd
@@ -17,10 +18,25 @@ namespace Glue.Actions
             set => this.cmd = value;
         }
 
+        [JsonProperty]
+        public string FinishedSoundPath
+        {
+            get => this.finishedSoundPath;
+            set => this.finishedSoundPath = value;
+        }
+
+        [JsonConstructor]
         public ActionCmd(long timeDelayMS, string cmd) : base(timeDelayMS)
         {
             this.Cmd = cmd;
             this.Type = ActionType.Cmd;
+        }
+
+        public ActionCmd(long timeDelayMS, string cmd, string finishedSoundPath) : base(timeDelayMS)
+        {
+            this.Cmd = cmd;
+            this.Type = ActionType.Cmd;
+            this.FinishedSoundPath = finishedSoundPath;
         }
 
         public override void Play()
@@ -69,11 +85,17 @@ namespace Glue.Actions
 
             message = message.Insert(0, "ActionCmd execute ");
             Tube.LogToGUI(message);
+
+            // Play sound indicating finished if one is specified
+            if (null != finishedSoundPath && finishedSoundPath.Length > 0)
+            {
+                ActionSound.GetPlayer(finishedSoundPath).Play();
+            }
         }
 
         public override Action[] Schedule(long timeScheduleFrom)
         {
-            ActionCmd scheduledCopy = new ActionCmd(this.DelayMS, this.Cmd)
+            ActionCmd scheduledCopy = new ActionCmd(this.DelayMS, this.Cmd, this.FinishedSoundPath)
             {
                 ScheduledTick = timeScheduleFrom + this.DelayMS
             };
