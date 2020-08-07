@@ -91,7 +91,7 @@ namespace Glue.Forms
             Text = baseCaptionText + " - " + fileName;
         }
 
-        private void AppendText(string text)
+        public void AppendText(string text)
         {
             if (!IsDisposed)
             { 

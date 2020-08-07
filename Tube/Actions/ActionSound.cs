@@ -27,14 +27,14 @@ namespace Glue.Actions
             this.Type = ActionType.Sound;
         }
 
-        protected SoundPlayer GetPlayer(string soundFileName)
+        public static SoundPlayer GetPlayer(string soundFileName)
         {
             if (!PLAYER_CACHE.TryGetValue(soundFileName, out SoundPlayer player))
             {
                 player = new SoundPlayer();
                 try
                 {
-                    player.SoundLocation = this.SoundPath;
+                    player.SoundLocation = soundFileName;
                     player.Load();
                 }
                 catch (Exception e)
