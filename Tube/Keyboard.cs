@@ -167,7 +167,7 @@ namespace Glue
             new Key(Keys.OemMinus,              "-",            true),
             new Key(Keys.OemPeriod,             ".",            true),
             new Key(Keys.OemQuestion,           "/",            true),
-            new Key(Keys.Oemtilde,              "`",            true),
+            new Key(Keys.Oemtilde,              "~",            true),
             new Key(Keys.OemOpenBrackets,       "[",            true),
             new Key(Keys.OemCloseBrackets,      "]",            true),
             // Oem5: For the US standard keyboard, the '\|' key
