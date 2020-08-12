@@ -7,6 +7,20 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tube", "Tube\Tube.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TubeTests", "TubeTests\TubeTests.csproj", "{40678705-0C6D-43FF-892C-649DA1F6ACC6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{2C8A3EC4-2061-426A-9487-D13B4703B7C5}"
+	ProjectSection(SolutionItems) = preProject
+		readme.md = readme.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sounds", "sounds", "{0695018E-0EDA-483C-8C6E-88ACD199FB20}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "glue-files", "glue-files", "{2A42AA76-AE73-4CD7-9796-B0FC328D10DB}"
+	ProjectSection(SolutionItems) = preProject
+		Tube\glue-files\ark.glue = Tube\glue-files\ark.glue
+		Tube\glue-files\mouse-safety.glue = Tube\glue-files\mouse-safety.glue
+		Tube\glue-files\terraria.glue = Tube\glue-files\terraria.glue
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
