@@ -47,14 +47,14 @@ Json containing the following elements
 
         {
           "movement": "RELEASE",
-          "key": "VK_D",
+          "key": "D",
           "timeClickMS": 0,
           "delayMS": 0,
           "type": "Keyboard"
         },
         {
           "movement": "RELEASE",
-          "key": "VK_G",
+          "key": "G",
           "timeClickMS": 0,
           "delayMS": 0,
           "type": "Keyboard"
@@ -89,7 +89,7 @@ Json containing the following elements
         },
         {
           "movement": "PRESS",
-          "key": "VK_D",
+          "key": "D",
           "timeClickMS": 0,
           "delayMS": 0,
           "type": "Keyboard"
@@ -124,7 +124,7 @@ Json containing the following elements
         },
         {
           "movement": "RELEASE",
-          "key": "VK_D",
+          "key": "D",
           "timeClickMS": 0,
           "delayMS": 0,
           "type": "Keyboard"
@@ -185,7 +185,7 @@ Json containing the following elements
       "actions": [
         {
           "movement": "Both",
-          "key": "VK_G",
+          "key": "G",
           "timeClickMS": 50,
           "delayMS": 50,
           "type": "Keyboard"
@@ -230,14 +230,14 @@ Json containing the following elements
         },
         {
           "movement": "RELEASE",
-          "key": "VK_D",
+          "key": "D",
           "timeClickMS": 50,
           "delayMS": 50,
           "type": "Keyboard"
         },
         {
           "movement": "RELEASE",
-          "key": "VK_G",
+          "key": "G",
           "timeClickMS": 0,
           "delayMS": 0,
           "type": "Keyboard"
@@ -285,7 +285,7 @@ Json containing the following elements
 
     {
       "buttonState": "Press",
-      "triggerKey": "HOME",
+      "triggerKey": "Home",
       "type": "Keyboard",
       "macroNames": [
         "mouse-lock"
@@ -296,7 +296,7 @@ Json containing the following elements
 
     {
       "buttonState": "Press",
-      "triggerKey": "END",
+      "triggerKey": "End",
       "type": "Keyboard",
       "macroNames": [
         "mouse-unlock"
@@ -307,7 +307,7 @@ Json containing the following elements
 	
     {
       "type": "Keyboard",
-      "triggerKey": "INSERT",
+      "triggerKey": "Insert",
       "buttonState": "Press",
       "macroNames": [
      		"auto-tool-begin"
@@ -317,7 +317,7 @@ Json containing the following elements
     },
     {
       "type": "Keyboard",
-      "triggerKey": "DELETE",
+      "triggerKey": "Delete",
       "buttonState": "Press",
       "macroNames": [
         "auto-tool-end"
@@ -328,7 +328,7 @@ Json containing the following elements
 
     {
       "type": "Keyboard",
-      "triggerKey": "PRIOR",
+      "triggerKey": "PageUp",
       "buttonState": "Press",
       "macroNames": [
         "toolgrapple-begin"
@@ -338,7 +338,7 @@ Json containing the following elements
     },
     {
       "type": "Keyboard",
-      "triggerKey": "NEXT",
+      "triggerKey": "PageDown",
       "buttonState": "Press",
       "macroNames": [
         "toolgrapple-end"
@@ -348,11 +348,11 @@ Json containing the following elements
     },
 	
 	/* fishing quick slap keys */
-	/* need to add support for multiple keys per trigger */
+	/* Maybe add support for multiple keys per trigger */
 
     {
       "type": "Keyboard",
-      "triggerKey": "NUMPAD0",
+      "triggerKey": "NumPad0",
       "buttonState": "Press",
       "macroNames": [
         "click-left"
@@ -362,11 +362,11 @@ Json containing the following elements
     },
     {
       "type": "Keyboard",
-      "triggerKey": "DECIMAL",
+      "triggerKey": "NumPad.",
       "buttonState": "Press",
       "macroNames": [
         "click-left"
-	  ],
+      ],
       "eatInput": true,
       "processName": "terraria.exe"
     }

@@ -55,7 +55,7 @@ Json containing the following elements
         },
         {
 		  "FinishedSoundPath": "sound_servomotor.wav",
-          "Cmd": "G:\\source\\git\\Savescum\\bin\\Release\\netcoreapp3.1\\SaveScum.exe operation=save gamePath=G:\\games\\steam\\steamapps\\common\\ARK\\ShooterGame\\Saved\\SavedArksLocal backupPath=G:\\games\\steam\\steamapps\\common\\ARK\\ShooterGame\\Saved\\BackupArksLocal backupPrefix=BackupArk protectPrefix=OverwrittenArk",
+          "Cmd": "G:\\source\\git\\Savescum\\bin\\Release\\netcoreapp3.1\\Savescum.exe operation=save gamePath=G:\\games\\steam\\steamapps\\common\\ARK\\ShooterGame\\Saved\\SavedArksLocal backupPath=G:\\games\\steam\\steamapps\\common\\ARK\\ShooterGame\\Saved\\BackupArksLocal backupPrefix=BackupArk protectPrefix=OverwrittenArk",
           "delayMS": 0,
           "type": "Cmd"
         }
@@ -72,7 +72,7 @@ Json containing the following elements
         },
         {
 		  "FinishedSoundPath": "sound_servomotor.wav",
-          "Cmd": "G:\\source\\git\\Savescum\\bin\\Release\\netcoreapp3.1\\SaveScum.exe operation=load gamePath=G:\\games\\steam\\steamapps\\common\\ARK\\ShooterGame\\Saved\\SavedArksLocal backupPath=G:\\games\\steam\\steamapps\\common\\ARK\\ShooterGame\\Saved\\BackupArksLocal backupPrefix=BackupArk protectPrefix=OverwrittenArk",
+          "Cmd": "G:\\source\\git\\Savescum\\bin\\Release\\netcoreapp3.1\\Savescum.exe operation=load gamePath=G:\\games\\steam\\steamapps\\common\\ARK\\ShooterGame\\Saved\\SavedArksLocal backupPath=G:\\games\\steam\\steamapps\\common\\ARK\\ShooterGame\\Saved\\BackupArksLocal backupPrefix=BackupArk protectPrefix=OverwrittenArk",
           "delayMS": 0,
           "type": "Cmd"
         }
@@ -84,32 +84,32 @@ Json containing the following elements
 
     {
       "type": "Keyboard",
-      "triggerKey": "Oemtilde",
+      "triggerKey": "~",
       "modKeys": [
-        "LShiftKey"
+        "LShift"
       ],
       "buttonState": "Press",
       "macroNames": [
         "savescum-save"
       ],
       "eatInput": true,
-	  // COMMENT OUT FOR DEBUG
-      // "processName": "ShooterGame.exe"
+	    // COMMENT OUT FOR DEBUG
+      "processName": "ShooterGame.exe"
     },
 	
     {
       "type": "Keyboard",
-      "triggerKey": "PRIOR",
+      "triggerKey": "PageUp",
       "modKeys": [
-        "LShiftKey"
+        "LShift"
       ],
       "buttonState": "Press",
       "macroNames": [
         "savescum-load"
       ],
       "eatInput": true,
-	  // COMMENT OUT FOR DEBUG
-      // "processName": "ShooterGame.exe"
+	    // COMMENT OUT FOR DEBUG
+      "processName": "ShooterGame.exe"
     }
   ],
   

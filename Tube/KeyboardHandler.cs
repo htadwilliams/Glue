@@ -138,11 +138,11 @@ namespace Glue
                     }
                 }
 
-                LOGGER.Debug("REMAPPED: " + inputKey + " -> " + remap.KeyNew);
-                ActionKey actionKey = new ActionKey(TimeProvider.GetTickCount(), remap.KeyNew, movement);
+                LOGGER.Debug("REMAPPED: " + inputKey + " -> " + remap.KeyCodeNew);
+                ActionKey actionKey = new ActionKey(TimeProvider.GetTickCount(), remap.KeyCodeNew, movement);
                 actionKey.Play();
 
-                return remap.KeyNew;
+                return remap.KeyCodeNew;
             }
 
             return inputKey;

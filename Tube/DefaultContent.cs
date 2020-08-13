@@ -24,9 +24,13 @@ namespace Glue
         private const int TIME_DWELL_GLOBAL_MS              = 250;            // Pressed keys are held this long
         private const int TIME_DELAY_ACTION                 = 8 * 1000;       // Bound to trigger for single delayed action
 
-        public static void AddRemap(VirtualKeyCode keyOld, VirtualKeyCode keyNew, string procName)
+        public static void AddRemap(string keyOld, string keyNew, string procName)
         {
-            Tube.KeyMap.Add(keyOld, new KeyboardRemapEntry(keyOld, keyNew, procName));
+            Keys keyCodeOld = Keyboard.GetKey(keyOld).Keys;
+
+            Tube.KeyMap.Add(
+                (VirtualKeyCode) keyCodeOld, 
+                new KeyboardRemapEntry(keyOld, keyNew, procName));
         }
 
         public static void Generate()
@@ -285,12 +289,12 @@ namespace Glue
         {
             // Sunless skies (and other games) won't allow binding to shift key
             // Mapping A to Shift allows binding game functions to that instead.
-            AddRemap(VirtualKeyCode.LSHIFT, VirtualKeyCode.VK_A, "skies.exe");
+            AddRemap("LShift", "A", "skies.exe");
 
             // Evil evil swap for people typing into notepad!  
             // Easy way to do quick functional test of remapping by process.
-            AddRemap(VirtualKeyCode.VK_B, VirtualKeyCode.VK_V, PROCESS_NAME_NOTEPAD);
-            AddRemap(VirtualKeyCode.VK_V, VirtualKeyCode.VK_B, PROCESS_NAME_NOTEPAD);
+            AddRemap("B", "V", PROCESS_NAME_NOTEPAD);
+            AddRemap("V", "B", PROCESS_NAME_NOTEPAD);
 
             // KILL WASD
             // 
@@ -305,16 +309,16 @@ namespace Glue
             // fASDghjkl;
 
             // WASD block will slide to right so this displaces R and F to make room
-            AddRemap(VirtualKeyCode.VK_Q, VirtualKeyCode.VK_R, PROCESS_NAME_WASD);
-            AddRemap(VirtualKeyCode.VK_A, VirtualKeyCode.VK_F, PROCESS_NAME_WASD);
+            AddRemap("Q", "R", PROCESS_NAME_WASD);
+            AddRemap("A", "F", PROCESS_NAME_WASD);
 
             // Remap WASD movement block to ESDF (plus rotation keys)
-            AddRemap(VirtualKeyCode.VK_W, VirtualKeyCode.VK_Q, PROCESS_NAME_WASD);
-            AddRemap(VirtualKeyCode.VK_E, VirtualKeyCode.VK_W, PROCESS_NAME_WASD);
-            AddRemap(VirtualKeyCode.VK_R, VirtualKeyCode.VK_E, PROCESS_NAME_WASD);
-            AddRemap(VirtualKeyCode.VK_S, VirtualKeyCode.VK_A, PROCESS_NAME_WASD);
-            AddRemap(VirtualKeyCode.VK_D, VirtualKeyCode.VK_S, PROCESS_NAME_WASD);
-            AddRemap(VirtualKeyCode.VK_F, VirtualKeyCode.VK_D, PROCESS_NAME_WASD);
+            AddRemap("W", "Q", PROCESS_NAME_WASD);
+            AddRemap("E", "W", PROCESS_NAME_WASD);
+            AddRemap("R", "E", PROCESS_NAME_WASD);
+            AddRemap("S", "A", PROCESS_NAME_WASD);
+            AddRemap("D", "S", PROCESS_NAME_WASD);
+            AddRemap("F", "D", PROCESS_NAME_WASD);
         }
     }
 }

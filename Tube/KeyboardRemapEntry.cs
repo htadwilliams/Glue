@@ -7,26 +7,29 @@ namespace Glue
     [JsonObject(MemberSerialization.OptIn)]
     class KeyboardRemapEntry
     {
-        public VirtualKeyCode KeyOld => this.keyOld;
-        public VirtualKeyCode KeyNew => this.keyNew;
         public string ProcessName => this.processName;
+        public VirtualKeyCode KeyCodeOld => keyCodeOld;
+        public VirtualKeyCode KeyCodeNew => keyCodeNew;
 
         [JsonProperty]
-        [JsonConverter(typeof(StringEnumConverter))]
-        private readonly VirtualKeyCode keyOld;
+        private readonly string keyOld;
 
         [JsonProperty]
-        [JsonConverter(typeof(StringEnumConverter))]
-        private readonly VirtualKeyCode keyNew;
+        private readonly string keyNew;
 
         [JsonProperty]
         private readonly string processName;
 
+        private readonly VirtualKeyCode keyCodeOld;
+        private readonly VirtualKeyCode keyCodeNew;
+
         [JsonConstructor]
-        public KeyboardRemapEntry(VirtualKeyCode keyOld, VirtualKeyCode keyNew, string procName)
+        public KeyboardRemapEntry(string keyOld, string keyNew, string procName)
         {
-            this.keyOld=keyOld;
-            this.keyNew=keyNew;
+            this.keyOld = keyOld;
+            this.keyNew = keyNew;
+            this.keyCodeOld = (VirtualKeyCode) Keyboard.GetKey(keyOld).Keys;
+            this.keyCodeNew = (VirtualKeyCode) Keyboard.GetKey(keyNew).Keys;
             this.processName=procName;
         }
     }
