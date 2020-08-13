@@ -65,7 +65,7 @@ Json containing the following elements
       "actions": [
         {
           "movement": "Press",
-          "key": "SPACE",
+          "key": "Space",
           "timeClickMS": 50,
           "delayMS": 0,
           "type": "Keyboard"
@@ -78,7 +78,7 @@ Json containing the following elements
       "actions": [
         {
           "movement": "Release",
-          "key": "SPACE",
+          "key": "Space",
           "timeClickMS": 0,
           "delayMS": 0,
           "type": "Keyboard"
@@ -91,7 +91,7 @@ Json containing the following elements
       "buttonState": "Press",
       "triggerKey": "L",
       "modKeys": [
-        "LControlKey"
+        "LControl"
       ],
       "type": "Keyboard",
       "macroNames": [
@@ -103,7 +103,7 @@ Json containing the following elements
       "buttonState": "Press",
       "triggerKey": "L",
       "modKeys": [
-        "RControlKey"
+        "RControl"
       ],
       "type": "Keyboard",
       "macroNames": [

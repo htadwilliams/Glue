@@ -8,11 +8,11 @@ namespace Glue
     {
         private static readonly Key[] KEYS = 
         {
-            //      Virtual key code            Display         Bindable
+            //      Virtual key code            Display name    Bindable
             new Key(Keys.None,					"",				false),
             new Key(Keys.LButton,				"",				false),
             new Key(Keys.RButton,               "",             false),
-            new Key(Keys.Cancel,				"",				false),
+            new Key(Keys.Cancel,				"",  		    false),
             new Key(Keys.MButton,               "",             false),
             new Key(Keys.XButton1,              "",             false),
             new Key(Keys.XButton2,              "",             false),
@@ -20,7 +20,7 @@ namespace Glue
             new Key(Keys.Tab,                   "",             true),
             new Key(Keys.LineFeed,              "",             false),
             new Key(Keys.Clear,                 "",             false),
-            new Key(Keys.Return,                "Return",		true),
+            new Key(Keys.Return,                "Enter",		true),
             new Key(Keys.ShiftKey,              "",             false),
             new Key(Keys.ControlKey,            "",             false),
             new Key(Keys.Menu,					"",             false),
@@ -36,8 +36,8 @@ namespace Glue
             new Key(Keys.IMEAceept,             "",             false),
             new Key(Keys.IMEModeChange,			"",             false),
             new Key(Keys.Space,                 "",             false),
-            new Key(Keys.PageUp,                "Page-Up",      true),
-            new Key(Keys.Next,                  "Page-Down",    true),
+            new Key(Keys.PageUp,                "",             true),
+            new Key(Keys.Next,                  "PageDown",     true),
             new Key(Keys.End,                   "",          	true),
             new Key(Keys.Home,                  "",         	true),
             new Key(Keys.Left,                  "",             true),
@@ -91,22 +91,22 @@ namespace Glue
             new Key(Keys.RWin,                  "Win-(R)",  	true),
             new Key(Keys.Apps,                  "",             false),
             new Key(Keys.Sleep,                 "",             false),
-            new Key(Keys.NumPad0,               "Numpad-0",     true),
-            new Key(Keys.NumPad1,               "Numpad-1",     true),
-            new Key(Keys.NumPad2,               "Numpad-2",     true),
-            new Key(Keys.NumPad3,               "Numpad-3",     true),
-            new Key(Keys.NumPad4,               "Numpad-4",     true),
-            new Key(Keys.NumPad5,               "Numpad-5",     true),
-            new Key(Keys.NumPad6,               "Numpad-6",     true),
-            new Key(Keys.NumPad7,               "Numpad-7",     true),
-            new Key(Keys.NumPad8,               "Numpad-8",     true),
-            new Key(Keys.NumPad9,               "Numpad-9",     true),
-            new Key(Keys.Multiply,              "Numpad-*",     true),
-            new Key(Keys.Add,                   "Numpad-+",     true),
+            new Key(Keys.NumPad0,               "",             true),
+            new Key(Keys.NumPad1,               "",             true),
+            new Key(Keys.NumPad2,               "",             true),
+            new Key(Keys.NumPad3,               "",             true),
+            new Key(Keys.NumPad4,               "",             true),
+            new Key(Keys.NumPad5,               "",             true),
+            new Key(Keys.NumPad6,               "",             true),
+            new Key(Keys.NumPad7,               "",             true),
+            new Key(Keys.NumPad8,               "",             true),
+            new Key(Keys.NumPad9,               "",             true),
+            new Key(Keys.Multiply,              "NumPad*",      true),
+            new Key(Keys.Add,                   "NumPad+",      true),
             new Key(Keys.Separator,             "",             false),
-            new Key(Keys.Subtract,              "Numpad--",		true),
-            new Key(Keys.Decimal,               "Numpad-.",     true),
-            new Key(Keys.Divide,                "Numpad-/",     true),
+            new Key(Keys.Subtract,              "NumPad-",		true),
+            new Key(Keys.Decimal,               "NumPad.",      true),
+            new Key(Keys.Divide,                "NumPad/",     true),
             new Key(Keys.F1,                    "",             true),
             new Key(Keys.F2,                    "",             true),
             new Key(Keys.F3,                    "",             true),
@@ -131,32 +131,32 @@ namespace Glue
             new Key(Keys.F22,                   "",             false),
             new Key(Keys.F23,                   "",             false),
             new Key(Keys.F24,                   "",             false),
-            new Key(Keys.NumLock,               "Num-Lock",     true),
-            new Key(Keys.Scroll,                "Scroll-Lock",  true),
-            new Key(Keys.LShiftKey,             "Shift-(L)",    true),
-            new Key(Keys.RShiftKey,             "Shift-(R)",    true),
-            new Key(Keys.LControlKey,           "Control-(L)",  true),
-            new Key(Keys.RControlKey,           "Control-(R)",  true),
-            new Key(Keys.LMenu,                 "Alt-(L)",      true),
-            new Key(Keys.RMenu,                 "Alt-(R)",      true),
-            new Key(Keys.BrowserBack,           "Browser-Back", false),
-            new Key(Keys.BrowserForward,        "Browser-Fwd",  false),
+            new Key(Keys.NumLock,               "",             true),
+            new Key(Keys.Scroll,                "ScrollLock",   true),
+            new Key(Keys.LShiftKey,             "LShift",       true),
+            new Key(Keys.RShiftKey,             "RShift",       true),
+            new Key(Keys.LControlKey,           "LControl",     true),
+            new Key(Keys.RControlKey,           "RControl",     true),
+            new Key(Keys.LMenu,                 "LAlt",         true),
+            new Key(Keys.RMenu,                 "RAlt",         true),
+            new Key(Keys.BrowserBack,           "",             false),
+            new Key(Keys.BrowserForward,        "",             false),
             new Key(Keys.BrowserRefresh,        "",             false),
             new Key(Keys.BrowserStop,           "",             false),
             new Key(Keys.BrowserSearch,         "",             false),
             new Key(Keys.BrowserFavorites,      "",             false),
             new Key(Keys.BrowserHome,           "",             false),
-            new Key(Keys.VolumeMute,            "Mute",         true),
-            new Key(Keys.VolumeDown,            "Vol-Dn",       true),
-            new Key(Keys.VolumeUp,              "Vol-Up",       true),
-            new Key(Keys.MediaNextTrack,        "Media-Next",   true),
-            new Key(Keys.MediaPreviousTrack,    "Media-Prev",   true),
-            new Key(Keys.MediaStop,             "Media-Stop",   true),
-            new Key(Keys.MediaPlayPause,        "Media-Play",   true),
-            new Key(Keys.LaunchMail,            "",             false),
-            new Key(Keys.SelectMedia,           "",             false),
-            new Key(Keys.LaunchApplication1,    "",             false),
-            new Key(Keys.LaunchApplication2,    "",             false),
+            new Key(Keys.VolumeMute,            "",             true),
+            new Key(Keys.VolumeDown,            "",             true),
+            new Key(Keys.VolumeUp,              "",             true),
+            new Key(Keys.MediaNextTrack,        "",             true),
+            new Key(Keys.MediaPreviousTrack,    "",             true),
+            new Key(Keys.MediaStop,             "",             true),
+            new Key(Keys.MediaPlayPause,        "",             true),
+            new Key(Keys.LaunchMail,            "",             true),
+            new Key(Keys.SelectMedia,           "",             true),
+            new Key(Keys.LaunchApplication1,    "",             true),
+            new Key(Keys.LaunchApplication2,    "",             true),
             // Oem1: For the US standard keyboard, the ';:' key 
             new Key(Keys.Oem1,                  ";",            true),      
             // Oem2: For the US standard keyboard, the '/?' key 
@@ -167,7 +167,7 @@ namespace Glue
             new Key(Keys.OemMinus,              "-",            true),
             new Key(Keys.OemPeriod,             ".",            true),
             new Key(Keys.OemQuestion,           "/",            true),
-            new Key(Keys.Oemtilde,              "`",            true),
+            new Key(Keys.Oemtilde,              "~",            true),
             new Key(Keys.OemOpenBrackets,       "[",            true),
             new Key(Keys.OemCloseBrackets,      "]",            true),
             // Oem5: For the US standard keyboard, the '\|' key
@@ -199,22 +199,44 @@ namespace Glue
             new Key(Keys.Alt,                   "",             false),
         };
 
+        internal static string GetKeyName(int virtualKeyCode)
+        {
+            Key key = GetKey(virtualKeyCode);
+
+            if (key.Display.Length == 0)
+            {
+                return key.ToString();
+            }
+
+            return key.Display;
+        }
+
+        private static readonly object s_locker = new object();
         private static readonly List<Key> s_bindableKeys = new List<Key>();
-        private static readonly Dictionary<int, Key> s_keys = new Dictionary<int, Key>();
+        private static readonly Dictionary<int, Key> s_keyCodeMap = new Dictionary<int, Key>();
+        private static readonly Dictionary<string, Key> s_keyNameMap = new Dictionary<string, Key>();
 
         public static List<Key> BindableKeys 
         { 
             get
             {
-                InitBindableKeys();
+                Init();
                 return s_bindableKeys;
             }
         }
 
         public static Key GetKey(int virtualKeyCode)
         { 
-            InitKeys();
-            s_keys.TryGetValue(virtualKeyCode, out Key key);
+            Init();
+            s_keyCodeMap.TryGetValue(virtualKeyCode, out Key key);
+
+            return key;
+        }
+
+        public static Key GetKey(string keyName)
+        {
+            Init();
+            s_keyNameMap.TryGetValue(keyName, out Key key);
 
             return key;
         }
@@ -234,28 +256,26 @@ namespace Glue
             return Native.Keyboard.IsKeyToggled((int) key);
         }
 
-        private static void InitKeys()
+        private static void Init()
         {
-            lock (s_keys)
+            lock (s_locker)
             {
-                if (0 == s_keys.Count)
+                if (0 == s_keyCodeMap.Count)
                 {
                     foreach (Key key in KEYS)
                     {
-                        s_keys.Add((int) key.Keys, key);
-                    }
-                }
-            }
-        }
+                        s_keyCodeMap.Add((int) key.Keys, key);
 
-        private static void InitBindableKeys()
-        {
-            lock (s_bindableKeys)
-            {
-                if (0 == s_bindableKeys.Count)
-                {
-                    foreach (Key key in KEYS)
-                    {
+                        if (key.Display.Length > 0)
+                        {
+                            s_keyNameMap.Add(key.Display, key);
+                        }
+                        // add with default name
+                        else
+                        {
+                            s_keyNameMap.Add(key.Keys.ToString(), key);
+                        }
+
                         if (key.Bindable)
                         {
                             s_bindableKeys.Add(key);

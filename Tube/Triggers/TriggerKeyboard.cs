@@ -8,32 +8,98 @@ namespace Glue.Triggers
 {
     public class TriggerKeyboard : Trigger
     {
-        public Keys TriggerKey => triggerKey;
         public ButtonStates ButtonState => this.buttonState;
-        public List<Keys> ModKeys => modKeys;
 
         [JsonProperty]
         [JsonConverter(typeof(StringEnumConverter))]
         private readonly ButtonStates buttonState;
 
         [JsonProperty]
-        [JsonConverter(typeof(StringEnumConverter))]
-        private readonly Keys triggerKey;
+        private readonly string triggerKey;
 
-        [JsonProperty (ItemConverterType = typeof(StringEnumConverter))]
-        private readonly List<Keys> modKeys = new List<Keys>();
+        [JsonProperty]
+        private readonly List<string> modKeys = new List<string>();
+
+        // This class de/serializes display names only 
+        private readonly Keys triggerKeyCode;
+        private readonly List<Keys> modKeyCodes = new List<Keys>();
 
         [JsonConstructor]
         public TriggerKeyboard(
-            Keys triggerKey,
+            string triggerKey,
+            List<string> modKeys,
+            ButtonStates buttonState,
+            List<string> macroNames,
+            bool eatInput
+            ) : base(macroNames, eatInput)
+        {
+            this.Type = TriggerType.Keyboard;
+            this.triggerKey = triggerKey;
+            this.modKeys = modKeys;
+            this.triggerKeyCode = Keyboard.GetKey(triggerKey).Keys;
+
+            foreach (string modKeyName in modKeys)
+            {
+                this.modKeyCodes.Add(Keyboard.GetKey(modKeyName).Keys);
+            }
+
+            this.buttonState = buttonState;
+        }
+
+        public TriggerKeyboard(
+            Keys triggerKeyCode,
             ButtonStates buttonState, 
             List<string> macroNames, 
             bool eatInput
             ) : base(macroNames, eatInput)
         {
             this.Type = TriggerType.Keyboard;
-            this.triggerKey = triggerKey;
+            this.triggerKeyCode = triggerKeyCode;
+            this.triggerKey = Keyboard.GetKeyName((int) triggerKeyCode);
             this.buttonState = buttonState;
+        }
+
+        public TriggerKeyboard(
+            Keys triggerKeyCode, 
+            List<string> macroNames) : base(macroNames, false)
+        {
+            this.Type = TriggerType.Keyboard;
+            this.triggerKeyCode = triggerKeyCode;
+            this.triggerKey = Keyboard.GetKeyName((int) triggerKeyCode);
+            this.buttonState = ButtonStates.Press;
+        }
+
+        public TriggerKeyboard(
+            Keys triggerKeyCode,
+            string macroName) : base (macroName, false)
+        {
+            this.Type = TriggerType.Keyboard;
+            this.triggerKeyCode = triggerKeyCode;
+            this.triggerKey = Keyboard.GetKeyName((int) triggerKeyCode);
+            this.buttonState = ButtonStates.Press;
+        }
+
+        public Trigger AddModifier(Keys modKeyCode)
+        {
+            this.modKeyCodes.Add(modKeyCode);
+            this.modKeys.Add(Keyboard.GetKeyName((int) modKeyCode));
+            return this;
+        }
+
+        private bool AreModKeysActive()
+        {
+            bool modKeysAreActive = true;
+
+            foreach(Keys key in this.modKeyCodes)
+            {
+                if (!Keyboard.IsKeyDown(key))
+                {
+                    modKeysAreActive = false;
+                    break;
+                }
+            }
+
+            return modKeysAreActive;
         }
 
         protected override void SubscribeEvent()
@@ -49,8 +115,8 @@ namespace Glue.Triggers
         private bool OnEventKeyboard(object sender, EventKeyboard e)
         {
             if (
-                TriggerKey == (Keys) e.VirtualKeyCode && 
-                    (ButtonState == ButtonStates.Both || 
+                this.triggerKeyCode == (Keys)e.VirtualKeyCode &&
+                    (ButtonState == ButtonStates.Both ||
                     ButtonState == e.ButtonState))
             {
                 if (AreModKeysActive())
@@ -62,46 +128,6 @@ namespace Glue.Triggers
             }
 
             return false;
-        }
-
-        public TriggerKeyboard(
-            Keys triggerKey, 
-            List<string> macroNames) : base(macroNames, false)
-        {
-            this.Type = TriggerType.Keyboard;
-            this.triggerKey = triggerKey;
-            this.buttonState = ButtonStates.Press;
-        }
-
-        public TriggerKeyboard(
-            Keys triggerKey,
-            string macroName) : base (macroName, false)
-        {
-            this.Type = TriggerType.Keyboard;
-            this.triggerKey = triggerKey;
-            this.buttonState = ButtonStates.Press;
-        }
-
-        public Trigger AddModifier(Keys modKey)
-        {
-            ModKeys.Add(modKey);
-            return this;
-        }
-
-        private bool AreModKeysActive()
-        {
-            bool modKeysAreActive = true;
-
-            foreach(Keys key in ModKeys)
-            {
-                if (!Keyboard.IsKeyDown(key))
-                {
-                    modKeysAreActive = false;
-                    break;
-                }
-            }
-
-            return modKeysAreActive;
         }
     }
 }

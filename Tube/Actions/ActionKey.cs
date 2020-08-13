@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Windows.Forms;
 using Glue.Events;
 using Glue.Native;
 using Glue.PropertyIO;
@@ -13,8 +14,11 @@ namespace Glue.Actions
     public class ActionKey : Action
     {
         private const string MOVEMENT = "movement";
+        private const string KEYNAME = "keyName";
         public static readonly IntPtr INJECTION_ID = new IntPtr(0xD00D);
-        public Nullable<VirtualKeyCode> Key => key;
+
+        public Nullable<VirtualKeyCode> KeyCode => keyCode;
+        public string KeyName => key;
 
         public ButtonStates Movement { get => movement; set => movement = value; }
 
@@ -23,33 +27,48 @@ namespace Glue.Actions
         private ButtonStates movement;
 
         [JsonProperty]
-        [JsonConverter(typeof(StringEnumConverter))]
-        private Nullable<VirtualKeyCode> key;
+        private string key;
 
         [JsonProperty]
         [DefaultValue (50)]
         // Options - if specified will be used to schedule if ButtonStates is CLICK
         protected long timeClickMS = 50;
 
-        // Generated only if scheduled by ActionTyping with a string
+        private Nullable<VirtualKeyCode> keyCode;
+
+        // Generated only if scheduled by ActionTyping with a string, or similar external action
         private Nullable<INPUT> input;          
 
         private static readonly WindowsInputMessageDispatcher DISPATCHER = new WindowsInputMessageDispatcher();
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         [JsonConstructor]
-        public ActionKey(long timeDelayMS, VirtualKeyCode key, ButtonStates movement) : base(timeDelayMS)
+        public ActionKey(long timeDelayMS, string key, ButtonStates movement) : base(timeDelayMS)
         {
+            this.keyCode = (VirtualKeyCode) Keyboard.GetKey(key).Keys;
             this.key = key;
+            this.movement = movement;
+            this.input = null;
+            this.Type = ActionType.Keyboard;
+        }
+
+        public ActionKey(long timeDelayMS, VirtualKeyCode virtualKeyCode, ButtonStates movement) : base(timeDelayMS)
+        {
+            this.key = Keyboard.GetKeyName((int) virtualKeyCode);
+            this.keyCode = virtualKeyCode;
             this.Movement = movement;
             this.input = null;
             this.Type = ActionType.Keyboard;
         }
 
+        //
+        // Used by ActionTyping or similar other actions to schedule keyboard events 
+        // Never to be serialized when constructed this way. Only scheduled.
+        //
         internal ActionKey(long timeDelayMS, INPUT input, ButtonStates movement) : base(timeDelayMS)
         {
-            this.input=input;
-            this.key = null;
+            this.input = input;
+            this.keyCode = null;
             this.Movement = movement;
             this.Type = ActionType.Keyboard;
         }
@@ -66,11 +85,11 @@ namespace Glue.Actions
 
                 scheduledActions = new Action[]
                 {
-                    new ActionKey(this.DelayMS, (VirtualKeyCode) this.key, ButtonStates.Press)
+                    new ActionKey(this.DelayMS, (VirtualKeyCode) this.keyCode, ButtonStates.Press)
                     {
                         ScheduledTick = timeScheduleFrom + this.delayMS
                     },
-                    new ActionKey(timeClickMS, (VirtualKeyCode) this.key, ButtonStates.Release)
+                    new ActionKey(timeClickMS, (VirtualKeyCode) this.keyCode, ButtonStates.Release)
                     {
                         ScheduledTick = timeScheduleFrom + this.delayMS + timeClickMS
                     }
@@ -80,7 +99,7 @@ namespace Glue.Actions
             {
                 scheduledActions = new Action[]
                 {
-                    new ActionKey(this.DelayMS, (VirtualKeyCode) this.key, this.Movement)
+                    new ActionKey(this.DelayMS, (VirtualKeyCode) this.keyCode, this.Movement)
                     {
                         ScheduledTick = timeScheduleFrom + this.delayMS
                     }
@@ -100,10 +119,10 @@ namespace Glue.Actions
                 switch (this.Movement)
                 {
                     case ButtonStates.Press:
-                        inputs = new InputBuilder().AddKeyDown((VirtualKeyCode) this.key).ToArray();
+                        inputs = new InputBuilder().AddKeyDown((VirtualKeyCode) this.keyCode).ToArray();
                         break;
                     case ButtonStates.Release:
-                        inputs = new InputBuilder().AddKeyUp((VirtualKeyCode) this.key).ToArray();
+                        inputs = new InputBuilder().AddKeyUp((VirtualKeyCode) this.keyCode).ToArray();
                         break;
                 }
 
@@ -127,7 +146,7 @@ namespace Glue.Actions
                 string message = String.Format("Played at tick {0:n0} dt {1:n0}ms: {2}-{3}",
                     now,                          // Time actually played
                     now - this.ScheduledTick,     // Time delta (how late were we?)
-                    this.key,                       
+                    this.KeyName,                       
                     this.Movement);
                 LOGGER.Debug(message);
             }
@@ -137,11 +156,19 @@ namespace Glue.Actions
         {
             string toString = base.ToString();
 
-            Key key = Keyboard.GetKey((int) this.key);
-
-            if (null != key)
+            if (null != this.keyCode)
             {
-                toString += " " + ButtonStatesToString(this.Movement) + key.ToString();
+                Key key = Keyboard.GetKey((int) this.keyCode);
+
+                if (null != key)
+                {
+                    toString += " " + ButtonStatesToString(this.Movement) + key.ToString();
+                }
+            }
+
+            if (null != this.input)
+            {
+                toString += this.input.ToString();
             }
 
             return toString;
@@ -172,6 +199,9 @@ namespace Glue.Actions
             return toString;
         }
 
+        // 
+        // TODO ponder making FromProperties all constructors that operate on property bags
+        // 
         public override void FromProperties(PropertyBag propertyBag)
         {
             base.FromProperties(propertyBag);
@@ -184,12 +214,10 @@ namespace Glue.Actions
                     Enum.TryParse(property.StringValue, out this.movement);
                 }
 
-                if (propertyBag.TryGetProperty("virtualKeyCode", out property))
+                if (propertyBag.TryGetProperty(KEYNAME, out property))
                 {
-                    if (Enum.TryParse(property.StringValue, out VirtualKeyCode keyTemp))
-                    {
-                        this.key = keyTemp;
-                    }
+                    this.key = property.StringValue;
+                    this.keyCode = (VirtualKeyCode) Keyboard.GetKey(property.StringValue).Keys;
                 }
             }
         }
@@ -199,7 +227,7 @@ namespace Glue.Actions
             base.ToProperties(propertyBag);
 
             propertyBag.Add(MOVEMENT, new PropertyString(this.Movement.ToString()));
-            propertyBag.Add("virtualKeyCode", new PropertyString(this.key.ToString()));
+            propertyBag.Add(KEYNAME, new PropertyString(this.key));
 
             return propertyBag;
         }

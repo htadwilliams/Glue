@@ -65,7 +65,7 @@ namespace Glue
 
             foreach (KeyboardRemapEntry remapEntry in RemapKeys)
             {
-                keyboardMap.Add(remapEntry.KeyOld, remapEntry);
+                keyboardMap.Add(remapEntry.KeyCodeOld, remapEntry);
             }
 
             return keyboardMap;
