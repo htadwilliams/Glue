@@ -10,7 +10,9 @@ namespace Glue.Actions
 
         private string cmd;
         private string finishedSoundPath;
+        private string errorSoundPath;
 
+        // Required
         [JsonProperty]
         public string Cmd
         {
@@ -18,6 +20,7 @@ namespace Glue.Actions
             set => this.cmd = value;
         }
 
+        // Optional
         [JsonProperty]
         public string FinishedSoundPath
         {
@@ -25,18 +28,19 @@ namespace Glue.Actions
             set => this.finishedSoundPath = value;
         }
 
+        // Optional
+        [JsonProperty]
+        public string ErrorSoundPath
+        {
+            get => this.errorSoundPath;
+            set => this.errorSoundPath = value;
+        }
+
         [JsonConstructor]
         public ActionCmd(long timeDelayMS, string cmd) : base(timeDelayMS)
         {
             this.Cmd = cmd;
             this.Type = ActionType.Cmd;
-        }
-
-        public ActionCmd(long timeDelayMS, string cmd, string finishedSoundPath) : base(timeDelayMS)
-        {
-            this.Cmd = cmd;
-            this.Type = ActionType.Cmd;
-            this.FinishedSoundPath = finishedSoundPath;
         }
 
         public override void Play()
@@ -57,6 +61,10 @@ namespace Glue.Actions
             };
 
             process.StartInfo = startInfo;
+
+            // TODO write output to GUI when written
+            // process.OutputDataReceived += Process_OutputDataReceived;
+
             process.Start();
 
             // This thread will be paused while the command executes
@@ -72,8 +80,7 @@ namespace Glue.Actions
                 "CMD.EXE " + process.StartInfo.Arguments + " returned(" + process.ExitCode + ") " + newline +
                 stdout;
 
-            // An error was returned - not very common case as most processes 
-            // are lazy and report errors on stdout
+            // Handle stuff from stderr
             if (stderr.Length > 0)
             {
                 message += 
@@ -86,18 +93,30 @@ namespace Glue.Actions
             message = message.Insert(0, "ActionCmd execute ");
             Tube.LogToGUI(message);
 
-            // Play sound indicating finished if one is specified
-            if (null != finishedSoundPath && finishedSoundPath.Length > 0)
+            // Play sound indicating finish and error status if specified
+            if (process.ExitCode == 0)
             {
-                ActionSound.GetPlayer(finishedSoundPath).Play();
+                if (null != finishedSoundPath && finishedSoundPath.Length > 0)
+                {
+                    ActionSound.GetPlayer(finishedSoundPath)?.Play();
+                }
+            }
+            else
+            {
+                if (null != errorSoundPath && errorSoundPath.Length > 0)
+                {
+                    ActionSound.GetPlayer(errorSoundPath)?.Play();
+                }
             }
         }
 
         public override Action[] Schedule(long timeScheduleFrom)
         {
-            ActionCmd scheduledCopy = new ActionCmd(this.DelayMS, this.Cmd, this.FinishedSoundPath)
+            ActionCmd scheduledCopy = new ActionCmd(this.DelayMS, this.Cmd)
             {
-                ScheduledTick = timeScheduleFrom + this.DelayMS
+                ScheduledTick = timeScheduleFrom + this.DelayMS,
+                FinishedSoundPath = this.FinishedSoundPath,
+                ErrorSoundPath = this.ErrorSoundPath,
             };
 
             return new Action[] { scheduledCopy };

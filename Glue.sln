@@ -12,8 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{2C8A3EC4-2
 		readme.md = readme.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sounds", "sounds", "{0695018E-0EDA-483C-8C6E-88ACD199FB20}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "glue-files", "glue-files", "{2A42AA76-AE73-4CD7-9796-B0FC328D10DB}"
 	ProjectSection(SolutionItems) = preProject
 		Tube\glue-files\ark.glue = Tube\glue-files\ark.glue
