@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Windows.Forms;
 
 namespace Glue.Actions
 {
@@ -68,7 +67,6 @@ namespace Glue.Actions
             process.Start();
 
             // This thread will be paused while the command executes
-            // TODO Spawned process from ActionCmd could block thread in queue and needs timeout.
             process.WaitForExit();
 
             string stdout = process.StandardOutput.ReadToEnd();
