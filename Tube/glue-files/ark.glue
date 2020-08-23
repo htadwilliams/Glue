@@ -55,6 +55,7 @@ Json containing the following elements
         },
         {
 		  "FinishedSoundPath": "sound_servomotor.wav",
+          "ErrorSoundPath": "fail.wav",
           "Cmd": "G:\\source\\git\\Savescum\\bin\\Release\\netcoreapp3.1\\Savescum.exe operation=save gamePath=G:\\games\\steam\\steamapps\\common\\ARK\\ShooterGame\\Saved\\SavedArksLocal backupPath=G:\\games\\steam\\steamapps\\common\\ARK\\ShooterGame\\Saved\\BackupArksLocal backupPrefix=BackupArk protectPrefix=OverwrittenArk",
           "delayMS": 0,
           "type": "Cmd"
@@ -72,6 +73,7 @@ Json containing the following elements
         },
         {
 		  "FinishedSoundPath": "sound_servomotor.wav",
+          "ErrorSoundPath": "fail.wav",
           "Cmd": "G:\\source\\git\\Savescum\\bin\\Release\\netcoreapp3.1\\Savescum.exe operation=load gamePath=G:\\games\\steam\\steamapps\\common\\ARK\\ShooterGame\\Saved\\SavedArksLocal backupPath=G:\\games\\steam\\steamapps\\common\\ARK\\ShooterGame\\Saved\\BackupArksLocal backupPrefix=BackupArk protectPrefix=OverwrittenArk",
           "delayMS": 0,
           "type": "Cmd"

@@ -22,7 +22,7 @@ namespace Glue
         private const int TIME_REPEAT_SOUND_MS              = 5 * 1000;       // For several sound delay loops 
         private const int TIME_DELAY_GLOBAL_MS              = 100;            // Delay fudge everywhere - can crank up for debugging
         private const int TIME_DWELL_GLOBAL_MS              = 250;            // Pressed keys are held this long
-        private const int TIME_DELAY_ACTION                 = 8 * 1000;       // Bound to trigger for single delayed action
+        private const int TIME_DELAY_ACTION                 = 3 * 1000;       // Bound to trigger for single delayed action
 
         public static void AddRemap(string keyOld, string keyNew, string procName)
         {
@@ -46,7 +46,8 @@ namespace Glue
             // Create macro with several actions bound to CTRL-Z
             //
             Macro macro = new Macro(macroName = "delayed-action", TIME_DELAY_ACTION) 
-                .AddAction(new ActionSound(TIME_DELAY_GLOBAL_MS,  "ahha.wav"))
+                // .AddAction(new ActionSound(TIME_DELAY_GLOBAL_MS,  "ahha.wav"))
+                .AddAction(new ActionSound(TIME_DELAY_GLOBAL_MS,  "fail.wav"))
                 .AddAction(new ActionKey(TIME_DELAY_GLOBAL_MS, VirtualKeyCode.RETURN, ButtonStates.Both))
                 ;
             Macros.Add(macroName, macro);
@@ -273,16 +274,30 @@ namespace Glue
             Tube.Triggers.Add(triggerAxis);
 
             //
-            // Spawn DIR command
+            // Spawn external commands
             //
-            macro = new Macro(macroName = "dir", 0)
-                .AddAction(new ActionCmd(TIME_DELAY_GLOBAL_MS, "dir"))
-                ;
-            Macros.Add(macroName, macro);
-            // Setup trigger
-            trigger = new TriggerKeyboard(Keys.D, macroName);
-            trigger.AddModifier(Keys.LControlKey);
-            Tube.Triggers.Add(trigger);
+
+            (string soundMacroName, string cmd, Keys triggerKey)[] commandTable =
+            {
+            //  name        command         trigger
+                ("dir",     "dir",          Keys.D),            // something with output
+                ("success", "success.cmd",  Keys.Add),          // guaranteed exit code 0
+                ("error",   "error.cmd",    Keys.Subtract),     // guaranteed exit code 1
+            };
+
+            foreach ((string name, string cmd, Keys triggerKey) in commandTable)
+            {
+                macro = new Macro(name, 0)
+                .AddAction(new ActionCmd(TIME_DELAY_GLOBAL_MS, cmd)
+                {
+                    ErrorSoundPath = "fail.wav",
+                    FinishedSoundPath = "sound_servomotor.wav"
+                });
+                Macros.Add(name, macro);
+                trigger = new TriggerKeyboard(triggerKey, name);
+                trigger.AddModifier(Keys.LControlKey);
+                Tube.Triggers.Add(trigger);
+            }
         }
 
         public static void GenerateKeyRemaps()
