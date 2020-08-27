@@ -23,6 +23,12 @@ https://github.com/oblitum/Interception
 
 https://github.com/jasonpang/Interceptor
 
+The code injects extra information that may be able to be detected and used to prevent dreaded remap / trigger infinite loops. 
+
+see https://github.com/oblitum/Interception/blob/master/library/interception.c line 205 (commit 5fb12fc)
+
+    rawstrokes[i].ExtraInformation = key_stroke[i].information;) 
+
 ## Other interesting links
 
 Seeking advice on best way to gracefully handle device unplug / replug in DirectInput #979

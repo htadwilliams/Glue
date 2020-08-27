@@ -1,7 +1,5 @@
 # Input remapping and macroing tool for Windows.
 
-WARNING: This globally hooks keyboard/mouse input and logs to file if DEBUG mode is enabled. Don't run in DEBUG mode if you don't want your keys logged!
-
 Originally written in C++ around 1999 and used to play EverQuest for over 10 years. This a total rewrite in C# just for fun including low-level keyboard and mouse hooks (with lots of native windows API calls). 
 
 Better than placing a stack of nickels on keys, or using an oscillating desk fan to hit a button repeatedly.
@@ -17,27 +15,65 @@ Default file name if not specified is "macros.glue".
 
 # Example Content
 
-The application by default attempts to read MACROS.GLUE from its working directory. The file name / path may be optionally specified as a command-line parameter. If this file isn't found one will be created with example macros, triggers, and remapping entries.
+The application by default attempts to read a file called macros.glue from its working directory. The file name / path may be optionally specified as a command-line parameter. If this file isn't found one will be created with example macros, triggers, and remapping entries. Files may also be opened from the menu File -> Open.
 
-In Glue, a Trigger detects inputs and fires Macros, which are collections of Actions. Actions may control keyboard keys or other input devices, play sounds, invoke other macros in order to loop or cancel them, and more.
+The file is a JSON collection of Macro, Trigger, and Remap entries.
 
-## Example content Macros and Triggers:
-* Ctrl-C cancels all queued actions, loops, etc.
-* Ctrl-Z will play a sound and type a key after a delay.
-* Ctrl-S "ripple fire" example that alternates between playing two sounds. If a sound is already playing it will be stopped and the next one played / restarted. This trigger will only fire if input focus is set to a process containing "notepad".
-* Ctrl-Space toggles the space bar so it's held with every other press. Doesn't cause windows key repeat messages while held down.
-* MBX1 / MBX2 (mouse side buttons) trigger a press of F10.
-* Alt-, Alt-. Alt-/ begin looping different sounds every N seconds.
-* Ctrl-, Ctrl-. Ctrl-/ cancel individual sound loops. 
-* Ctrl-L toggles mouse pointer lock. 
-* Warthog Throttle controller EAC Arm/Off toggle switch (button 23) controls mouse lock. The button number and controller name are easily tweakable after the file is created. This is ideal for controllers with toggle switches.
+Triggers detect inputs and fires one or more Macros, which are collections of Actions. Actions may control keyboard keys or other input devices, play sounds, invoke other macros in order to loop or cancel them, and more. Actions are scheduled and queued in an output priority queue. The action queue may be viewed from the menu View -> Queued Actions.
+
+Sound paths in the example content are relative to the glue directory, although sounds may be anywhere. Only .wav files are supported. 
+
+CMD.exe paths for spawned processes are also relative to the glue directory. The example one is in the glue directory.
+
+## Example content Macros and Triggers: 
+
+| Trigger                     | Macro name(s)                   | Notes                                             |
+| --------------------------- | ------------------------------- | ------------------------------------------------- |
+| LControl + C                | cancel-all                      | Cancels all queued actions, loops, etc. |
+| LControl + Z                | delaye-action                   | Plays a sound and types the enter key after a delay of three seconds. |
+| LControl + S                | sound-servomotor, sound-ahha    | Ripple fire example that alternates between two macros. If a sound is already playing it will be stopped and the next one played / restarted. |
+| LControl + Win              | space-press, space-release      | Toggles the space bar so it's held with every other press. Note: Doesn't cause windows to repeat spaces while toggled on. |
+| XButton1 (mouse)            | F10                             | Press and release F10 key (not a remap as button still activates). |
+| Alt + ,                     | repeat-sound-dice sound-dice    | Starts a loop that plays a sound every few seconds. |
+| Alt + .                     | repeat-sound-tock sound-tock    | " |
+| Alt + /                     | repeat-sound-estop sound-estop  | " |
+| LControl + ,                | stop-sound-dice                 | Cancels all scheduled dice sounds and ends the loop. |
+| LControl + .                | stop-sound-tock                 | " |
+| LControl + /                | stop-sound-estop                | " |
+| LControl + L                | mouse-lock mouse-unlock         | Toggles mouse pointer lock. Mouse will not move while locked. |
+| LControl + D                | dir                             | Uses ActionCMD to spawn an external process and desplay the results in Glue's window. |
+
+Note: In example, the Warthog Throttle controller EAC Arm/Off toggle switch (button 23) controls mouse lock. The button number and controller name are easily tweakable after the file is created. This is ideal for controllers with toggle switches.
 
 ## Examples of key remapping:
 * V and B are swapped if typing into notepad. Note that this is applied to any .exe with "notepad" in the name, so this includes things like Notepad++. Insert evil laugh here.
 * LEFT SHIFT types an A if input window process name contains "skies.exe" so it can be mapped in Sunless Skies (and easily change for other games where SHIFT can't be remapped).
 * WASD is EVIL! WASD and typical rotation keys Q/E are remapped to ESDF W/R (R/F slide to left over Q/A to make room) for "fallout4.exe". Change to your .exe name to use.
 
+## Keyboard and Mouse Interceptor driver 
+
+### Interceptor reference URLs
+
+http://www.oblita.com/interception.html
+
+https://github.com/oblitum/Interception
+
+https://github.com/jasonpang/Interceptor
+
+### Notes
+
+The interceptor driver will optionally be used to simulate input if it's installed. There are a few bugs and remapping is a WIP. If the driver isn't installed, Glue will use SendInput() to inject keystrokes.
+
+The driver uses DeviceIoControl() calls to inject input. These talk whichever existing keyboard or mouse driver is detected first by the interceptor driver, so on startup there is a race condition for the devices. 
+
+Glue uses the jasonpang wrapper to talk to the Interceptor driver. The wrapper does this by calling into the DLL provided by the interceptor driver. 
+
 # Dependencies
+
+## Binary dependencies
+
+Interceptor.dll from https://github.com/jasonpang/Interceptor. 
+Log4net.dll 
 
 ## NuGet managed dependencies
 * SharpDX and SharpDX.DirectInput http://sharpdx.org/ 
@@ -82,9 +118,11 @@ In Glue, a Trigger detects inputs and fires Macros, which are collections of Act
 # Feature TODO list
 
 ## Core TODO
+ - [ ] Action that is a script interpreter for other actions. Adds interface similar to AHK for Glue.
+ - [ ] Move Log4net dependency to Nuget.
  - [x] Game controller button triggers.
  - [ ] Game controller triggers support chording (with combinations of other controller or mouse buttons and keyboard keys.
- - [X] Game controller hat triggers (with inherited chording support).
+ - [X] Game controller hat triggers.
  - [ ] Game controller force feedback events.
  - [X] Game controller axis movement triggers.
  - [x] Queue view should update every second if nothing else is happening.
