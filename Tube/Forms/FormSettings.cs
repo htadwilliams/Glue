@@ -46,15 +46,30 @@ namespace Glue.Forms
                 {
                     using (StreamReader sr = new StreamReader(FileName))
                     {
+                        if (sr.BaseStream.Length == 0)
+                        {
+                            sr.Close();
+                            File.Delete(FileName);
+                            LOGGER.Warn("Form settings found but is empty. Deleting " + FileName + " and using default values");
+                            return;
+                        }
+
                         using (JsonReader reader = new JsonTextReader(sr))
                         {
                             reader.SupportMultipleContent = true;
                             reader.Read();
                             settingsList = serializer.Deserialize<List<FormSettings>>(reader);
 
-                            foreach(FormSettings settings in settingsList)
+                            if (null != settingsList)
                             {
-                                s_collectedSettings[settings.Name] = settings;
+                                foreach (FormSettings settings in settingsList)
+                                {
+                                    s_collectedSettings[settings.Name] = settings;
+                                }
+                            }
+                            else
+                            {
+                                LOGGER.Warn("Form settings found but unable to read. May have been corrupted by hard reset.");
                             }
                         }
                     }
