@@ -74,7 +74,7 @@ namespace Glue
             Tube.Triggers.Add(trigger);
 
             //
-            // Create a trigger that alternates between macros - ripple fire example
+            // Create a trigger that alternates between macros - simple ripple fire example
             //
             macro = new Macro(macroName = "sound-servomotor", 0);
             macro.AddAction(new ActionSound(TIME_DELAY_GLOBAL_MS, "sound_servomotor.wav"));
@@ -86,14 +86,13 @@ namespace Glue
 
             trigger = new TriggerKeyboard(Keys.S, new List<string> { "sound-servomotor", "sound-ahha" });
             trigger.AddModifier(Keys.LControlKey);
-            trigger.ProcessName = PROCESS_NAME_NOTEPAD;
             Tube.Triggers.Add(trigger);
 
+            // Makes mouse wheel noisy - mouse wheel trigger example
             TriggerMouseWheel triggerMouseWheel = new TriggerMouseWheel(WheelMoves.Up, "sound-servomotor", false);
             Tube.Triggers.Add(triggerMouseWheel);
             triggerMouseWheel = new TriggerMouseWheel(WheelMoves.Down, "sound-ahha", false);
             Tube.Triggers.Add(triggerMouseWheel);
-
 
             //
             // Drum kit!
@@ -146,16 +145,18 @@ namespace Glue
             // 
             // Toggle - hold SPACE key every other time it is pressed 
             //
-            macro = new Macro(macroName = "toggle-down", TIME_DELAY_GLOBAL_MS);
+            macro = new Macro(macroName = "space-press", TIME_DELAY_GLOBAL_MS);
             macro.AddAction(new ActionKey(0, VirtualKeyCode.SPACE, ButtonStates.Press));
             Macros.Add(macroName, macro);
 
-            macro = new Macro(macroName = "toggle-up", TIME_DELAY_GLOBAL_MS);
+            macro = new Macro(macroName = "space-release", TIME_DELAY_GLOBAL_MS);
             macro.AddAction(new ActionKey(0, VirtualKeyCode.SPACE, ButtonStates.Release));
             Macros.Add(macroName, macro);
 
+            // trigger will ripple fire these macros, creating a toggle for the space bar
+            // press LControl + 
             trigger = new TriggerKeyboard(
-                Keys.Space, ButtonStates.Both, new List<string> {"toggle-down", null, "toggle-up", null}, true);
+                Keys.LWin, ButtonStates.Press, new List<string> {"space-press", "space-release"}, true);
             trigger.AddModifier(Keys.LControlKey);
             Tube.Triggers.Add(trigger);
 

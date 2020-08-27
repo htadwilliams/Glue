@@ -30,10 +30,10 @@ namespace Glue.Actions
 
         public override Action[] Schedule(long timeScheduleFrom)
         {
+            // TODO ActionTyping.Schedule() needs a complete re-write for filter-driver injection. 
             List<Action> actions = new List<Action>();
 
-            // TODO INPUT generated with AddCharacters(char) or AddCharacters(string) mask information
-            // The keyboard hook (KeyInterceptor) can't make sense of input generated this way
+            // TODO INPUT generated with AddCharacters(char) or AddCharacters(string) cause PACKET to be displayed by keyboard hook
             INPUT[] inputs = new InputBuilder().AddCharacters(this.typedString).ToArray();
 
             int actionCount = 0;

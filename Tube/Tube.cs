@@ -3,6 +3,7 @@ using Glue.Events;
 using Glue.Forms;
 using Glue.Native;
 using Glue.Triggers;
+using Interceptor;
 using log4net.Config;
 using NerfDX.DirectInput;
 using NerfDX.Events;
@@ -32,6 +33,8 @@ namespace Glue
         public static List<Trigger> Triggers { get; set; }
         public static bool WriteOnExit { get => s_writeOnExit; set => s_writeOnExit = value; }
         public static CmdReader CmdFileReader { get; set; }
+        public static Input IntercepterDriverWrapper { get; private set; }
+
         #endregion
 
         #region Private static fields
@@ -74,6 +77,10 @@ namespace Glue
                 TrayApplicationContext<ViewMain> trayApplicationContext = new TrayApplicationContext<ViewMain>();
                 MainForm = (ViewMain) trayApplicationContext.MainForm;
 
+                // Careful. Does bad things if the event handlers block the driver.
+                // TODO: Make Interceptor driver use toggle-able in the GUI
+                InitIntercepterDriver();
+
                 // Native keyboard and mouse hook initialization
                 KeyInterceptor.Initialize(KeyboardHandler.HookCallback);
 
@@ -111,6 +118,65 @@ namespace Glue
 
             LOGGER.Info("Exiting");
         }
+
+        private static void InitIntercepterDriver()
+        {
+            IntercepterDriverWrapper = new Input
+            {
+                KeyboardFilterMode = KeyboardFilterMode.All,
+                // MouseFilterMode = MouseFilterMode.All ^ MouseFilterMode.MouseMove
+            };
+
+            // Probably not needed unless we need the filter driver for both input and output
+            // IntercepterDriverWrapper.OnKeyPressed += IntercepterDriverWrapper_OnKeyPressed;
+
+            // Clicking in console with this enabled is very bad. 
+            // IntercepterDriverWrapper.OnMousePressed += IntercepterDriverWrapper_OnMousePressed;
+
+            try
+            {
+                IntercepterDriverWrapper.Load();
+            }
+            catch (DllNotFoundException notFoundException)
+            {
+                LOGGER.Info("Unable to load keyboard filter driver DLL. Make sure DLL is in application directory: " + notFoundException);
+                return;
+            }
+            catch (Exception e)
+            {
+                LOGGER.Warn("Failed to load keyboard filter driver. SendInput will be used: " + e);
+                return;
+            }
+
+            LOGGER.Info("Keyboard filter driver loaded and will be used instead of SendInput()!");
+        }
+
+        // Saving for now - TODO delete mouse handler from intercepter driver if not needed
+        //private static void IntercepterDriverWrapper_OnMousePressed(object sender, MousePressedEventArgs e)
+        //{
+        //    LOGGER.Debug("Filter driver mouse pressed: " + e.State + " X:" + e.X + ", Y:" + e.Y);
+        //}
+
+        //private static void IntercepterDriverWrapper_OnKeyPressed(object sender, KeyPressedEventArgs e)
+        //{
+        //    string state;
+        //    switch (e.State)
+        //    {
+        //        case KeyState.Down:
+        //            state = "+";
+        //            break;
+
+        //        case KeyState.Up:
+        //            state = "-";
+        //            break;
+
+        //        default:
+        //            state = e.State + " ";
+        //            break;
+        //    }
+
+        //    LOGGER.Debug("Filter driver key pressed: " + state + e.Key );
+        //}
 
         internal static void ProcessFileArg(String fileName)
         {

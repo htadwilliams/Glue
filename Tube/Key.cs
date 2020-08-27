@@ -8,14 +8,17 @@ namespace Glue
         public string Display { get => display; set => display = value; }
         public bool Bindable { get => bindable; set => bindable = value; }
         public Keys Keys { get => keys; set => keys = value; }
+        public Interceptor.Keys InterceptorKey { get => interceptorKey; set => interceptorKey = value; }
 
         private Keys keys;
         private string display;
         private bool bindable;
+        private Interceptor.Keys interceptorKey;
 
-        public Key(Keys key, string display, bool bindable)
+        internal Key(Keys key, Interceptor.Keys interceptorKey, string display, bool bindable)
         {
-            this.Keys = key;
+            Keys = key;
+            InterceptorKey = interceptorKey;
             Display = display;
             Bindable = bindable;
         }

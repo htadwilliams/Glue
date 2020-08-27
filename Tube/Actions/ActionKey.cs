@@ -1,11 +1,10 @@
-﻿using System;
-using System.ComponentModel;
-using System.Windows.Forms;
-using Glue.Events;
+﻿using Glue.Events;
 using Glue.Native;
 using Glue.PropertyIO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.ComponentModel;
 using WindowsInput;
 using WindowsInput.Native;
 
@@ -113,32 +112,58 @@ namespace Glue.Actions
         {
             INPUT[] inputs = null;
 
-            // Constructor only supplied virtual key code - create INPUT 
-            if (null == this.input)
+            // Use filter driver to simulate input
+            if (null == this.input && Tube.IntercepterDriverWrapper.IsLoaded)
             {
-                switch (this.Movement)
+                Glue.Key glueKey = Keyboard.GetKey((int) this.KeyCode);
+                Interceptor.Keys simulatedDriverKey = glueKey.InterceptorKey;
+
+                if (0 == simulatedDriverKey)
                 {
-                    case ButtonStates.Press:
-                        inputs = new InputBuilder().AddKeyDown((VirtualKeyCode) this.keyCode).ToArray();
-                        break;
-                    case ButtonStates.Release:
-                        inputs = new InputBuilder().AddKeyUp((VirtualKeyCode) this.keyCode).ToArray();
-                        break;
+                    LOGGER.Warn(
+                        "Action attempted to simulate key that doesn't exist in the filter driver: virtualKeyCode = " 
+                        + glueKey.Display + "simulatedDriverCode = " + simulatedDriverKey );
                 }
 
+                else
+                {
+                    Tube.IntercepterDriverWrapper.SendKey(
+                        simulatedDriverKey, 
+                        Movement == ButtonStates.Press 
+                            ? Interceptor.KeyState.Down 
+                            : Interceptor.KeyState.Up);
+                }
             }
-            // Constructor supplied INPUT - use it instead
+            // Use SendInput() API to simulate input
             else
             {
-                inputs = new INPUT[1];
-                inputs[0] = (INPUT) this.input;
-            }
+                // Constructor only supplied virtual key code - create INPUT 
+                if (null == this.input)
+                {
+                    switch (this.Movement)
+                    {
+                        case ButtonStates.Press:
+                            inputs = new InputBuilder().AddKeyDown((VirtualKeyCode) this.keyCode).ToArray();
+                            break;
+                        case ButtonStates.Release:
+                            inputs = new InputBuilder().AddKeyUp((VirtualKeyCode) this.keyCode).ToArray();
+                            break;
+                    }
 
-            // Stamp our injected input so our keyboard remapper doesn't try 
-            // to remap it! We still want to remap other injected input (for 
-            // example from remote desktop, or steam streaming)
-            inputs[0].Data.Keyboard.ExtraInfo = INJECTION_ID;
-            DISPATCHER.DispatchInput(inputs);
+                }
+                // Constructor supplied INPUT - use it instead
+                else
+                {
+                    inputs = new INPUT[1];
+                    inputs[0] = (INPUT) this.input;
+                }
+
+                // Stamp our injected input so our keyboard remapper doesn't try 
+                // to remap it! We still want to remap other injected input (for 
+                // example from remote desktop, or steam streaming)
+                inputs[0].Data.Keyboard.ExtraInfo = INJECTION_ID;
+                DISPATCHER.DispatchInput(inputs);
+            }
 
             if (LOGGER.IsDebugEnabled)
             {
