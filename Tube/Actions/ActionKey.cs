@@ -14,7 +14,7 @@ namespace Glue.Actions
     {
         private const string MOVEMENT = "movement";
         private const string KEYNAME = "keyName";
-        public static readonly IntPtr INJECTION_ID = new IntPtr(0xD00D);
+        public static readonly IntPtr INJECTION_ID = new IntPtr(0xD00B);
 
         public Nullable<VirtualKeyCode> KeyCode => keyCode;
         public string KeyName => key;
@@ -124,14 +124,15 @@ namespace Glue.Actions
                         "Action attempted to simulate key that doesn't exist in the filter driver: virtualKeyCode = " 
                         + glueKey.Display + "simulatedDriverCode = " + simulatedDriverKey );
                 }
-
                 else
                 {
+                    LOGGER.Info("Sending to Interceptor driver...");
                     Tube.IntercepterDriverWrapper.SendKey(
                         simulatedDriverKey, 
                         Movement == ButtonStates.Press 
                             ? Interceptor.KeyState.Down 
-                            : Interceptor.KeyState.Up);
+                            : Interceptor.KeyState.Up,
+                        (uint) INJECTION_ID.ToInt32());     // extra info so Glue can detect its own input
                 }
             }
             // Use SendInput() API to simulate input
@@ -161,7 +162,10 @@ namespace Glue.Actions
                 // Stamp our injected input so our keyboard remapper doesn't try 
                 // to remap it! We still want to remap other injected input (for 
                 // example from remote desktop, or steam streaming)
-                inputs[0].Data.Keyboard.ExtraInfo = INJECTION_ID;
+                for (int inputIndex = 0; inputIndex < inputs.Length; inputIndex++)
+                {
+                    inputs[inputIndex].Data.Keyboard.ExtraInfo = INJECTION_ID;
+                }
                 DISPATCHER.DispatchInput(inputs);
             }
 
