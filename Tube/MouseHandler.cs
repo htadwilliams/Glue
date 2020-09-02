@@ -126,8 +126,9 @@ namespace Glue
                 }
             }
 
-            // Freeze the mouse if mouse safety is toggled
-            if (Tube.MouseLocked)
+            // Freeze the mouse if mouse safety is toggled (and not using filter driver)
+            if (!Tube.IntercepterDriverWrapper.IsLoaded && 
+                 Tube.MouseLocked)
             {
                 return new IntPtr(1);
             }
