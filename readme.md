@@ -30,7 +30,7 @@ CMD.exe paths for spawned processes are also relative to the glue directory. The
 | Trigger                     | Macro name(s)                   | Notes                                             |
 | --------------------------- | ------------------------------- | ------------------------------------------------- |
 | LControl + C                | cancel-all                      | Cancels all queued actions, loops, etc. |
-| LControl + Z                | delaye-action                   | Plays a sound and types the enter key after a delay of three seconds. |
+| LControl + Z                | delayed-action                   | Plays a sound and types the enter key after a delay of three seconds. |
 | LControl + S                | sound-servomotor, sound-ahha    | Ripple fire example that alternates between two macros. If a sound is already playing it will be stopped and the next one played / restarted. |
 | LControl + Win              | space-press, space-release      | Toggles the space bar so it's held with every other press. Note: Doesn't cause windows to repeat spaces while toggled on. |
 | XButton1 (mouse)            | F10                             | Press and release F10 key (not a remap as button still activates). |
