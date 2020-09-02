@@ -297,6 +297,7 @@
     <PostBuildEvent>copy $(ProjectDir)\Log.$(ConfigurationName).config $(TargetDir)\Log.config
 copy $(ProjectDir)\sounds\*.wav $(TargetDir)
 copy $(ProjectDir)\glue-files\*.glue $(TargetDir)
-copy $(ProjectDir)\glue-files\*.cmd $(TargetDir)</PostBuildEvent>
+copy $(ProjectDir)\glue-files\*.cmd $(TargetDir)
+copy $(ProjectDir)\..\bin\*.dll $(TargetDir)</PostBuildEvent>
   </PropertyGroup>
 </Project>
