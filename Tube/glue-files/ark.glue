@@ -9,38 +9,21 @@ Json containing the following elements
     keyMap     Each entry remaps a key on the keyboard.
 
 */
-
 {
   "macros": [
     {
-      "name": "mouse-lock",
+      "name": "mouse-lock-toggle",
       "delayTimeMS": 0,
       "actions": [
         {
-          "lockAction": "Lock",
+          "lockAction": "Toggle",
           "delayMS": 0,
           "type": "MouseLock"
         },
         {
           "delayMS": 0,
           "type": "Sound",
-          "SoundPath": "sound_click_latch.wav"
-        }
-      ]
-    },
-    {
-      "name": "mouse-unlock",
-      "delayTimeMS": 0,
-      "actions": [
-        {
-          "delayMS": 0,
-          "type": "Sound",
-          "SoundPath": "sound_click_latch.wav"
-        },
-        {
-          "lockAction": "Unlock",
-          "delayMS": 0,
-          "type": "MouseLock"
+          "SoundPath": "elev_start.wav" // sounds a bit like a lock
         }
       ]
     },
@@ -54,7 +37,7 @@ Json containing the following elements
           "SoundPath": "sound_click_latch.wav"
         },
         {
-		  "FinishedSoundPath": "sound_servomotor.wav",
+          "FinishedSoundPath": "sound_servomotor.wav",
           "ErrorSoundPath": "fail.wav",
           "Cmd": "G:\\source\\git\\Savescum\\bin\\Release\\netcoreapp3.1\\Savescum.exe operation=save gamePath=G:\\games\\steam\\steamapps\\common\\ARK\\ShooterGame\\Saved\\SavedArksLocal backupPath=G:\\games\\steam\\steamapps\\common\\ARK\\ShooterGame\\Saved\\BackupArksLocal backupPrefix=BackupArk protectPrefix=OverwrittenArk",
           "delayMS": 0,
@@ -72,7 +55,7 @@ Json containing the following elements
           "SoundPath": "van_door.wav"
         },
         {
-		  "FinishedSoundPath": "sound_servomotor.wav",
+          "FinishedSoundPath": "sound_servomotor.wav",
           "ErrorSoundPath": "fail.wav",
           "Cmd": "G:\\source\\git\\Savescum\\bin\\Release\\netcoreapp3.1\\Savescum.exe operation=load gamePath=G:\\games\\steam\\steamapps\\common\\ARK\\ShooterGame\\Saved\\SavedArksLocal backupPath=G:\\games\\steam\\steamapps\\common\\ARK\\ShooterGame\\Saved\\BackupArksLocal backupPrefix=BackupArk protectPrefix=OverwrittenArk",
           "delayMS": 0,
@@ -81,9 +64,20 @@ Json containing the following elements
       ]
     }
   ],
-  
-  "triggers": [
 
+  "triggers": [
+    {
+      "type": "Keyboard",
+      "triggerKey": "LWin",
+      "modKeys": [
+        "LControl"
+      ],
+      "buttonState": "Press",
+      "macroNames": [
+        "mouse-lock-toggle"
+      ],
+      "eatInput": false
+    },
     {
       "type": "Keyboard",
       "triggerKey": "~",
@@ -95,10 +89,8 @@ Json containing the following elements
         "savescum-save"
       ],
       "eatInput": true,
-	    // COMMENT OUT FOR DEBUG
       "processName": "ShooterGame.exe"
     },
-	
     {
       "type": "Keyboard",
       "triggerKey": "PageUp",
@@ -110,7 +102,6 @@ Json containing the following elements
         "savescum-load"
       ],
       "eatInput": true,
-	    // COMMENT OUT FOR DEBUG
       "processName": "ShooterGame.exe"
     }
   ],

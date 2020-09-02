@@ -124,14 +124,16 @@ namespace Glue
             IntercepterDriverWrapper = new Input
             {
                 KeyboardFilterMode = KeyboardFilterMode.All,
-                // MouseFilterMode = MouseFilterMode.All ^ MouseFilterMode.MouseMove
+
+                // For mouse lock
+                MouseFilterMode = MouseFilterMode.MouseMove
             };
 
             // Probably not needed unless we need the filter driver for both input and output
             // IntercepterDriverWrapper.OnKeyPressed += IntercepterDriverWrapper_OnKeyPressed;
 
             // Clicking in console with this enabled is very bad. 
-            // IntercepterDriverWrapper.OnMousePressed += IntercepterDriverWrapper_OnMousePressed;
+            IntercepterDriverWrapper.OnMousePressed += IntercepterDriverWrapper_OnMousePressed;
 
             try
             {
@@ -151,11 +153,11 @@ namespace Glue
             LOGGER.Info("Keyboard filter driver loaded and will be used instead of SendInput()!");
         }
 
-        // Saving for now - TODO delete mouse handler from intercepter driver if not needed
-        //private static void IntercepterDriverWrapper_OnMousePressed(object sender, MousePressedEventArgs e)
-        //{
-        //    LOGGER.Debug("Filter driver mouse pressed: " + e.State + " X:" + e.X + ", Y:" + e.Y);
-        //}
+        private static void IntercepterDriverWrapper_OnMousePressed(object sender, MousePressedEventArgs e)
+        {
+            // Lock the mouse
+            e.Handled = Tube.MouseLocked;
+        }
 
         //private static void IntercepterDriverWrapper_OnKeyPressed(object sender, KeyPressedEventArgs e)
         //{
