@@ -72,7 +72,6 @@ Glue uses the jasonpang wrapper to talk to the Interceptor driver. The wrapper d
 
 ## Binary dependencies
 
-Interceptor.dll from https://github.com/jasonpang/Interceptor. 
 Log4net.dll 
 
 ## NuGet managed dependencies
@@ -80,9 +79,10 @@ Log4net.dll
 * NerfDX facade for SharpDX.DirectInput https://github.com/htadwilliams/NerfDX 
 * NewtonSoft.Json for de/serialization of content https://www.newtonsoft.com/json
 
-## Other code forked directly into project
+## Other external code forked into project
 * Priority queue implementation is courtesy of BlueRaja.admin@gmail.com (https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp). The application creates a thread that monitors a queue of scheduled macro action events to fire (See EventQueue class).
 * Windows Input simulator to wrap Windows API SendInput https://archive.codeplex.com/?p=inputsimulator and provide all the native constants needed. See https://docs.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-sendinput.
+* Wrapper around Interceptor driver (https://github.com/oblitum/Interception): https://github.com/jasonpang/Interceptor
 
 # Completed features
 
