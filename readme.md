@@ -62,7 +62,7 @@ https://github.com/jasonpang/Interceptor
 
 ### Notes
 
-The interceptor driver will optionally be used to simulate input if it's installed. There are a few bugs and remapping is a WIP. If the driver isn't installed, Glue will use SendInput() to inject keystrokes.
+The interceptor driver will optionally be used to simulate input if it's installed. If the driver isn't installed, Glue will use SendInput() to inject keystrokes.
 
 The driver uses DeviceIoControl() calls to inject input. These talk whichever existing keyboard or mouse driver is detected first by the interceptor driver, so on startup there is a race condition for the devices. 
 
