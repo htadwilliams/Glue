@@ -56,10 +56,6 @@
     <ApplicationIcon>glue.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Interceptor, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\bin\Interceptor.dll</HintPath>
-    </Reference>
     <Reference Include="log4net">
       <HintPath>..\bin\log4net.dll</HintPath>
     </Reference>
@@ -291,6 +287,12 @@
     <None Include="notes.md" />
     <Content Include="resources\glue.ico" />
     <Content Include="resources\key.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Interceptor\Interceptor.csproj">
+      <Project>{c451a00e-77f1-4f3f-b7ee-27dc712ea316}</Project>
+      <Name>Interceptor</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
