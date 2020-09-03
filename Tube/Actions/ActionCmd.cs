@@ -61,7 +61,7 @@ namespace Glue.Actions
 
             process.StartInfo = startInfo;
 
-            // TODO write output to GUI when written
+            // TODO write output to GUI when available instead of all at end
             // process.OutputDataReceived += Process_OutputDataReceived;
 
             process.Start();
