@@ -21,7 +21,6 @@ namespace Glue.Actions
         {
             int cancelCount = 0;
 
-            // TODO Cancel by name should support regex or partial name matching
             if (name.Equals("*"))
             {
                 cancelCount = actions.Count;
@@ -31,7 +30,7 @@ namespace Glue.Actions
             {
                 foreach (Action action in actions)
                 {
-                    if (null != action.Name && action.Name.Equals(name))
+                    if (null != action.Name && action.Name.Contains(name))
                     {
                         cancelCount++;
                         actions.Remove(action);
@@ -46,8 +45,6 @@ namespace Glue.Actions
         {
             if (actions.Count != 0)
             {
-                // WARNING! assumes 1 tick == 1 MS which may not be true on all systems
-                // TODO Add code to verify and warn or adjust if 1 tick != 1 MS, or verify it isn't needed
                 return (int) (actions.First.ScheduledTick - TimeProvider.GetTickCount());
             }
 

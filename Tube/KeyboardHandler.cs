@@ -144,7 +144,6 @@ namespace Glue
                         + "] focus window = [" + inputFocusProcessName 
                         + "] remap process = [" + remap.ProcessName + "]");
 
-                    // TODO process name filtering should be regex not .Contains()
                     if (!inputFocusProcessName
                         .ToLower()
                         .Contains(remap.ProcessName.ToLower())

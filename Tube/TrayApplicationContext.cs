@@ -91,7 +91,6 @@ namespace Glue
 
         private void ContextMenuStrip_Opening(object sender, CancelEventArgs e)
         {
-            // TODO customize context menu strip here if needed
             e.Cancel = false;
         }
     }
