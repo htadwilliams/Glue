@@ -90,7 +90,7 @@
     <Compile Include="Actions\JsonContract\ActionConverter.cs" />
     <Compile Include="CmdReader.cs" />
     <Compile Include="DefaultContent.cs" />
-    <Compile Include="Events\Event.cs" />
+    <Compile Include="Events\ButtonStates.cs" />
     <Compile Include="Events\EventMacro.cs" />
     <Compile Include="Events\EventKeyboard.cs" />
     <Compile Include="Events\EventMouse.cs" />

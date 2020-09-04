@@ -2,15 +2,15 @@
 
 namespace Glue.Events
 {
-    public enum WheelMoves
-    {
-        None = -1,
-        Up = 0,
-        Down = 1,
-    }
-
     public class EventMouse
     {
+        public enum WheelMoves
+        {
+            None = -1,
+            Up = 0,
+            Down = 1,
+        }
+
         public int X { get; }
         public int Y { get; }
         public MouseButtons MouseButton { get; }
