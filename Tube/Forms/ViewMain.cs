@@ -56,7 +56,7 @@ namespace Glue.Forms
         {
             EventBus<EventKeyboard>.Instance.EventRecieved += EventKeyboard_Recieved;
             EventBus<EventMouse>.Instance.EventRecieved += EventMouse_Received;
-            EventBus<EventMacro>.Instance.EventRecieved += EventMacro_Received;
+            EventBus<EventUserInfo>.Instance.EventRecieved += EventMacro_Received;
             EventBus<EventController>.Instance.EventRecieved += EventController_Received;
         }
 
@@ -236,7 +236,7 @@ namespace Glue.Forms
             // TODO
         }
 
-        internal void DisplayMouseMove(int xPos, int yPos)
+        private void DisplayMouseMove(int xPos, int yPos)
         {
             int xOut = xPos;
             int yOut = yPos;
@@ -250,7 +250,7 @@ namespace Glue.Forms
             toolStripMousePos.Text = String.Format("Mouse: ({0:n0}, {1:n0})", xOut, yOut);
         }
 
-        internal void DisplayMouseClick(MouseButtons mouseButton, int xPos, int yPos)
+        private void DisplayMouseClick(MouseButtons mouseButton, int xPos, int yPos)
         {
             int xOut = xPos;
             int yOut = yPos;
@@ -332,11 +332,11 @@ namespace Glue.Forms
             }
         }
 
-        private void EventMacro_Received(object sender, BusEventArgs<EventMacro> e)
+        private void EventMacro_Received(object sender, BusEventArgs<EventUserInfo> e)
         {
             if (LogInput)
             {
-                AppendText(" [" + e.BusEvent.MacroName + "]");
+                AppendText(" " + e.BusEvent.Message);
             }
         }
 

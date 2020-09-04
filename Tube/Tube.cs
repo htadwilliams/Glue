@@ -233,7 +233,7 @@ namespace Glue
                 LOGGER.Debug("Playing macro [" + macroName + "]");
 
                 macro.ScheduleActions();
-                EventBus<EventMacro>.Instance.SendEvent(null, new EventMacro(macroName));
+                EventBus<EventUserInfo>.Instance.SendEvent(null, new EventUserInfo("[" + macroName + "]"));
             }
             else
             {
