@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using WindowsInput;
 using WindowsInput.Native;
+using static Glue.Events.EventMouse;
 using static Glue.Tube;
 
 namespace Glue

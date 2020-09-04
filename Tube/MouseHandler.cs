@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using WindowsInput.Native;
+using static Glue.Events.EventMouse;
 using static Glue.Native.MouseInterceptor;
 
 namespace Glue

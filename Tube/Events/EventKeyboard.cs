@@ -8,7 +8,7 @@ namespace Glue.Events
         public int VirtualKeyCode { get; }
         public ButtonStates ButtonState { get; }
 
-        public EventKeyboard(int virtualKeyCode, ButtonStates buttonState) : base()
+        public EventKeyboard(int virtualKeyCode, ButtonStates buttonState)
         {
             VirtualKeyCode = virtualKeyCode;
             ButtonState = buttonState;
