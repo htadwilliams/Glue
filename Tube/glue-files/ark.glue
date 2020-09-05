@@ -89,7 +89,7 @@ Json containing the following elements
         "savescum-save"
       ],
       "eatInput": true,
-      "processName": "ShooterGame.exe"
+      // "processName": "ShooterGame.exe"
     },
     {
       "type": "Keyboard",

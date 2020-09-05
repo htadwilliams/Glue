@@ -56,7 +56,7 @@ namespace Glue.Forms
         {
             EventBus<EventKeyboard>.Instance.EventRecieved += EventKeyboard_Recieved;
             EventBus<EventMouse>.Instance.EventRecieved += EventMouse_Received;
-            EventBus<EventUserInfo>.Instance.EventRecieved += EventMacro_Received;
+            EventBus<EventUserInfo>.Instance.EventRecieved += EventUserInfo_Received;
             EventBus<EventController>.Instance.EventRecieved += EventController_Received;
         }
 
@@ -332,15 +332,12 @@ namespace Glue.Forms
             }
         }
 
-        private void EventMacro_Received(object sender, BusEventArgs<EventUserInfo> e)
+        private void EventUserInfo_Received(object sender, BusEventArgs<EventUserInfo> e)
         {
-            if (LogInput)
-            {
-                AppendText(" " + e.BusEvent.Message);
-            }
+            AppendText(" " + e.BusEvent.Message);
         }
 
-        public void DisplayKeyUp(int vkCode)
+        private void DisplayKeyUp(int vkCode)
         {
             if (RawKeyNames)
             {
@@ -348,7 +345,7 @@ namespace Glue.Forms
             }
         }
 
-        public void DisplayKeyDown(int vkCode)
+        private void DisplayKeyDown(int vkCode)
         {
             string output;
             if (RawKeyNames)
