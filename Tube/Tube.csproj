@@ -183,7 +183,6 @@
     <Compile Include="Triggers\TriggerControllerButton.cs" />
     <Compile Include="Triggers\TriggerMouseWheel.cs" />
     <Compile Include="Triggers\TriggerKeyboard.cs" />
-    <Compile Include="Utils.cs" />
     <Compile Include="WindowsInput\InputBuilder.cs" />
     <Compile Include="Priority_Queue\IPriorityQueue.cs" />
     <Compile Include="Native\Keyboard.cs" />

@@ -212,7 +212,6 @@ namespace Glue
             macro.AddAction(new ActionCancel("*"));
             Macros.Add(macroName, macro);
 
-            // TODO Trigger mod keys should allow logical combinations e.g. (LControlKey | RControlKey) 
             trigger = new TriggerKeyboard(Keys.C, macroName);
             trigger.AddModifier(Keys.LControlKey);
             Tube.Triggers.Add(trigger);

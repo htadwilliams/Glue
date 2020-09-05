@@ -228,12 +228,12 @@ namespace Glue.Forms
 
         private void MenuItemEditTriggers_Click(object sender, EventArgs e)
         {
-            // TODO
+            // TODO MenuItemEditTriggers
         }
 
         private void MenuItemEditRemaps_Click(object sender, EventArgs e)
         {
-            // TODO
+            // TODO MenuItemEditRemaps
         }
 
         private void DisplayMouseMove(int xPos, int yPos)
@@ -363,18 +363,10 @@ namespace Glue.Forms
             AppendText(output);
         }
 
-        // TODO FormatKeyString should be in its own wrapper around Keyboard Key
         private static string FormatKeyString(int vkCode)
         {
-            string output = "";
-            
             Key key = Keyboard.GetKey(vkCode);
-            if (null == key)
-            {
-                return output;
-            }
-
-            output = key.Display;
+            string output = key.Display;
             if (output == "")
             {
                 output = key.ToString();

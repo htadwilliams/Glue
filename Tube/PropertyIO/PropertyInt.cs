@@ -15,8 +15,6 @@ namespace Glue.PropertyIO
 
         public override void Parse(string stringValue)
         {
-            // TODO Decide how IProperty and Property handle parsing exceptions
-            // For now just throw whatever Int32 does when parsing
             value = Int32.Parse(stringValue);
         }
 
