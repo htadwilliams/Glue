@@ -233,7 +233,9 @@ namespace Glue
                 LOGGER.Debug("Playing macro [" + macroName + "]");
 
                 macro.ScheduleActions();
-                EventBus<EventUserInfo>.Instance.SendEvent(null, new EventUserInfo("[" + macroName + "]"));
+                EventBus<EventUserInfo>.Instance.SendEvent(
+                    null, 
+                    new EventUserInfo("[" + macroName + "]"));
             }
             else
             {
@@ -388,11 +390,6 @@ namespace Glue
             }
 
             LOGGER.Info("Activated mouse lock: action = " + lockAction + " lock = " + MouseLocked);
-        }
-
-        public static void LogToGUI(string message)
-        {
-            MainForm.AppendText(message);
         }
     }
 }

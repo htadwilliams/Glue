@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using Glue.Events;
+using NerfDX.Events;
+using Newtonsoft.Json;
 using System;
 
 namespace Glue.Actions
@@ -44,14 +46,21 @@ namespace Glue.Actions
 
         public override void Play()
         {
-            LOGGER.Info("Executing CMD.EXE with: /C " + Cmd);
+            string arguments = "/C " + Cmd;         // carries out the command and terminates process
+            string nl = Environment.NewLine;
+
+            string message = "Calling CMD.EXE " + arguments;
+            LOGGER.Info(message);
+            EventBus<EventUserInfo>.Instance.SendEvent(
+                this,
+                new EventUserInfo(nl + "ActionCmd " + message + " ..." + nl));
 
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo
             {
                 WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
                 FileName = "cmd.exe",               // see cmd.exe /? for more details on argument tweaking
-                Arguments = "/C " + Cmd,            // carries out the command and terminates process
+                Arguments = arguments,              // 
                 RedirectStandardInput = true,       // stdin <- System.Diagnostics.Process.StandardInput
                 RedirectStandardOutput = true,      // stdout -> System.Diagnostics.Process.StandardOutput
                 RedirectStandardError = true,       // stderr -> System.Diagnostics.Process.StandardError`
@@ -60,36 +69,32 @@ namespace Glue.Actions
             };
 
             process.StartInfo = startInfo;
-
-            // TODO write output to GUI when written
-            // process.OutputDataReceived += Process_OutputDataReceived;
-
             process.Start();
 
-            // This thread will be paused while the command executes
+            // This thread will be blocked while the command executes
             process.WaitForExit();
 
             string stdout = process.StandardOutput.ReadToEnd();
             string stderr = process.StandardError.ReadToEnd();
-            string newline = Environment.NewLine;
 
-            string message =
-                newline +
-                "CMD.EXE " + process.StartInfo.Arguments + " returned(" + process.ExitCode + ") " + newline +
-                stdout;
+            message =
+                nl + nl +
+                "CMD.EXE returned (" + process.ExitCode + ") " 
+                + nl + nl + stdout + nl;
 
             // Handle stuff from stderr
             if (stderr.Length > 0)
             {
                 message += 
-                "STDEERR! : " + newline +
-                stderr + newline;
+                "STDEERR! : " + nl +
+                stderr + nl;
             }
 
             LOGGER.Info(message);
 
-            message = message.Insert(0, "ActionCmd execute ");
-            Tube.LogToGUI(message);
+            EventBus<EventUserInfo>.Instance.SendEvent(
+                this,
+                new EventUserInfo(message));
 
             // Play sound indicating finish and error status if specified
             if (process.ExitCode == 0)
