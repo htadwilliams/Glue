@@ -91,7 +91,7 @@
     <Compile Include="CmdReader.cs" />
     <Compile Include="DefaultContent.cs" />
     <Compile Include="Events\ButtonStates.cs" />
-    <Compile Include="Events\EventMacro.cs" />
+    <Compile Include="Events\EventUserInfo.cs" />
     <Compile Include="Events\EventKeyboard.cs" />
     <Compile Include="Events\EventMouse.cs" />
     <Compile Include="Forms\DialogEditMacros.cs">
