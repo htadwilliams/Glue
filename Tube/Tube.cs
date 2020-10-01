@@ -33,7 +33,7 @@ namespace Glue
         public static List<Trigger> Triggers { get; set; }
         public static bool WriteOnExit { get => s_writeOnExit; set => s_writeOnExit = value; }
         public static CmdReader CmdFileReader { get; set; }
-        public static Input IntercepterDriverWrapper { get; private set; }
+        public static Input InterceptorDriverInput { get; private set; }
 
         #endregion
 
@@ -54,7 +54,7 @@ namespace Glue
         /// </summary>
         [STAThread]
         static void Main(string[] args)
-        {
+       {
             if (Thread.CurrentThread.Name == null)
             {
                 Thread.CurrentThread.Name = "Main";
@@ -79,7 +79,7 @@ namespace Glue
 
                 // Careful. Does bad things if the event handlers block the driver.
                 // TODO: Make Interceptor driver use toggle-able in the GUI
-                InitIntercepterDriver();
+                LoadInterceptorDriver();
 
                 // Native keyboard and mouse hook initialization
                 KeyInterceptor.Initialize(KeyboardHandler.HookCallback);
@@ -106,9 +106,10 @@ namespace Glue
             finally
             {
                 // Native class de-initialization
-                MouseInterceptor.Cleanup();
+                MouseInterceptor.Unhook();
                 KeyInterceptor.Cleanup();
                 CmdFileReader.Dispose();
+                UnloadInterceptorDriver();
             }
 
             if (WriteOnExit)
@@ -119,9 +120,9 @@ namespace Glue
             LOGGER.Info("Exiting");
         }
 
-        private static void InitIntercepterDriver()
+        private static void LoadInterceptorDriver()
         {
-            IntercepterDriverWrapper = new Input
+            InterceptorDriverInput = new Input
             {
                 KeyboardFilterMode = KeyboardFilterMode.All,
 
@@ -133,11 +134,11 @@ namespace Glue
             // IntercepterDriverWrapper.OnKeyPressed += IntercepterDriverWrapper_OnKeyPressed;
 
             // Clicking in console with this enabled is very bad. 
-            IntercepterDriverWrapper.OnMousePressed += IntercepterDriverWrapper_OnMousePressed;
+            InterceptorDriverInput.OnMousePressed += IntercepterDriverWrapper_OnMousePressed;
 
             try
             {
-                IntercepterDriverWrapper.Load();
+                InterceptorDriverInput.Load();
             }
             catch (DllNotFoundException notFoundException)
             {
@@ -151,6 +152,14 @@ namespace Glue
             }
 
             LOGGER.Info("Keyboard filter driver loaded and will be used instead of SendInput()!");
+        }
+
+        private static void UnloadInterceptorDriver()
+        {
+            if (InterceptorDriverInput.IsLoaded)
+            {
+                InterceptorDriverInput.Unload();
+            }
         }
 
         private static void IntercepterDriverWrapper_OnMousePressed(object sender, MousePressedEventArgs e)
