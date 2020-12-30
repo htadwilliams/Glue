@@ -219,48 +219,47 @@ namespace Glue
             trigger.AddModifier(Keys.RControlKey);
             Tube.Triggers.Add(trigger);
 
-            // Toggle mouse safety
-            macro = new Macro(macroName = "lock-mouse-toggle", 0);
-            macro.AddAction(new ActionMouseLock(LockAction.Toggle));
-            macro.AddAction(new ActionSound(TIME_DELAY_GLOBAL_MS, "sound_click_latch.wav"));
-            Macros.Add(macroName, macro);
-
-            trigger = new TriggerKeyboard(Keys.L, macroName);
-            trigger.AddModifier(Keys.LControlKey);
-            Tube.Triggers.Add(trigger);
-            trigger = new TriggerKeyboard(Keys.L, macroName);
-            trigger.AddModifier(Keys.RControlKey);
-            Tube.Triggers.Add(trigger);
-
             // 
-            // Mouse safety - example optimal for controller that 
-            // has a toggle switch
+            // Mouse safety 
             //
 
             // Engage mouse safety
             macro = new Macro(macroName = "lock-mouse-engage", 0);
-            macro.AddAction(new ActionMouseLock(LockAction.Lock));
+            macro.AddAction(new ActionMouseLock(MouseLocks.Locked));
             macro.AddAction(new ActionSound(TIME_DELAY_GLOBAL_MS, "sound_click_latch.wav"));
             Macros.Add(macroName, macro);
-            
-            TriggerController triggerController = new TriggerControllerButton(
-                 NAME_CONTROLLER, BUTTON_CONTROLLER, ButtonValues.Press, macroName);
-            Tube.Triggers.Add(triggerController);
 
+            // Example trigger optimal for controller that has a toggle switch or POV hat
+            TriggerController triggerController = new TriggerControllerButton(
+                NAME_CONTROLLER, BUTTON_CONTROLLER, ButtonValues.Press, macroName);
+            Tube.Triggers.Add(triggerController);
             triggerController = new TriggerControllerPOV(NAME_CONTROLLER, POVStates.Up, macroName);
             Tube.Triggers.Add(triggerController);
 
             // Disengage mouse safety
             macro = new Macro(macroName = "lock-mouse-disengage", 0);
-            macro.AddAction(new ActionMouseLock(LockAction.Unlock));
+            macro.AddAction(new ActionMouseLock(MouseLocks.Unlocked));
             macro.AddAction(new ActionSound(TIME_DELAY_GLOBAL_MS, "sound_click_latch.wav"));
             Macros.Add(macroName, macro);
-            
+
             triggerController = new TriggerControllerButton(
                 NAME_CONTROLLER, BUTTON_CONTROLLER, ButtonValues.Release, macroName );
             Tube.Triggers.Add(triggerController);
             triggerController = new TriggerControllerPOV(NAME_CONTROLLER, POVStates.Down, macroName);
             Tube.Triggers.Add(triggerController);
+
+            // Toggle mouse safety via keyboard
+            List<string> macroNames = new List<string>
+            {
+                "lock-mouse-engage",
+                "lock-mouse-disengage"
+            };
+            trigger = new TriggerKeyboard(Keys.L, macroNames);
+            trigger.AddModifier(Keys.LControlKey);
+            Tube.Triggers.Add(trigger);
+            trigger = new TriggerKeyboard(Keys.L, macroNames);
+            trigger.AddModifier(Keys.RControlKey);
+            Tube.Triggers.Add(trigger);
 
             TriggerControllerAxis triggerAxis = new TriggerControllerAxis(
                 NAME_CONTROLLER, 

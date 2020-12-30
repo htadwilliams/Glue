@@ -20,12 +20,13 @@ namespace Glue.Actions
         Cmd,
      }
 
-    public enum LockAction
+    public enum MouseLocks
     {
-        Unlock = 0,
-        Lock = 1,
-        Toggle = 2,
-    }
+        Unlocked    = 0x0000,
+        Horizontal  = 0x0001,
+        Vertical    = 0x0002,
+        Locked      = 0xFFFF,
+    };
 
     [JsonConverter(typeof(ActionConverter))]
     [JsonObject(MemberSerialization.OptIn)]

@@ -4,26 +4,28 @@ using Newtonsoft.Json.Converters;
 namespace Glue.Actions
 {
     [JsonObject(MemberSerialization.OptIn)]
-    class ActionMouseLock : Action
+    public class ActionMouseLock : Action
     {
+        public MouseLocks MouseLock{ get => mouseLock; set => mouseLock = value; }
+
         [JsonProperty]
         [JsonConverter(typeof(StringEnumConverter))]
-        private readonly LockAction lockAction;
+        private MouseLocks mouseLock;
 
-        public ActionMouseLock(LockAction lockAction) : base (0)
+        public ActionMouseLock(MouseLocks mouseLock) : base (0)
         {
             Type = ActionType.MouseLock;
-            this.lockAction = lockAction;
+            this.MouseLock = mouseLock;
         }
 
         public override void Play()
         {
-            Glue.Tube.ActivateMouseLock(this.lockAction);
+            Glue.Tube.MouseLock = this.MouseLock;
         }
 
         public override Action[] Schedule(long scheduleFromTick)
         {
-            ActionMouseLock scheduledCopy = new ActionMouseLock(this.lockAction)
+            ActionMouseLock scheduledCopy = new ActionMouseLock(this.MouseLock)
             {
                 ScheduledTick = scheduleFromTick + this.DelayMS
             };
@@ -33,7 +35,7 @@ namespace Glue.Actions
 
         public override string ToString()
         {
-            return base.ToString() + " (" + this.lockAction + ")";
+            return base.ToString() + " (" + this.MouseLock + ")";
         }
     }
 }

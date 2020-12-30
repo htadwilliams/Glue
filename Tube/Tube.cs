@@ -20,26 +20,46 @@ using WindowsInput.Native;
 
 namespace Glue
 {
-    internal static class Tube
+    public static class Tube
     {
         #region Automatic properties
-        internal static Dictionary<VirtualKeyCode, KeyboardRemapEntry> KeyMap { get; set; }
+        public static Dictionary<VirtualKeyCode, KeyboardRemapEntry> KeyMap { get; set; }
         public static Dictionary<string, Macro> Macros { get; set; }
         public static ViewMain MainForm { get; set; }
         public static string FileName { get; set; } = FILENAME_DEFAULT;
         public static Scheduler Scheduler { get; } = new Scheduler();
-        public static bool MouseLocked { get; set; } = false;
+
         public static DirectInputManager DirectInputManager { get; private set; }
         public static List<Trigger> Triggers { get; set; }
-        public static bool WriteOnExit { get => s_writeOnExit; set => s_writeOnExit = value; }
-        public static CmdReader CmdFileReader { get; set; }
         public static Input InterceptorDriverInput { get; private set; }
-
+        public static CmdReader CmdFileReader { get; set; }
         #endregion
 
         #region Private static fields
         private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private static bool s_writeOnExit = false;
+        private static MouseLocks s_mouseLock = MouseLocks.Unlocked;
+        #endregion
+
+        #region Properties
+        public static bool WriteOnExit
+        {
+            get => s_writeOnExit;
+            set
+            {
+                s_writeOnExit = value;
+                LOGGER.Info("Set to write file on exit: " + FileName);
+            }
+        }
+        public static MouseLocks MouseLock
+        {
+            get => s_mouseLock;
+            set
+            {
+                LOGGER.Info("Setting mouse lock from: " + s_mouseLock + " to: " + value);
+                s_mouseLock = value;
+            }
+        }
         #endregion
 
         #region Constants
@@ -176,7 +196,10 @@ namespace Glue
         private static void IntercepterDriverWrapper_OnMousePressed(object sender, MousePressedEventArgs e)
         {
             // Lock the mouse
-            e.Handled = Tube.MouseLocked;
+            if (Tube.MouseLock == MouseLocks.Locked)
+            {
+                e.Handled = true;
+            }
         }
 
         //private static void IntercepterDriverWrapper_OnKeyPressed(object sender, KeyPressedEventArgs e)
@@ -390,26 +413,6 @@ namespace Glue
             LOGGER.Error(output, e);
                          
             return;
-        }
-
-        internal static void ActivateMouseLock(LockAction lockAction)
-        {
-            switch (lockAction)
-            {
-                case LockAction.Lock:
-                    MouseLocked = true;
-                    break;
-
-                case LockAction.Unlock:
-                    MouseLocked = false;
-                    break;
-
-                case LockAction.Toggle:
-                    MouseLocked = !MouseLocked;
-                    break;
-            }
-
-            LOGGER.Info("Activated mouse lock: action = " + lockAction + " lock = " + MouseLocked);
         }
     }
 }
