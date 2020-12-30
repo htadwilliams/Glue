@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace Glue.Actions
 {
-    class Scheduler : IActionScheduler
+    public class Scheduler : IActionScheduler
     {
         public event OnQueueChange QueueChangeEvent;
 

@@ -27,7 +27,7 @@ namespace Glue.Native
         WM_XBUTTONDBLCLK    = 0x020D,
     }
 
-    class MouseInterceptor
+    public class MouseInterceptor
     {
         public delegate IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam);
 

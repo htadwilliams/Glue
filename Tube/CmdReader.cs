@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Glue
 {
-    class CmdReader : IDisposable
+    public class CmdReader : IDisposable
     {
         private FileSystemWatcher Watcher { get; set; }
         private StreamReader Reader { get; set; }

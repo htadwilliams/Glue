@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace Glue.Native
 {
-    static class WinConsole
+    public static class WinConsole
     {
         public static void Initialize(bool alwaysCreateNewConsole = true)
         {

@@ -5,7 +5,7 @@ using WindowsInput.Native;
 namespace Glue
 {
     [JsonObject(MemberSerialization.OptIn)]
-    class KeyboardRemapEntry
+    public class KeyboardRemapEntry
     {
         public string ProcessName => this.processName;
         public VirtualKeyCode KeyCodeOld => keyCodeOld;
