@@ -24,6 +24,13 @@ namespace Glue.Native
             }
         }
 
+        public static void Free()
+        {
+            Console.Out?.Close();
+            Console.In?.Close();
+            FreeConsole();
+        }
+
         private static void InitializeOutStream()
         {
             var fs = CreateFileStream("CONOUT$", GENERIC_WRITE, FILE_SHARE_WRITE, FileAccess.Write);
@@ -44,8 +51,11 @@ namespace Glue.Native
             }
         }
 
-        private static FileStream CreateFileStream(string name, uint win32DesiredAccess, uint win32ShareMode,
-                                FileAccess dotNetFileAccess)
+        private static FileStream CreateFileStream(
+            string name, 
+            uint win32DesiredAccess, 
+            uint win32ShareMode,
+            FileAccess dotNetFileAccess)
         {
             var file = new SafeFileHandle(CreateFileW(name, win32DesiredAccess, win32ShareMode, IntPtr.Zero, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, IntPtr.Zero), true);
             if (!file.IsInvalid)
@@ -65,6 +75,13 @@ namespace Glue.Native
         private static extern int AllocConsole();
 
         [DllImport("kernel32.dll",
+            EntryPoint = "FreeConsole",
+            SetLastError = true,
+            CharSet = CharSet.Auto,
+            CallingConvention = CallingConvention.StdCall)]
+        private static extern bool FreeConsole();
+
+        [DllImport("kernel32.dll",
             EntryPoint = "AttachConsole",
             SetLastError = true,
             CharSet = CharSet.Auto,
@@ -76,6 +93,7 @@ namespace Glue.Native
             SetLastError = true,
             CharSet = CharSet.Auto,
             CallingConvention = CallingConvention.StdCall)]
+
         private static extern IntPtr CreateFileW(
               string lpFileName,
               UInt32 dwDesiredAccess,

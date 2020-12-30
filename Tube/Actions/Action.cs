@@ -60,6 +60,12 @@ namespace Glue.Actions
         // Time scheduled for this action instance 
         protected long scheduledTick;
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Required by callback signature")]
+        public void PlayWaitCallback(object context)
+        {
+            Play();
+        }
+
         public abstract void Play();
 
         // Actions may schedule multiple instances - see ActionTyping

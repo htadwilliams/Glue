@@ -113,7 +113,7 @@ namespace Glue.Actions
             INPUT[] inputs = null;
 
             // Use filter driver to simulate input
-            if (null == this.input && Tube.IntercepterDriverWrapper.IsLoaded)
+            if (null == this.input && Tube.InterceptorDriverInput.IsLoaded)
             {
                 Glue.Key glueKey = Keyboard.GetKey((int) this.KeyCode);
                 Interceptor.Keys simulatedDriverKey = glueKey.InterceptorKey;
@@ -127,7 +127,7 @@ namespace Glue.Actions
                 else
                 {
                     LOGGER.Info("Sending to Interceptor driver...");
-                    Tube.IntercepterDriverWrapper.SendKey(
+                    Tube.InterceptorDriverInput.SendKey(
                         simulatedDriverKey, 
                         Movement == ButtonStates.Press 
                             ? Interceptor.KeyState.Down 

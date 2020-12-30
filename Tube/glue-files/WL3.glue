@@ -1,0 +1,87 @@
+/*
+
+Glue macro tool file
+
+Json containing the following elements
+
+    macros     Actions to be performed such as pressing a key or playing a sound.
+    triggers   Bind keys or key combinations to macros.
+    keyMap     Each entry remaps a key on the keyboard.
+
+*/
+{
+  "macros": [
+    {
+      "name": "mouse-lock-toggle",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "lockAction": "Toggle",
+          "delayMS": 0,
+          "type": "MouseLock"
+        },
+        {
+          "delayMS": 0,
+          "type": "Sound",
+          "SoundPath": "elev_start.wav" // sounds a bit like a lock
+        }
+      ]
+    }
+  ],
+  "triggers": [
+    {
+      "type": "Keyboard",
+      "triggerKey": "LWin",
+      "modKeys": [
+        "LControl"
+      ],
+      "buttonState": "Press",
+      "macroNames": [
+        "mouse-lock-toggle"
+      ],
+      "eatInput": false
+    }
+  ],
+ "remapKeys": [
+    {
+      "keyOld": "Q",
+      "keyNew": "R",
+      "processName": "WL3.exe"
+    },
+    {
+      "keyOld": "A",
+      "keyNew": "F",
+      "processName": "WL3.exe"
+    },
+    {
+      "keyOld": "W",
+      "keyNew": "Q",
+      "processName": "WL3.exe"
+    },
+    {
+      "keyOld": "E",
+      "keyNew": "W",
+      "processName": "WL3.exe"
+    },
+    {
+      "keyOld": "R",
+      "keyNew": "E",
+      "processName": "WL3.exe"
+    },
+    {
+      "keyOld": "S",
+      "keyNew": "A",
+      "processName": "WL3.exe"
+    },
+    {
+      "keyOld": "D",
+      "keyNew": "S",
+      "processName": "WL3.exe"
+    },
+    {
+      "keyOld": "F",
+      "keyNew": "D",
+      "processName": "WL3.exe"
+    }
+  ]
+}

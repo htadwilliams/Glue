@@ -41,7 +41,7 @@ namespace Glue.Native
             s_handler = lowLevelMouseProc;
         }
 
-        public static void Cleanup()
+        public static void Unhook()
         {
             if (s_hookID != IntPtr.Zero)
             {

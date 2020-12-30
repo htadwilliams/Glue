@@ -1,0 +1,104 @@
+/*
+
+Glue macro tool file
+
+Json containing the following elements
+
+    macros     Actions to be performed such as pressing a key or playing a sound.
+    triggers   Bind keys or key combinations to macros.
+    keyMap     Each entry remaps a key on the keyboard.
+
+*/
+
+{
+  "macros": [
+	/* click left mouse button - made for mouse with keyboard when mouse hand is busy, 
+	   or when clicking needs to be very precise */
+    {
+      "name": "click-left",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "delayMS": 0,
+          "type": "Sound",
+          "SoundPath": "dice_roll.wav"
+        },
+        {
+          "clickType": "PRESS",
+          "mode": "NONE",
+          "button": "LeftButton",
+          "xMove": 0,
+          "yMove": 0,
+          "xButtonId": -1,
+          "delayMS": 0,
+          "type": "Mouse"
+        },
+        {
+          "clickType": "RELEASE",
+          "mode": "NONE",
+          "button": "LeftButton",
+          "xMove": 0,
+          "yMove": 0,
+          "xButtonId": -1,
+          "delayMS": 50,
+          "type": "Mouse"
+        }
+      ]
+    },
+    {
+      "name": "mouse-lock-toggle",
+      "delayTimeMS": 0,
+      "actions": [
+        {
+          "type": "MouseLock",
+          "lockAction": "Toggle",
+          "delayMS": 0
+        },
+        {
+          "type": "Sound",
+          "SoundPath": "elev_start.wav", // sounds a bit like a lock
+          "delayMS": 0
+        }
+      ]
+    }
+  ],
+  
+  "triggers": [
+    {
+      "type": "Keyboard",
+      "triggerKey": "LWin",
+      "modKeys": [
+        "LControl"
+      ],
+      "buttonState": "Press",
+      "macroNames": [
+        "mouse-lock-toggle"
+      ],
+      "eatInput": false
+    },
+	// fishing quick slap keys
+	// Maybe add support for multiple keys per trigger
+    {
+      "type": "Keyboard",
+      "triggerKey": "NumPad0",
+      "buttonState": "Press",
+      "macroNames": [
+        "click-left"
+      ],
+      "eatInput": true,
+      "processName": "raft.exe"
+    },
+    {
+      "type": "Keyboard",
+      "triggerKey": "NumPad.",
+      "buttonState": "Press",
+      "macroNames": [
+        "click-left"
+      ],
+      "eatInput": true,
+      "processName": "raft.exe"
+    }
+  ],
+  "remapKeys": [
+  ]
+}
