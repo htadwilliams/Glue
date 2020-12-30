@@ -23,6 +23,7 @@ namespace Glue.Triggers
         // This class de/serializes display names only 
         private readonly Keys triggerKeyCode;
         private readonly List<Keys> modKeyCodes = new List<Keys>();
+        private static readonly log4net.ILog LOGGER = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         [JsonConstructor]
         public TriggerKeyboard(
@@ -38,9 +39,19 @@ namespace Glue.Triggers
             this.modKeys = modKeys;
             this.triggerKeyCode = Keyboard.GetKey(triggerKey).Keys;
 
-            foreach (string modKeyName in modKeys)
+            // Many triggers won't have them
+            if (null != modKeys)
             {
-                this.modKeyCodes.Add(Keyboard.GetKey(modKeyName).Keys);
+                foreach (string modKeyName in modKeys)
+                {
+                    Key key = Keyboard.GetKey(modKeyName);
+                    if (null == key)
+                    {
+                        LOGGER.Warn("Unknown key name: " + modKeyName);
+                        key = Keyboard.GetKey(Keys.None);
+                    }
+                    this.modKeyCodes.Add(key.Keys);
+                }
             }
 
             this.buttonState = buttonState;
