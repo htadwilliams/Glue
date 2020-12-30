@@ -8,10 +8,12 @@ Unless you're a developer that wants a tool written in C# you can modify or get 
 
 # Usage
 
-Glue.exe [macros.glue]
+Glue.exe [macros.glue] [UseInterceptor]
 
 If optionally specified file does not exist, one will be created with examples of Glue's features.
 Default file name if not specified is "macros.glue".
+
+The UseInterceptor flag will cause Glue to attempt use of the Interceptor driver in place of SendInput and low level keyboard / mouse hooks.
 
 # Example Content
 
